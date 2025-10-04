@@ -9,6 +9,8 @@ from pydantic import BaseModel, Field
 from typing import List, Optional, Dict, Any
 import uuid
 from datetime import datetime, timezone
+import asyncio
+import json
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -60,11 +62,26 @@ class PassportResponse(BaseModel):
     recommendations: List[RecommendationItem]
     created_at: str
 
+class ImportXlsxRequest(BaseModel):
+    url: str
+    replace: bool = True
+    mapping: Optional[Dict[str, str]] = None  # optional column mapping
+
+class AIRequest(BaseModel):
+    occasion: str
+    style: str
+    budget: str
+    vibe_preference: Optional[str] = None
+
+class AIResponse(BaseModel):
+    vibe: str
+    explanation: str
+    source: str
+
 # -------------------------------------------------
 # Helpers
 # -------------------------------------------------
 VIBE_IMAGES: Dict[str, str] = {
-    # Populated from vision_expert_agent curated set
     "Hollywood Glam": "https://images.unsplash.com/photo-1616837874254-8d5aaa63e273?crop=entropy&cs=srgb&fm=jpg&q=85",
     "Editorial Chic": "https://images.unsplash.com/photo-1727784892059-c85b4d9f763c?crop=entropy&cs=srgb&fm=jpg&q=85",
     "Bridal Grace": "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?crop=entropy&cs=srgb&fm=jpg&q=85",
@@ -163,7 +180,6 @@ async def seed_products_if_needed():
             "description": "Architectural cuff that turns heads.",
         },
     ]
-    # Duplicate with slight variations to reach ~16 items
     more = []
     for i in range(8):
         base = sample[i % len(sample)].copy()
@@ -194,7 +210,6 @@ def match_vibe(s: SurveyInput) -> str:
     if "bold" in st or "party" in oc:
         return "Bold Statement"
     if pref:
-        # Try to map preference text to closest vibe name tokens
         for vibe in VIBE_IMAGES.keys():
             if pref in vibe.lower():
                 return vibe
@@ -214,6 +229,35 @@ def vibe_explanation(vibe: str) -> str:
     }
     return explanations.get(vibe, "Personalized selections tuned to your style and occasion.")
 
+async def get_ai_vibe(payload: AIRequest) -> Optional[AIResponse]:
+    """Attempt AI vibe using Emergent Integrations with OpenAI latest text model. Fallback returns None."""
+    api_key = os.environ.get("EMERGENT_LLM_KEY")
+    if not api_key:
+        return None
+    try:
+        # Delayed import so that code runs even if library missing
+        # NOTE: Implementation follows integration playbook; if SDK unavailable, we fallback.
+        from emergent import UniversalLLMClient  # type: ignore
+        client = UniversalLLMClient(api_key=api_key, model="gpt-4.1", timeout=25.0)
+        prompt = (
+            "You are a luxury jewelry stylist. Given the survey, return STRICT JSON with keys 'vibe' and 'explanation'.\n"
+            f"Occasion: {payload.occasion}\n"
+            f"Style: {payload.style}\n"
+            f"Budget: {payload.budget}\n"
+            f"Preference: {payload.vibe_preference or 'None'}\n"
+            "Rules: vibe must be one of [Hollywood Glam, Editorial Chic, Bridal Grace, Everyday Chic, Minimal Modern, Vintage Romance, Boho Luxe, Bold Statement]."
+        )
+        result = await client.generate(prompt=prompt, max_tokens=220, temperature=0.5)  # type: ignore
+        text = result.get('choices', [{}])[0].get('text', '').strip()  # type: ignore
+        data = json.loads(text)
+        vibe = data.get('vibe')
+        explanation = data.get('explanation')
+        if isinstance(vibe, str) and isinstance(explanation, str) and vibe in VIBE_IMAGES:
+            return AIResponse(vibe=vibe, explanation=explanation, source="ai")
+    except Exception as e:
+        logging.warning(f"AI vibe selection failed, fallback to rules. Error: {e}")
+    return None
+
 async def recommend_products(s: SurveyInput, vibe: str) -> List[RecommendationItem]:
     # Filter by style/occasion keywords and budget
     min_b, max_b = BUDGET_RANGES.get(s.budget, (0, 999999))
@@ -222,9 +266,8 @@ async def recommend_products(s: SurveyInput, vibe: str) -> List[RecommendationIt
     occ_q = s.occasion.lower().split()
 
     cursor = db.products.find({})
-    items = await cursor.to_list(200)
+    items = await cursor.to_list(500)
 
-    # Score items
     scored: List[tuple[float, Dict[str, Any]]] = []
     for it in items:
         price = float(it.get("price", 0))
@@ -233,12 +276,10 @@ async def recommend_products(s: SurveyInput, vibe: str) -> List[RecommendationIt
         score = 0.0
         tags = [t.lower() for t in it.get("style_tags", [])]
         occs = [t.lower() for t in it.get("occasion_tags", [])]
-        # keyword overlaps
         score += sum(1 for t in tags for q in style_q if q in t) * 1.5
         score += sum(1 for t in occs for q in occ_q if q in t) * 1.2
         if vibe.split()[0].lower() in tags:
             score += 1.0
-        # small bias towards mid-priced items
         score += 0.2 if 120 <= price <= 600 else 0
         scored.append((score, it))
 
@@ -256,7 +297,6 @@ async def recommend_products(s: SurveyInput, vibe: str) -> List[RecommendationIt
         reason_bits.append(f"within your budget at ${price}")
         reason = ", ".join(reason_bits) if reason_bits else "tailored to your inputs"
         recs.append(RecommendationItem(product=Product(**it), reason=reason))
-    # If less than 3, backfill with any products in budget
     if len(recs) < 3:
         for it in items:
             price = float(it.get("price", 0))
@@ -279,19 +319,33 @@ async def root():
 
 @api.get("/products", response_model=List[Product])
 async def list_products():
-    items = await db.products.find({}).to_list(200)
+    items = await db.products.find({}).to_list(500)
     return [Product(**it) for it in items]
+
+@api.post("/ai/vibe", response_model=AIResponse)
+async def ai_vibe(payload: AIRequest):
+    # Try AI first, fallback to rules
+    ai = await get_ai_vibe(payload)
+    if ai:
+        return ai
+    vibe = match_vibe(SurveyInput(**payload.model_dump()))
+    return AIResponse(vibe=vibe, explanation=vibe_explanation(vibe), source="rules")
 
 @api.post("/survey", response_model=RecommendationResponse)
 async def submit_survey(payload: SurveyInput):
-    vibe = match_vibe(payload)
-    explanation = vibe_explanation(vibe)
+    # Use AI to detect vibe if available
+    ai = await get_ai_vibe(AIRequest(**payload.model_dump()))
+    if ai:
+        vibe = ai.vibe
+        explanation = ai.explanation
+    else:
+        vibe = match_vibe(payload)
+        explanation = vibe_explanation(vibe)
     mood_img = VIBE_IMAGES.get(vibe)
     recs = await recommend_products(payload, vibe)
 
     session_id = str(uuid.uuid4())
     created_at = now_iso()
-    # store session for passport
     await db.sessions.insert_one({
         "id": session_id,
         "created_at": created_at,
@@ -316,10 +370,9 @@ async def get_passport(session_id: str):
     if not sess:
         raise HTTPException(status_code=404, detail="Session not found")
     prod_ids = sess.get("recommendation_product_ids", [])
-    prods = await db.products.find({"id": {"$in": prod_ids}}).to_list(100)
+    prods = await db.products.find({"id": {"$in": prod_ids}}).to_list(200)
     recs: List[RecommendationItem] = []
     for it in prods:
-        # basic reason regeneration (session doesn't store reasons)
         recs.append(RecommendationItem(product=Product(**it), reason="curated for your vibe"))
 
     survey = SurveyInput(**sess["survey"]) if isinstance(sess.get("survey"), dict) else SurveyInput(**{})
@@ -331,6 +384,71 @@ async def get_passport(session_id: str):
         recommendations=recs,
         created_at=sess.get("created_at", now_iso()),
     )
+
+@api.post("/admin/import-xlsx")
+async def import_xlsx(req: ImportXlsxRequest):
+    """Import products from an Excel file hosted at a URL. Default mapping: name, price, image_url, style_tags, occasion_tags, description.
+    If replace=True, existing products are cleared first.
+    """
+    try:
+        import pandas as pd
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"pandas not available: {e}")
+
+    try:
+        df = pd.read_excel(req.url, engine="openpyxl")
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Failed to read Excel: {e}")
+
+    mapping = req.mapping or {
+        "name": "name",
+        "price": "price",
+        "image_url": "image_url",
+        "style_tags": "style_tags",
+        "occasion_tags": "occasion_tags",
+        "description": "description",
+    }
+
+    records: List[Dict[str, Any]] = []
+    for _, row in df.iterrows():
+        try:
+            name = str(row.get(mapping["name"]))
+            if not name or name == 'nan':
+                continue
+            price_val = row.get(mapping["price"]) if mapping["price"] in row else None
+            try:
+                price = float(price_val)
+            except Exception:
+                continue
+            image = str(row.get(mapping["image_url"]) or row.get("image") or row.get("image link") or "").strip()
+            style_raw = row.get(mapping["style_tags"]) or row.get("style") or ""
+            occ_raw = row.get(mapping["occasion_tags"]) or row.get("occasion") or ""
+            def to_list(v):
+                if isinstance(v, list):
+                    return [str(x).strip() for x in v]
+                s = str(v) if v is not None else ""
+                return [x.strip() for x in s.split(',') if x and str(x).strip().lower() != 'nan']
+            style_tags = to_list(style_raw)
+            occasion_tags = to_list(occ_raw)
+            desc = row.get(mapping["description"]) if mapping["description"] in row else None
+            item = {
+                "id": str(uuid.uuid4()),
+                "name": name.strip(),
+                "price": price,
+                "image_url": image,
+                "style_tags": style_tags,
+                "occasion_tags": occasion_tags,
+                "description": str(desc) if desc is not None and str(desc).lower() != 'nan' else None,
+            }
+            records.append(item)
+        except Exception:
+            continue
+
+    if req.replace:
+        await db.products.delete_many({})
+    if records:
+        await db.products.insert_many(records)
+    return {"imported": len(records), "replaced": bool(req.replace)}
 
 # Register router
 app.include_router(api)
