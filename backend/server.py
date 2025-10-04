@@ -244,7 +244,8 @@ async def get_ai_vibe(payload: AIRequest) -> Optional[AIResponse]:
         return None
     try:
         client = AsyncOpenAI(api_key=api_key)
-        model = os.environ.get("OPENAI_MODEL", "gpt-4")  # user requested gpt-4
+        prefer = os.environ.get("OPENAI_MODEL", "gpt-4").strip()
+        fallbacks = [m for m in [prefer, "gpt-4o", "gpt-4.1", "gpt-4o-mini"] if m]
         system = (
             "You are a luxury jewelry stylist. Given the survey, return JSON only with keys 'vibe' and 'explanation'. "
             "Vibe must be EXACTLY one of: [Hollywood Glam, Editorial Chic, Bridal Grace, Everyday Chic, Minimal Modern, Vintage Romance, Boho Luxe, Bold Statement]."
@@ -255,40 +256,44 @@ async def get_ai_vibe(payload: AIRequest) -> Optional[AIResponse]:
             f"Budget: {payload.budget}\n"
             f"Preference: {payload.vibe_preference or 'None'}"
         )
-        # Some older models (e.g. gpt-4) do not support response_format. Use it only if supported.
-        supports_json_mode = any(x in model for x in ["gpt-4o", "gpt-4.1", "gpt-5", "o4", "mini"])
-        kwargs = dict(model=model, messages=[
-            {"role": "system", "content": system},
-            {"role": "user", "content": user},
-        ], temperature=0.4, max_tokens=220)
-        if supports_json_mode:
-            kwargs["response_format"] = {"type": "json_object"}
-        resp = await asyncio.wait_for(
-            client.chat.completions.create(**kwargs),
-            timeout=22.0,
-        )
-        content = resp.choices[0].message.content or ""
-        # Try strict JSON first
-        data = None
-        try:
-            data = json.loads(content)
-        except Exception:
-            # Fallback: extract JSON object from text
-            import re
-            m = re.search(r"\{[\s\S]*\}", content)
-            if m:
+        last_err = None
+        for model in fallbacks:
+            try:
+                supports_json_mode = any(x in model for x in ["gpt-4o", "gpt-4.1", "gpt-5", "o4", "mini"])
+                kwargs = dict(model=model, messages=[
+                    {"role": "system", "content": system},
+                    {"role": "user", "content": user},
+                ], temperature=0.4, max_tokens=220)
+                if supports_json_mode:
+                    kwargs["response_format"] = {"type": "json_object"}
+                resp = await asyncio.wait_for(
+                    client.chat.completions.create(**kwargs),
+                    timeout=22.0,
+                )
+                content = resp.choices[0].message.content or ""
+                data = None
                 try:
-                    data = json.loads(m.group(0))
+                    data = json.loads(content)
                 except Exception:
-                    data = None
-        if not isinstance(data, dict):
-            # Last resort: map a simple text into our schema
-            vibe_guess = match_vibe(SurveyInput(**payload.model_dump()))
-            return AIResponse(vibe=vibe_guess, explanation="Tailored to your inputs.", source="ai")
-        vibe = data.get("vibe")
-        explanation = data.get("explanation")
-        if isinstance(vibe, str) and isinstance(explanation, str) and vibe in VIBE_IMAGES:
-            return AIResponse(vibe=vibe, explanation=explanation, source="ai")
+                    import re
+                    m = re.search(r"\{[\s\S]*\}", content)
+                    if m:
+                        try:
+                            data = json.loads(m.group(0))
+                        except Exception:
+                            data = None
+                if not isinstance(data, dict):
+                    vibe_guess = match_vibe(SurveyInput(**payload.model_dump()))
+                    return AIResponse(vibe=vibe_guess, explanation="Tailored to your inputs.", source="ai")
+                vibe = data.get("vibe")
+                explanation = data.get("explanation")
+                if isinstance(vibe, str) and isinstance(explanation, str) and vibe in VIBE_IMAGES:
+                    return AIResponse(vibe=vibe, explanation=explanation, source="ai")
+            except Exception as ie:
+                last_err = ie
+                continue
+        if last_err:
+            raise last_err
     except Exception as e:
         logging.warning(f"OpenAI vibe failed, fallback to rules. Error: {e}")
     return None
