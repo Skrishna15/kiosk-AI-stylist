@@ -54,6 +54,7 @@ class RecommendationItem(BaseModel):
 
 class RecommendationResponse(BaseModel):
     session_id: str
+    engine: str
     vibe: str
     explanation: str
     moodboard_image: str
@@ -62,6 +63,7 @@ class RecommendationResponse(BaseModel):
 
 class PassportResponse(BaseModel):
     session_id: str
+    engine: str
     survey: SurveyInput
     vibe: str
     explanation: str
@@ -244,7 +246,7 @@ async def get_ai_vibe(payload: AIRequest) -> Optional[AIResponse]:
         return None
     try:
         client = AsyncOpenAI(api_key=api_key)
-        prefer = os.environ.get("OPENAI_MODEL", "gpt-4").strip()
+        prefer = os.environ.get("OPENAI_MODEL", "gpt-5").strip()
         fallbacks = [m for m in [prefer, "gpt-4o", "gpt-4.1", "gpt-4o-mini"] if m]
         system = (
             "You are a luxury jewelry stylist. Given the survey, return JSON only with keys 'vibe' and 'explanation'. "
@@ -375,9 +377,11 @@ async def submit_survey(payload: SurveyInput):
     if ai:
         vibe = ai.vibe
         explanation = ai.explanation
+        engine = "ai"
     else:
         vibe = match_vibe(payload)
         explanation = vibe_explanation(vibe)
+        engine = "rules"
     mood_img = VIBE_IMAGES.get(vibe)
     recs = await recommend_products(payload, vibe)
 
@@ -389,11 +393,13 @@ async def submit_survey(payload: SurveyInput):
         "survey": payload.model_dump(),
         "vibe": vibe,
         "explanation": explanation,
+        "engine": engine,
         "recommendation_product_ids": [r.product.id for r in recs],
     })
 
     return RecommendationResponse(
         session_id=session_id,
+        engine=engine,
         vibe=vibe,
         explanation=explanation,
         moodboard_image=mood_img,
@@ -413,8 +419,10 @@ async def get_passport(session_id: str):
         recs.append(RecommendationItem(product=Product(**it), reason="curated for your vibe"))
 
     survey = SurveyInput(**sess["survey"]) if isinstance(sess.get("survey"), dict) else SurveyInput(**{})
+    engine = sess.get("engine", "rules")
     return PassportResponse(
         session_id=sess["id"],
+        engine=engine,
         survey=survey,
         vibe=sess.get("vibe", ""),
         explanation=sess.get("explanation", ""),

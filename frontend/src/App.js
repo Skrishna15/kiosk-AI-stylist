@@ -36,6 +36,13 @@ const useIdleReset = (ms = 120000) => {
   }, [ms]);
 };
 
+const Badge = ({ engine }) => (
+  <div data-testid="ai-status-badge" className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs ${engine === 'ai' ? 'bg-emerald-100 text-emerald-800' : 'bg-neutral-100 text-neutral-700'}`}>
+    <span className="w-2 h-2 rounded-full" style={{backgroundColor: engine === 'ai' ? '#10b981' : '#9ca3af'}}></span>
+    {engine === 'ai' ? 'AI mode' : 'Stylist engine'}
+  </div>
+);
+
 const Welcome = () => {
   useIdleReset();
   const navigate = useNavigate();
@@ -92,8 +99,13 @@ const Survey = () => {
       <div className="container max-w-2xl">
         <Card>
           <CardHeader>
-            <h2 className="card-title text-3xl">Quick Style Survey</h2>
-            <p className="subcopy mt-1">Answer 3 questions to get your vibe and picks.</p>
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <h2 className="card-title text-3xl">Quick Style Survey</h2>
+                <p className="subcopy mt-1">Answer 3 questions to get your vibe and picks.</p>
+              </div>
+              <Badge engine="rules" />
+            </div>
           </CardHeader>
           <CardContent className="space-y-6">
             <div>
@@ -167,6 +179,7 @@ const Recommendation = () => {
         const r = res.data;
         setData({
           session_id: r.session_id,
+          engine: r.engine || 'rules',
           vibe: r.vibe,
           explanation: r.explanation,
           moodboard_image: VIBE_IMAGES[r.vibe] || VIBE_IMAGES["Everyday Chic"],
@@ -189,8 +202,13 @@ const Recommendation = () => {
       <div className="container max-w-5xl">
         <div className="grid md:grid-cols-2 gap-8 items-start">
           <div className="order-2 md:order-1">
-            <h2 className="card-title text-4xl" data-testid="vibe-title">Your Style Match: {data.vibe}</h2>
-            <p className="subcopy mt-2" data-testid="vibe-explanation">{data.explanation}</p>
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <h2 className="card-title text-4xl" data-testid="vibe-title">Your Style Match: {data.vibe}</h2>
+                <p className="subcopy mt-2" data-testid="vibe-explanation">{data.explanation}</p>
+              </div>
+              <Badge engine={data.engine || 'rules'} />
+            </div>
             <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-5">
               {data.recommendations?.map((rec, idx) => (
                 <Card key={rec.product.id} data-testid={`product-card-${idx}`}>
@@ -233,8 +251,13 @@ const Passport = () => {
   return (
     <div className="kiosk-frame section" data-testid="passport-screen">
       <div className="container max-w-3xl">
-        <h2 className="card-title text-3xl">Jewelry Passport</h2>
-        <p className="subcopy">Session: {data.session_id}</p>
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <h2 className="card-title text-3xl">Jewelry Passport</h2>
+            <p className="subcopy">Session: {data.session_id}</p>
+          </div>
+          <Badge engine={data.engine || 'rules'} />
+        </div>
         <Card className="mt-5">
           <CardHeader>
             <div className="font-medium">Stylist Vibe: {data.vibe}</div>
