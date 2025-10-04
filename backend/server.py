@@ -66,6 +66,7 @@ class ImportXlsxRequest(BaseModel):
     url: str
     replace: bool = True
     mapping: Optional[Dict[str, str]] = None  # optional column mapping
+    auto_detect: bool = True
 
 class AIRequest(BaseModel):
     occasion: str
@@ -235,8 +236,6 @@ async def get_ai_vibe(payload: AIRequest) -> Optional[AIResponse]:
     if not api_key:
         return None
     try:
-        # Delayed import so that code runs even if library missing
-        # NOTE: Implementation follows integration playbook; if SDK unavailable, we fallback.
         from emergent import UniversalLLMClient  # type: ignore
         client = UniversalLLMClient(api_key=api_key, model="gpt-4.1", timeout=25.0)
         prompt = (
@@ -259,14 +258,13 @@ async def get_ai_vibe(payload: AIRequest) -> Optional[AIResponse]:
     return None
 
 async def recommend_products(s: SurveyInput, vibe: str) -> List[RecommendationItem]:
-    # Filter by style/occasion keywords and budget
     min_b, max_b = BUDGET_RANGES.get(s.budget, (0, 999999))
 
     style_q = s.style.lower().split()
     occ_q = s.occasion.lower().split()
 
     cursor = db.products.find({})
-    items = await cursor.to_list(500)
+    items = await cursor.to_list(1000)
 
     scored: List[tuple[float, Dict[str, Any]]] = []
     for it in items:
@@ -306,6 +304,25 @@ async def recommend_products(s: SurveyInput, vibe: str) -> List[RecommendationIt
                 break
     return recs
 
+# Heuristics for importer
+INR_TO_USD = 83.0
+
+def infer_tags(name: str) -> Dict[str, List[str]]:
+    n = name.lower()
+    style = []
+    occ = []
+    if any(k in n for k in ["ring", "band"]):
+        style.append("bold") if any(k in n for k in ["statement", "chunky"]) else style.append("classic")
+    if any(k in n for k in ["necklace", "pendant", "chain"]):
+        style.append("minimal") if any(k in n for k in ["bar", "thin", "sleek"]) else style.append("chic")
+    if any(k in n for k in ["bridal", "wedding"]):
+        occ.append("wedding")
+    if any(k in n for k in ["party", "cocktail"]):
+        occ.append("party")
+    if not occ:
+        occ.append("everyday")
+    return {"style": list(set(style)), "occ": list(set(occ))}
+
 # -------------------------------------------------
 # Routes
 # -------------------------------------------------
@@ -319,12 +336,11 @@ async def root():
 
 @api.get("/products", response_model=List[Product])
 async def list_products():
-    items = await db.products.find({}).to_list(500)
+    items = await db.products.find({}).to_list(1000)
     return [Product(**it) for it in items]
 
 @api.post("/ai/vibe", response_model=AIResponse)
 async def ai_vibe(payload: AIRequest):
-    # Try AI first, fallback to rules
     ai = await get_ai_vibe(payload)
     if ai:
         return ai
@@ -333,7 +349,6 @@ async def ai_vibe(payload: AIRequest):
 
 @api.post("/survey", response_model=RecommendationResponse)
 async def submit_survey(payload: SurveyInput):
-    # Use AI to detect vibe if available
     ai = await get_ai_vibe(AIRequest(**payload.model_dump()))
     if ai:
         vibe = ai.vibe
@@ -387,7 +402,9 @@ async def get_passport(session_id: str):
 
 @api.post("/admin/import-xlsx")
 async def import_xlsx(req: ImportXlsxRequest):
-    """Import products from an Excel file hosted at a URL. Default mapping: name, price, image_url, style_tags, occasion_tags, description.
+    """Import products from an Excel file hosted at a URL.
+    Tries mapping, else auto-detects for Evol sheet: name from 'A', price from 'Price' (INR→USD ~83),
+    image_url from 'Spf-product-card__image Image'. Tags inferred from name.
     If replace=True, existing products are cleared first.
     """
     try:
@@ -400,42 +417,72 @@ async def import_xlsx(req: ImportXlsxRequest):
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Failed to read Excel: {e}")
 
-    mapping = req.mapping or {
-        "name": "name",
-        "price": "price",
-        "image_url": "image_url",
-        "style_tags": "style_tags",
-        "occasion_tags": "occasion_tags",
-        "description": "description",
-    }
+    # Column resolution
+    name_col = None
+    price_col = None
+    image_col = None
+    desc_col = None
+    style_col = None
+    occ_col = None
+
+    if req.mapping:
+        name_col = req.mapping.get("name")
+        price_col = req.mapping.get("price")
+        image_col = req.mapping.get("image_url")
+        style_col = req.mapping.get("style_tags")
+        occ_col = req.mapping.get("occasion_tags")
+        desc_col = req.mapping.get("description")
+
+    if req.auto_detect:
+        cols = list(df.columns)
+        # Heuristics for Evol export
+        if name_col is None:
+            name_col = "A" if "A" in cols else ("Name" if "Name" in cols else None)
+        if price_col is None:
+            price_col = "Price" if "Price" in cols else None
+        if image_col is None:
+            candidates = [
+                "Spf-product-card__image Image",
+                "Image",
+                "image",
+                "Image URL",
+            ]
+            image_col = next((c for c in candidates if c in cols), None)
+        if desc_col is None:
+            desc_col = "Description" if "Description" in cols else None
+
+    if not name_col or not price_col or not image_col:
+        raise HTTPException(status_code=400, detail="Required columns not found. Provide mapping: name, price, image_url")
 
     records: List[Dict[str, Any]] = []
     for _, row in df.iterrows():
         try:
-            name = str(row.get(mapping["name"]))
-            if not name or name == 'nan':
+            raw_name = row.get(name_col)
+            if raw_name is None or str(raw_name).strip().lower() == 'nan':
                 continue
-            price_val = row.get(mapping["price"]) if mapping["price"] in row else None
-            try:
-                price = float(price_val)
-            except Exception:
+            name = str(raw_name).strip()
+            price_raw = row.get(price_col)
+            if price_raw is None:
                 continue
-            image = str(row.get(mapping["image_url"]) or row.get("image") or row.get("image link") or "").strip()
-            style_raw = row.get(mapping["style_tags"]) or row.get("style") or ""
-            occ_raw = row.get(mapping["occasion_tags"]) or row.get("occasion") or ""
-            def to_list(v):
-                if isinstance(v, list):
-                    return [str(x).strip() for x in v]
-                s = str(v) if v is not None else ""
-                return [x.strip() for x in s.split(',') if x and str(x).strip().lower() != 'nan']
-            style_tags = to_list(style_raw)
-            occasion_tags = to_list(occ_raw)
-            desc = row.get(mapping["description"]) if mapping["description"] in row else None
+            price_inr = float(price_raw)
+            price_usd = round(price_inr / INR_TO_USD, 2)
+            image_url = str(row.get(image_col) or "").strip()
+            if not image_url:
+                continue
+            desc = row.get(desc_col) if desc_col else None
+            if style_col:
+                style_tags = [str(x).strip() for x in str(row.get(style_col) or "").split(',') if str(x).strip()]
+            else:
+                style_tags = infer_tags(name)["style"]
+            if occ_col:
+                occasion_tags = [str(x).strip() for x in str(row.get(occ_col) or "").split(',') if str(x).strip()]
+            else:
+                occasion_tags = infer_tags(name)["occ"]
             item = {
                 "id": str(uuid.uuid4()),
-                "name": name.strip(),
-                "price": price,
-                "image_url": image,
+                "name": name,
+                "price": price_usd,
+                "image_url": image_url,
                 "style_tags": style_tags,
                 "occasion_tags": occasion_tags,
                 "description": str(desc) if desc is not None and str(desc).lower() != 'nan' else None,
