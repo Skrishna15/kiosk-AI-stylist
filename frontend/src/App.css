@@ -7,8 +7,23 @@
   --accent:#c8a97e; /* soft gold */
 }
 
+@font-face{
+  font-family: 'Playfair Display';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('https://fonts.gstatic.com/s/playfairdisplay/v30/nuFvD-vYSZviVYUb_rj3ij__anPXDTzYhM2w9Ck.woff2') format('woff2');
+}
+@font-face{
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 300 700;
+  font-display: swap;
+  src: url('https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMa.woff2') format('woff2');
+}
+
 html, body, #root { height:100%; }
-body { background: var(--bg); color: var(--ink); }
+body { background: var(--bg); color: var(--ink); font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
 
 .ej-gradient-accent { /* decorative only, < 20% area */
   background: radial-gradient(1200px 600px at 85% -10%, rgba(200,169,126,0.18), transparent 60%),
@@ -41,4 +56,6 @@ body { background: var(--bg); color: var(--ink); }
 .section{ padding: 24px; }
 .container{ max-width: 1080px; margin: 0 auto; }
 
-/* Data test id helper visuals (none) */
+/* Kiosk idle reset */
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+.kiosk-frame { width: 100%; min-height: 100vh; animation: fadeIn .25s ease; }

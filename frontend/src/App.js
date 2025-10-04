@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import "@/App.css";
-import { BrowserRouter, Routes, Route, useNavigate, useParams } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useNavigate, useParams, useLocation } from "react-router-dom";
 import axios from "axios";
 import { Button } from "@/components/ui/button";
 import { Select, SelectOption } from "@/components/ui/select";
@@ -21,13 +21,27 @@ const VIBE_IMAGES = {
   "Bold Statement": "https://images.unsplash.com/photo-1623321673989-830eff0fd59f?crop=entropy&cs=srgb&fm=jpg&q=85",
 };
 
-const Welcome = () => {
+const useIdleReset = (ms = 120000) => {
   const navigate = useNavigate();
+  const timer = useRef(null);
+  const resetTimer = () => {
+    if (timer.current) clearTimeout(timer.current);
+    timer.current = setTimeout(() => navigate("/"), ms);
+  };
   useEffect(() => {
-    axios.get(`${API}/health`).catch(() => {});
-  }, []);
+    const events = ["click","mousemove","keydown","touchstart","scroll"];
+    events.forEach(e => window.addEventListener(e, resetTimer));
+    resetTimer();
+    return () => { events.forEach(e => window.removeEventListener(e, resetTimer)); if (timer.current) clearTimeout(timer.current); };
+  }, [ms]);
+};
+
+const Welcome = () => {
+  useIdleReset();
+  const navigate = useNavigate();
+  useEffect(() => { axios.get(`${API}/health`).catch(() => {}); }, []);
   return (
-    <div className="kiosk-container ej-gradient-accent" data-testid="welcome-screen">
+    <div className="kiosk-frame kiosk-container ej-gradient-accent" data-testid="welcome-screen">
       <section className="hero section">
         <div className="container grid md:grid-cols-2 gap-10 items-center">
           <div>
@@ -54,6 +68,7 @@ const Welcome = () => {
 };
 
 const Survey = () => {
+  useIdleReset();
   const navigate = useNavigate();
   const [occasion, setOccasion] = useState("");
   const [style, setStyle] = useState("");
@@ -69,13 +84,11 @@ const Survey = () => {
       navigate(`/recommendation/${data.session_id}`, { state: data });
     } catch (e) {
       console.error(e);
-    } finally {
-      setLoading(false);
-    }
+    } finally { setLoading(false); }
   };
 
   return (
-    <div className="section" data-testid="survey-screen">
+    <div className="kiosk-frame section" data-testid="survey-screen">
       <div className="container max-w-2xl">
         <Card>
           <CardHeader>
@@ -139,17 +152,17 @@ const Survey = () => {
 };
 
 const Recommendation = () => {
+  useIdleReset();
   const params = useParams();
-  const [data, setData] = useState(null);
+  const { state } = useLocation();
+  const [data, setData] = useState(state || null);
   const [qr, setQr] = useState("");
   const sessionId = params.sessionId;
 
   const passportLink = useMemo(()=> `${window.location.origin}/passport/${sessionId}`, [sessionId]);
 
   useEffect(()=>{
-    const stateData = window.history.state && window.history.state.usr;
-    if (stateData) setData(stateData);
-    else if (sessionId){
+    if (!data && sessionId){
       axios.get(`${API}/passport/${sessionId}`).then(res => {
         const r = res.data;
         setData({
@@ -162,7 +175,7 @@ const Recommendation = () => {
         });
       });
     }
-  }, [sessionId]);
+  }, [sessionId, data]);
 
   useEffect(()=>{
     if (!sessionId) return;
@@ -172,7 +185,7 @@ const Recommendation = () => {
   if (!data) return <div className="section">Loading…</div>;
 
   return (
-    <div className="section" data-testid="recommendation-screen">
+    <div className="kiosk-frame section" data-testid="recommendation-screen">
       <div className="container max-w-5xl">
         <div className="grid md:grid-cols-2 gap-8 items-start">
           <div className="order-2 md:order-1">
@@ -210,6 +223,7 @@ const Recommendation = () => {
 };
 
 const Passport = () => {
+  useIdleReset();
   const { sessionId } = useParams();
   const [data, setData] = useState(null);
   useEffect(()=>{
@@ -217,7 +231,7 @@ const Passport = () => {
   }, [sessionId]);
   if (!data) return <div className="section">Loading…</div>;
   return (
-    <div className="section" data-testid="passport-screen">
+    <div className="kiosk-frame section" data-testid="passport-screen">
       <div className="container max-w-3xl">
         <h2 className="card-title text-3xl">Jewelry Passport</h2>
         <p className="subcopy">Session: {data.session_id}</p>
