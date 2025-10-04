@@ -1,50 +1,18 @@
-import * as React from "react"
+import React from "react";
+import { cn } from "@/utils/cn";
 
-import { cn } from "@/lib/utils"
+export const Card = ({ className, children, ...props }) => (
+  <div className={cn("rounded-xl border border-neutral-200 bg-white/90 shadow-sm backdrop-blur-md", className)} {...props}>
+    {children}
+  </div>
+);
 
-const Card = React.forwardRef(({ className, ...props }, ref) => (
-  <div
-    ref={ref}
-    className={cn("rounded-xl border bg-card text-card-foreground shadow", className)}
-    {...props} />
-))
-Card.displayName = "Card"
-
-const CardHeader = React.forwardRef(({ className, ...props }, ref) => (
-  <div
-    ref={ref}
-    className={cn("flex flex-col space-y-1.5 p-6", className)}
-    {...props} />
-))
-CardHeader.displayName = "CardHeader"
-
-const CardTitle = React.forwardRef(({ className, ...props }, ref) => (
-  <div
-    ref={ref}
-    className={cn("font-semibold leading-none tracking-tight", className)}
-    {...props} />
-))
-CardTitle.displayName = "CardTitle"
-
-const CardDescription = React.forwardRef(({ className, ...props }, ref) => (
-  <div
-    ref={ref}
-    className={cn("text-sm text-muted-foreground", className)}
-    {...props} />
-))
-CardDescription.displayName = "CardDescription"
-
-const CardContent = React.forwardRef(({ className, ...props }, ref) => (
-  <div ref={ref} className={cn("p-6 pt-0", className)} {...props} />
-))
-CardContent.displayName = "CardContent"
-
-const CardFooter = React.forwardRef(({ className, ...props }, ref) => (
-  <div
-    ref={ref}
-    className={cn("flex items-center p-6 pt-0", className)}
-    {...props} />
-))
-CardFooter.displayName = "CardFooter"
-
-export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent }
+export const CardHeader = ({ className, children, ...props }) => (
+  <div className={cn("p-5 border-b border-neutral-200", className)} {...props}>{children}</div>
+);
+export const CardContent = ({ className, children, ...props }) => (
+  <div className={cn("p-5", className)} {...props}>{children}</div>
+);
+export const CardFooter = ({ className, children, ...props }) => (
+  <div className={cn("p-5 border-t border-neutral-200", className)} {...props}>{children}</div>
+);

@@ -1,34 +1,44 @@
-.App-logo {
-    height: 40vmin;
-    pointer-events: none;
+/* Global accents for Evol Jewels kiosk */
+:root{
+  --bg:#faf8f5; /* warm neutral */
+  --ink:#151515;
+  --muted:#6b6b6b;
+  --brand:#1f3e37; /* ocean green */
+  --accent:#c8a97e; /* soft gold */
 }
 
-@media (prefers-reduced-motion: no-preference) {
-    .App-logo {
-        animation: App-logo-spin infinite 20s linear;
-    }
+html, body, #root { height:100%; }
+body { background: var(--bg); color: var(--ink); }
+
+.ej-gradient-accent { /* decorative only, < 20% area */
+  background: radial-gradient(1200px 600px at 85% -10%, rgba(200,169,126,0.18), transparent 60%),
+              radial-gradient(800px 500px at -10% 110%, rgba(31,62,55,0.12), transparent 60%);
 }
 
-.App-header {
-    background-color: #0f0f10;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    font-size: calc(10px + 2vmin);
-    color: white;
+.button-pill {
+  border-radius: 999px;
+  background-color: var(--ink);
+  color: #fff;
+  padding: 12px 20px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  transition: background-color .2s ease, box-shadow .2s ease;
 }
+.button-pill:hover{ background-color:#222; box-shadow:0 8px 20px rgba(0,0,0,.08); }
 
-.App-link {
-    color: #61dafb;
-}
+.kiosk-container{ min-height:100vh; display:flex; flex-direction:column; }
+.hero{ min-height:100vh; display:flex; align-items:center; }
+.hero-title{ font-family: 'Playfair Display', serif; letter-spacing: .4px; }
+.subcopy{ color: var(--muted); }
+.card-title{ font-family: 'Playfair Display', serif; }
 
-@keyframes App-logo-spin {
-    from {
-        transform: rotate(0deg);
-    }
-    to {
-        transform: rotate(360deg);
-    }
-}
+/* No universal transitions, only targeted */
+.link-underline{ position:relative; }
+.link-underline::after{ content:""; position:absolute; left:0; bottom:-2px; width:0; height:2px; background:var(--accent); transition: width .2s ease; }
+.link-underline:hover::after{ width:100%; }
+
+/* Layout helpers */
+.section{ padding: 24px; }
+.container{ max-width: 1080px; margin: 0 auto; }
+
+/* Data test id helper visuals (none) */
