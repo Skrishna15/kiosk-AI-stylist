@@ -12,6 +12,12 @@ from datetime import datetime, timezone
 import asyncio
 import json
 
+# OpenAI (async client)
+try:
+    from openai import AsyncOpenAI
+except Exception:  # library may not be installed yet
+    AsyncOpenAI = None  # type: ignore
+
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
@@ -230,31 +236,46 @@ def vibe_explanation(vibe: str) -> str:
     }
     return explanations.get(vibe, "Personalized selections tuned to your style and occasion.")
 
+# ------------------ OpenAI integration ------------------
 async def get_ai_vibe(payload: AIRequest) -> Optional[AIResponse]:
-    """Attempt AI vibe using Emergent Integrations with OpenAI latest text model. Fallback returns None."""
-    api_key = os.environ.get("EMERGENT_LLM_KEY")
-    if not api_key:
+    """Use OpenAI (via OPENAI_API_KEY) to classify vibe. Fallback returns None."""
+    api_key = os.environ.get("OPENAI_API_KEY")
+    if not api_key or AsyncOpenAI is None:
         return None
     try:
-        from emergent import UniversalLLMClient  # type: ignore
-        client = UniversalLLMClient(api_key=api_key, model="gpt-4.1", timeout=25.0)
-        prompt = (
-            "You are a luxury jewelry stylist. Given the survey, return STRICT JSON with keys 'vibe' and 'explanation'.\n"
+        client = AsyncOpenAI(api_key=api_key)
+        model = os.environ.get("OPENAI_MODEL", "gpt-4")  # user requested gpt-4
+        system = (
+            "You are a luxury jewelry stylist. Given the survey, return JSON only with keys 'vibe' and 'explanation'. "
+            "Vibe must be EXACTLY one of: [Hollywood Glam, Editorial Chic, Bridal Grace, Everyday Chic, Minimal Modern, Vintage Romance, Boho Luxe, Bold Statement]."
+        )
+        user = (
             f"Occasion: {payload.occasion}\n"
             f"Style: {payload.style}\n"
             f"Budget: {payload.budget}\n"
-            f"Preference: {payload.vibe_preference or 'None'}\n"
-            "Rules: vibe must be one of [Hollywood Glam, Editorial Chic, Bridal Grace, Everyday Chic, Minimal Modern, Vintage Romance, Boho Luxe, Bold Statement]."
+            f"Preference: {payload.vibe_preference or 'None'}"
         )
-        result = await client.generate(prompt=prompt, max_tokens=220, temperature=0.5)  # type: ignore
-        text = result.get('choices', [{}])[0].get('text', '').strip()  # type: ignore
-        data = json.loads(text)
-        vibe = data.get('vibe')
-        explanation = data.get('explanation')
+        resp = await asyncio.wait_for(
+            client.chat.completions.create(
+                model=model,
+                messages=[
+                    {"role": "system", "content": system},
+                    {"role": "user", "content": user},
+                ],
+                response_format={"type": "json_object"},
+                temperature=0.4,
+                max_tokens=220,
+            ),
+            timeout=22.0,
+        )
+        content = resp.choices[0].message.content
+        data = json.loads(content)
+        vibe = data.get("vibe")
+        explanation = data.get("explanation")
         if isinstance(vibe, str) and isinstance(explanation, str) and vibe in VIBE_IMAGES:
             return AIResponse(vibe=vibe, explanation=explanation, source="ai")
     except Exception as e:
-        logging.warning(f"AI vibe selection failed, fallback to rules. Error: {e}")
+        logging.warning(f"OpenAI vibe failed, fallback to rules. Error: {e}")
     return None
 
 async def recommend_products(s: SurveyInput, vibe: str) -> List[RecommendationItem]:
@@ -303,25 +324,6 @@ async def recommend_products(s: SurveyInput, vibe: str) -> List[RecommendationIt
             if len(recs) >= 4:
                 break
     return recs
-
-# Heuristics for importer
-INR_TO_USD = 83.0
-
-def infer_tags(name: str) -> Dict[str, List[str]]:
-    n = name.lower()
-    style = []
-    occ = []
-    if any(k in n for k in ["ring", "band"]):
-        style.append("bold") if any(k in n for k in ["statement", "chunky"]) else style.append("classic")
-    if any(k in n for k in ["necklace", "pendant", "chain"]):
-        style.append("minimal") if any(k in n for k in ["bar", "thin", "sleek"]) else style.append("chic")
-    if any(k in n for k in ["bridal", "wedding"]):
-        occ.append("wedding")
-    if any(k in n for k in ["party", "cocktail"]):
-        occ.append("party")
-    if not occ:
-        occ.append("everyday")
-    return {"style": list(set(style)), "occ": list(set(occ))}
 
 # -------------------------------------------------
 # Routes
@@ -399,103 +401,6 @@ async def get_passport(session_id: str):
         recommendations=recs,
         created_at=sess.get("created_at", now_iso()),
     )
-
-@api.post("/admin/import-xlsx")
-async def import_xlsx(req: ImportXlsxRequest):
-    """Import products from an Excel file hosted at a URL.
-    Tries mapping, else auto-detects for Evol sheet: name from 'A', price from 'Price' (INR→USD ~83),
-    image_url from 'Spf-product-card__image Image'. Tags inferred from name.
-    If replace=True, existing products are cleared first.
-    """
-    try:
-        import pandas as pd
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"pandas not available: {e}")
-
-    try:
-        df = pd.read_excel(req.url, engine="openpyxl")
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=f"Failed to read Excel: {e}")
-
-    # Column resolution
-    name_col = None
-    price_col = None
-    image_col = None
-    desc_col = None
-    style_col = None
-    occ_col = None
-
-    if req.mapping:
-        name_col = req.mapping.get("name")
-        price_col = req.mapping.get("price")
-        image_col = req.mapping.get("image_url")
-        style_col = req.mapping.get("style_tags")
-        occ_col = req.mapping.get("occasion_tags")
-        desc_col = req.mapping.get("description")
-
-    if req.auto_detect:
-        cols = list(df.columns)
-        # Heuristics for Evol export
-        if name_col is None:
-            name_col = "A" if "A" in cols else ("Name" if "Name" in cols else None)
-        if price_col is None:
-            price_col = "Price" if "Price" in cols else None
-        if image_col is None:
-            candidates = [
-                "Spf-product-card__image Image",
-                "Image",
-                "image",
-                "Image URL",
-            ]
-            image_col = next((c for c in candidates if c in cols), None)
-        if desc_col is None:
-            desc_col = "Description" if "Description" in cols else None
-
-    if not name_col or not price_col or not image_col:
-        raise HTTPException(status_code=400, detail="Required columns not found. Provide mapping: name, price, image_url")
-
-    records: List[Dict[str, Any]] = []
-    for _, row in df.iterrows():
-        try:
-            raw_name = row.get(name_col)
-            if raw_name is None or str(raw_name).strip().lower() == 'nan':
-                continue
-            name = str(raw_name).strip()
-            price_raw = row.get(price_col)
-            if price_raw is None:
-                continue
-            price_inr = float(price_raw)
-            price_usd = round(price_inr / INR_TO_USD, 2)
-            image_url = str(row.get(image_col) or "").strip()
-            if not image_url:
-                continue
-            desc = row.get(desc_col) if desc_col else None
-            if style_col:
-                style_tags = [str(x).strip() for x in str(row.get(style_col) or "").split(',') if str(x).strip()]
-            else:
-                style_tags = infer_tags(name)["style"]
-            if occ_col:
-                occasion_tags = [str(x).strip() for x in str(row.get(occ_col) or "").split(',') if str(x).strip()]
-            else:
-                occasion_tags = infer_tags(name)["occ"]
-            item = {
-                "id": str(uuid.uuid4()),
-                "name": name,
-                "price": price_usd,
-                "image_url": image_url,
-                "style_tags": style_tags,
-                "occasion_tags": occasion_tags,
-                "description": str(desc) if desc is not None and str(desc).lower() != 'nan' else None,
-            }
-            records.append(item)
-        except Exception:
-            continue
-
-    if req.replace:
-        await db.products.delete_many({})
-    if records:
-        await db.products.insert_many(records)
-    return {"imported": len(records), "replaced": bool(req.replace)}
 
 # Register router
 app.include_router(api)
