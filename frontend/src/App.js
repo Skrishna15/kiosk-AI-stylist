@@ -88,7 +88,7 @@ const AttractOverlay = ({ onStart }) => {
   );
 };
 
-// Parallax hook for moodboard
+// Parallax hook (reused for chat panel)
 const useParallax = () => {
   const ref = useRef(null);
   const [offset, setOffset] = useState(0);
@@ -97,10 +97,9 @@ const useParallax = () => {
       if (!ref.current) return;
       const rect = ref.current.getBoundingClientRect();
       const viewH = window.innerHeight;
-      // progress: element center relative to viewport
       const centerY = rect.top + rect.height/2;
       const progress = (centerY - viewH/2) / viewH; // -1..1
-      const translate = Math.max(-20, Math.min(20, -progress * 30)); // cap to ±20px
+      const translate = Math.max(-20, Math.min(20, -progress * 30));
       setOffset(translate);
     };
     onScroll();
@@ -110,22 +109,89 @@ const useParallax = () => {
   return { ref, offset };
 };
 
-// Simple intent parser for AI chat → maps text to occasion/style/budget
+// Intent parser for AI chat → maps text to survey inputs
 const parseIntent = (text) => {
   const t = (text||"").toLowerCase();
-  const pick = (arr) => arr.find(a => t.includes(a));
-  const occasionMap = ["wedding","red carpet","everyday","office","party","festival","date night"];
-  const styleMap = ["minimal","bold","glam","editorial","vintage","boho","classic","modern","chic"];
+  const has = (k) => t.includes(k);
+  const findOne = (list) => list.find(k => has(k));
+  const occasions = ["wedding","red carpet","everyday","office","party","festival","date night"];
+  const styles = ["minimal","bold","glam","editorial","vintage","boho","classic","modern","chic"];
   let budget = "Under $100";
-  if (/\$?\s*([1-9]?\d)\s*(-|to)\s*([12]\d\d)/.test(t) || t.includes("100-300") || t.includes("$100") && t.includes("$300")) budget = "$100–$300";
-  else if (t.includes("300") && (t.includes("800") || t.includes("$800"))) budget = "$300–$800";
-  else if (t.includes("800") || /\$?\s*800\+/.test(t) || t.includes("over 800")) budget = "$800+";
-  else if (t.includes("under 100") || t.includes("<100") || t.includes("below 100")) budget = "Under $100";
-  const occasion = pick(occasionMap) || "everyday";
-  const style = pick(styleMap) || (t.includes("diamond")? "glam" : (t.includes("pearl")? "classic" : "minimal"));
-  return { occasion: occasion.replace(/(^.|\s.)./g, s=>s.toUpperCase()), style: style[0].toUpperCase()+style.slice(1), budget };
+  if ((has("100") && has("300")) || has("100-300") || has("$100–$300")) budget = "$100–$300";
+  else if ((has("300") && has("800")) || has("$300–$800")) budget = "$300–$800";
+  else if (has("800+") || has("over 800")) budget = "$800+";
+  else if (has("under 100") || has("<100") || has("below 100")) budget = "Under $100";
+  const occ = findOne(occasions) || "everyday";
+  const st = findOne(styles) || (has("diamond")? "glam" : (has("pearl")? "classic" : "minimal"));
+  const caps = (s) => s.charAt(0).toUpperCase()+s.slice(1);
+  return { occasion: caps(occ), style: caps(st), budget };
 };
 
+// Embedded Chat Panel used on Recommendation page
+const ChatInline = ({ onNewRecommendation }) => {
+  const { ref, offset } = useParallax();
+  const [input, setInput] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [messages, setMessages] = useState([
+    { role: 'assistant', content: 'Tell me the occasion, your style vibe, and budget. I\'ll curate top picks instantly.' }
+  ]);
+
+  const send = async () => {
+    if (!input.trim()) return;
+    const userMsg = { role: 'user', content: input };
+    setMessages(prev => [...prev, userMsg]);
+    setInput("");
+    setLoading(true);
+    try {
+      const intent = parseIntent(userMsg.content);
+      // Call survey to get full recommendations session
+      const { data } = await axios.post(`${API}/survey`, intent);
+      onNewRecommendation?.(data);
+      const reply = `Your vibe: ${data.vibe}. ${data.explanation}`;
+      setMessages(prev => [...prev, { role: 'assistant', content: reply }]);
+    } catch (e) {
+      // graceful fallback on any error
+      const intent = parseIntent(userMsg.content);
+      const reply = `Your vibe: ${intent.style === 'Minimal' ? 'Minimal Modern' : intent.style === 'Glam' ? 'Hollywood Glam' : 'Everyday Chic'}. Tailored to your inputs.`;
+      setMessages(prev => [...prev, { role: 'assistant', content: reply }]);
+    } finally { setLoading(false); }
+  };
+
+  return (
+    <Card ref={ref} className="will-change-transform" style={{transform:`translateY(${offset}px)`}} data-testid="chat-inline">
+      <CardHeader>
+        <div className="flex items-center justify-between">
+          <div className="card-title text-2xl">AI Stylist</div>
+          <div className="text-xs subcopy">Chat to refine picks</div>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div className="max-h-[44vh] overflow-y-auto space-y-3 pr-1" data-testid="chat-messages">
+          {messages.map((m, idx) => (
+            <div key={idx} className={`text-sm ${m.role==='assistant'?'text-neutral-800':'text-neutral-700'}`} data-testid={`chat-message-${m.role}-${idx}`}>
+              <div className={`inline-block rounded-2xl px-3 py-2 ${m.role==='assistant'?'bg-neutral-100':'bg-emerald-50 text-emerald-800'}`}>{m.content}</div>
+            </div>
+          ))}
+        </div>
+      </CardContent>
+      <CardFooter>
+        <div className="w-full flex gap-2">
+          <input
+            data-testid="chat-input"
+            className="flex-1 h-11 rounded-md border border-neutral-300 px-3 shadow-sm focus:outline-none focus:ring-2 focus:ring-neutral-800"
+            placeholder="e.g., Wedding, minimal style, budget $300–$800"
+            value={input}
+            onChange={(e)=>setInput(e.target.value)}
+            onKeyDown={(e)=>{ if(e.key==='Enter'){ e.preventDefault(); send(); } }}
+          />
+          <Button data-testid="chat-send-button" className="button-pill" disabled={loading} onClick={send}>{loading? 'Thinking…':'Send'}</Button>
+        </div>
+      </CardFooter>
+    </Card>
+  );
+};
+
+// Floating chat dialog widget (kept for Welcome/Survey pages)
 const ChatWidget = () => {
   const [open, setOpen] = useState(false);
   const [input, setInput] = useState("");
@@ -146,7 +212,6 @@ const ChatWidget = () => {
       const reply = `Your vibe: ${data.vibe}. ${data.explanation}`;
       setMessages(prev => [...prev, { role: 'assistant', content: reply }]);
     } catch (e) {
-      // graceful fallback on any error
       const intent = parseIntent(userMsg.content);
       const reply = `Your vibe: ${intent.style === 'Minimal' ? 'Minimal Modern' : intent.style === 'Glam' ? 'Hollywood Glam' : 'Everyday Chic'}. Tailored to your inputs.`;
       setMessages(prev => [...prev, { role: 'assistant', content: reply }]);
@@ -360,7 +425,6 @@ const Recommendation = () => {
   const [activeProduct, setActiveProduct] = useState(null);
   const sessionId = params.sessionId;
 
-  const { ref: parallaxRef, offset } = useParallax();
   const passportLink = useMemo(()=> `${window.location.origin}/passport/${sessionId}`, [sessionId]);
 
   useEffect(()=>{
@@ -393,6 +457,7 @@ const Recommendation = () => {
     <div className="kiosk-frame section" data-testid="recommendation-screen">
       <div className="container max-w-5xl">
         <div className="grid md:grid-cols-2 gap-8 items-start">
+          {/* Left: Title and copy only */}
           <div className="order-2 md:order-1">
             <div className="flex items-center justify-between gap-3">
               <div>
@@ -404,7 +469,26 @@ const Recommendation = () => {
                 <div className="text-xs subcopy" data-testid="wishlist-count">Wishlist: {ids.length}</div>
               </div>
             </div>
-            <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-5">
+          </div>
+
+          {/* Right: Chat panel replacing moodboard, then AI top picks grid, then QR */}
+          <div className="order-1 md:order-2 space-y-6">
+            <ChatInline onNewRecommendation={(rec) => {
+              setData({
+                session_id: rec.session_id,
+                engine: rec.engine || 'ai',
+                vibe: rec.vibe,
+                explanation: rec.explanation,
+                moodboard_image: rec.moodboard_image,
+                recommendations: rec.recommendations,
+                created_at: rec.created_at,
+              });
+              // Update QR for new session
+              const link = `${window.location.origin}/passport/${rec.session_id}`;
+              QRCode.toDataURL(link, { margin: 1, width: 220 }).then(setQr).catch(()=>{});
+            }} />
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5" data-testid="ai-top-picks">
               {data.recommendations?.map((rec, idx) => (
                 <Card key={rec.product.id} data-testid={`product-card-${idx}`} onClick={() => openDetail(rec.product)} className="cursor-pointer">
                   <img alt={rec.product.name} src={rec.product.image_url} className="w-full h-44 object-cover rounded-t-xl" />
@@ -423,12 +507,8 @@ const Recommendation = () => {
                 </Card>
               ))}
             </div>
-          </div>
-          <div className="order-1 md:order-2">
-            <div ref={parallaxRef} data-testid="moodboard-parallax" className="rounded-2xl overflow-hidden shadow-xl border border-neutral-200 will-change-transform" style={{transform:`translateY(${offset}px)`}}>
-              <img alt={data.vibe} src={data.moodboard_image} className="w-full h-[520px] object-cover" data-testid="vibe-moodboard-image" />
-            </div>
-            <div className="mt-6 flex items-center gap-4">
+
+            <div className="flex items-center gap-4">
               {qr && <img src={qr} alt="QR" className="w-[160px] h-[160px] border border-neutral-300 rounded-lg" data-testid="passport-qr"/>}
               <div>
                 <div className="text-sm font-medium">Take it with you</div>
@@ -445,7 +525,6 @@ const Recommendation = () => {
         onToggleWishlist={toggle}
         inWishlist={activeProduct ? ids.includes(activeProduct.id) : false}
       />
-      <ChatWidget />
     </div>
   );
 };
@@ -500,7 +579,6 @@ const Passport = () => {
           </CardContent>
         </Card>
       </div>
-      <ChatWidget />
     </div>
   );
 };
