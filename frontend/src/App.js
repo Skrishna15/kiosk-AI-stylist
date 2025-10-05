@@ -540,6 +540,7 @@ const Passport = () => {
     axios.get(`${API}/passport/${sessionId}`).then(res => setData(res.data)).catch(()=>{});
   }, [sessionId]);
   if (!data) return <div className="section">Loading…</div>;
+  const [feedback, setFeedback] = useState(null);
   return (
     <div className="kiosk-frame section" data-testid="passport-screen">
       <div className="container max-w-3xl">
@@ -550,6 +551,7 @@ const Passport = () => {
           </div>
           <Badge engine={data.engine || 'rules'} />
         </div>
+        <div className="mt-2 text-sm text-neutral-700" data-testid="passport-cta-copy">Your selections are saved here. Continue exploring, save favorites, and purchase securely on Evol Jewels.</div>
         <Card className="mt-5">
           <CardHeader>
             <div className="font-medium">Stylist Vibe: {data.vibe}</div>
@@ -577,6 +579,16 @@ const Passport = () => {
                   </CardContent>
                 </Card>
               ))}
+            </div>
+            <div className="pt-4 border-t border-neutral-200">
+              <div className="text-sm font-medium mb-2">How helpful were these picks?</div>
+              <div className="flex items-center gap-3" data-testid="passport-feedback">
+                <button aria-label="Loved it" data-testid="feedback-love" className={`h-9 w-9 rounded-full border flex items-center justify-center ${feedback==='love'?'bg-emerald-100 border-emerald-300':'border-neutral-300'}`} onClick={()=>setFeedback('love')}><Heart size={16} /></button>
+                <button aria-label="Great" data-testid="feedback-great" className={`h-9 w-9 rounded-full border flex items-center justify-center ${feedback==='up'?'bg-emerald-100 border-emerald-300':'border-neutral-300'}`} onClick={()=>setFeedback('up')}><ThumbsUp size={16} /></button>
+                <button aria-label="Okay" data-testid="feedback-okay" className={`h-9 w-9 rounded-full border flex items-center justify-center ${feedback==='meh'?'bg-emerald-100 border-emerald-300':'border-neutral-300'}`} onClick={()=>setFeedback('meh')}><Meh size={16} /></button>
+                <button aria-label="Not sure" data-testid="feedback-unsure" className={`h-9 w-9 rounded-full border flex items-center justify-center ${feedback==='help'?'bg-emerald-100 border-emerald-300':'border-neutral-300'}`} onClick={()=>setFeedback('help')}><HelpCircle size={16} /></button>
+                <button aria-label="Didn’t help" data-testid="feedback-down" className={`h-9 w-9 rounded-full border flex items-center justify-center ${feedback==='down'?'bg-emerald-100 border-emerald-300':'border-neutral-300'}`} onClick={()=>setFeedback('down')}><ThumbsDown size={16} /></button>
+              </div>
             </div>
           </CardContent>
         </Card>
