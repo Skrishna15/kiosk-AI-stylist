@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectOption } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardFooter } from "@/components/ui/card";
 import QRCode from "qrcode";
-// Attempt to use shadcn dialog components
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
@@ -89,6 +88,109 @@ const AttractOverlay = ({ onStart }) => {
   );
 };
 
+// Parallax hook for moodboard
+const useParallax = () => {
+  const ref = useRef(null);
+  const [offset, setOffset] = useState(0);
+  useEffect(()=>{
+    const onScroll = () => {
+      if (!ref.current) return;
+      const rect = ref.current.getBoundingClientRect();
+      const viewH = window.innerHeight;
+      // progress: element center relative to viewport
+      const centerY = rect.top + rect.height/2;
+      const progress = (centerY - viewH/2) / viewH; // -1..1
+      const translate = Math.max(-20, Math.min(20, -progress * 30)); // cap to ±20px
+      setOffset(translate);
+    };
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return ()=> window.removeEventListener('scroll', onScroll);
+  }, []);
+  return { ref, offset };
+};
+
+// Simple intent parser for AI chat → maps text to occasion/style/budget
+const parseIntent = (text) => {
+  const t = (text||"").toLowerCase();
+  const pick = (arr) => arr.find(a => t.includes(a));
+  const occasionMap = ["wedding","red carpet","everyday","office","party","festival","date night"];
+  const styleMap = ["minimal","bold","glam","editorial","vintage","boho","classic","modern","chic"];
+  let budget = "Under $100";
+  if (/\$?\s*([1-9]?\d)\s*(-|to)\s*([12]\d\d)/.test(t) || t.includes("100-300") || t.includes("$100") && t.includes("$300")) budget = "$100–$300";
+  else if (t.includes("300") && (t.includes("800") || t.includes("$800"))) budget = "$300–$800";
+  else if (t.includes("800") || /\$?\s*800\+/.test(t) || t.includes("over 800")) budget = "$800+";
+  else if (t.includes("under 100") || t.includes("<100") || t.includes("below 100")) budget = "Under $100";
+  const occasion = pick(occasionMap) || "everyday";
+  const style = pick(styleMap) || (t.includes("diamond")? "glam" : (t.includes("pearl")? "classic" : "minimal"));
+  return { occasion: occasion.replace(/(^.|\s.)./g, s=>s.toUpperCase()), style: style[0].toUpperCase()+style.slice(1), budget };
+};
+
+const ChatWidget = () => {
+  const [open, setOpen] = useState(false);
+  const [input, setInput] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [messages, setMessages] = useState([
+    { role: 'assistant', content: 'Hi! I\'m your in-store stylist. Tell me the occasion and vibe you\'re going for, and your budget.' }
+  ]);
+
+  const send = async () => {
+    if (!input.trim()) return;
+    const userMsg = { role: 'user', content: input };
+    setMessages(prev => [...prev, userMsg]);
+    setInput("");
+    setLoading(true);
+    try {
+      const intent = parseIntent(userMsg.content);
+      const { data } = await axios.post(`${API}/ai/vibe`, intent);
+      const reply = `Your vibe: ${data.vibe}. ${data.explanation}`;
+      setMessages(prev => [...prev, { role: 'assistant', content: reply }]);
+    } catch (e) {
+      // graceful fallback on any error
+      const intent = parseIntent(userMsg.content);
+      const reply = `Your vibe: ${intent.style === 'Minimal' ? 'Minimal Modern' : intent.style === 'Glam' ? 'Hollywood Glam' : 'Everyday Chic'}. Tailored to your inputs.`;
+      setMessages(prev => [...prev, { role: 'assistant', content: reply }]);
+    } finally { setLoading(false); }
+  };
+
+  return (
+    <>
+      <button
+        data-testid="chat-open-button"
+        onClick={()=>setOpen(true)}
+        className="fixed bottom-6 right-6 z-40 button-pill shadow-lg px-5 py-3"
+      >Ask Stylist</button>
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent data-testid="chat-dialog" className="sm:max-w-xl">
+          <DialogHeader>
+            <DialogTitle className="card-title text-2xl">Ask the Stylist</DialogTitle>
+          </DialogHeader>
+          <div className="max-h-[50vh] overflow-y-auto space-y-3 pr-1" data-testid="chat-messages">
+            {messages.map((m, idx) => (
+              <div key={idx} className={`text-sm ${m.role==='assistant'?'text-neutral-800':'text-neutral-700'}`} data-testid={`chat-message-${m.role}-${idx}`}>
+                <div className={`inline-block rounded-2xl px-3 py-2 ${m.role==='assistant'?'bg-neutral-100':'bg-emerald-50 text-emerald-800'}`}>{m.content}</div>
+              </div>
+            ))}
+          </div>
+          <DialogFooter>
+            <div className="w-full flex gap-2">
+              <input
+                data-testid="chat-input"
+                className="flex-1 h-11 rounded-md border border-neutral-300 px-3 shadow-sm focus:outline-none focus:ring-2 focus:ring-neutral-800"
+                placeholder="e.g., Wedding, minimal style, budget around $300–$800"
+                value={input}
+                onChange={(e)=>setInput(e.target.value)}
+                onKeyDown={(e)=>{ if(e.key==='Enter'){ e.preventDefault(); send(); } }}
+              />
+              <Button data-testid="chat-send-button" className="button-pill" disabled={loading} onClick={send}>{loading? 'Thinking…':'Send'}</Button>
+            </div>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
+  );
+};
+
 const Welcome = () => {
   useIdleReset();
   const navigate = useNavigate();
@@ -127,6 +229,7 @@ const Welcome = () => {
         </div>
       </section>
       {showAttract && <AttractOverlay onStart={() => { setShowAttract(false); navigate('/survey'); }} />}
+      <ChatWidget />
     </div>
   );
 };
@@ -216,6 +319,7 @@ const Survey = () => {
           </CardFooter>
         </Card>
       </div>
+      <ChatWidget />
     </div>
   );
 };
@@ -256,6 +360,7 @@ const Recommendation = () => {
   const [activeProduct, setActiveProduct] = useState(null);
   const sessionId = params.sessionId;
 
+  const { ref: parallaxRef, offset } = useParallax();
   const passportLink = useMemo(()=> `${window.location.origin}/passport/${sessionId}`, [sessionId]);
 
   useEffect(()=>{
@@ -320,7 +425,7 @@ const Recommendation = () => {
             </div>
           </div>
           <div className="order-1 md:order-2">
-            <div className="rounded-2xl overflow-hidden shadow-xl border border-neutral-200">
+            <div ref={parallaxRef} data-testid="moodboard-parallax" className="rounded-2xl overflow-hidden shadow-xl border border-neutral-200 will-change-transform" style={{transform:`translateY(${offset}px)`}}>
               <img alt={data.vibe} src={data.moodboard_image} className="w-full h-[520px] object-cover" data-testid="vibe-moodboard-image" />
             </div>
             <div className="mt-6 flex items-center gap-4">
@@ -340,6 +445,7 @@ const Recommendation = () => {
         onToggleWishlist={toggle}
         inWishlist={activeProduct ? ids.includes(activeProduct.id) : false}
       />
+      <ChatWidget />
     </div>
   );
 };
@@ -394,6 +500,7 @@ const Passport = () => {
           </CardContent>
         </Card>
       </div>
+      <ChatWidget />
     </div>
   );
 };
