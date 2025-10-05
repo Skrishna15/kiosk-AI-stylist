@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectOption } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardFooter } from "@/components/ui/card";
 import QRCode from "qrcode";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Heart, ThumbsUp, Meh, HelpCircle, ThumbsDown } from "lucide-react";
 
