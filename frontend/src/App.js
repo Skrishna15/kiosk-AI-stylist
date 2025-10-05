@@ -1,14 +1,14 @@
 import { useEffect, useMemo, useState, useRef } from "react";
 import "@/App.css";
-import { BrowserRouter, Routes, Route, useNavigate, useParams, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useNavigate, useParams, useLocation, Link } from "react-router-dom";
 import axios from "axios";
 import { Button } from "@/components/ui/button";
 import { Select, SelectOption } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardFooter } from "@/components/ui/card";
 import QRCode from "qrcode";
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Heart, ThumbsUp, Meh, HelpCircle, ThumbsDown } from "lucide-react";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -26,7 +26,16 @@ const VIBE_IMAGES = {
   "Bold Statement": "https://images.unsplash.com/photo-1623321673989-830eff0fd59f?crop=entropy&cs=srgb&fm=jpg&q=85",
 };
 
-// 120s idle reset hook
+// Header – Evol Jewels centered logo across all pages
+const HeaderBar = () => (
+  <div className="header-glass" data-testid="header-bar">
+    <div className="container py-4 flex items-center justify-center">
+      <Link to="/" className="header-logo text-2xl" data-testid="header-logo">Evol Jewels</Link>
+    </div>
+  </div>
+);
+
+// 60s idle reset
 const useIdleReset = (ms = 60000) => {
   const navigate = useNavigate();
   const timer = useRef(null);
@@ -62,37 +71,7 @@ const Badge = ({ engine }) => (
   </div>
 );
 
-// Attract overlay for Welcome (appears after 20s idle on Welcome only)
-const AttractOverlay = ({ onStart }) => {
-  const [index, setIndex] = useState(0);
-  useEffect(()=>{
-    const t = setInterval(()=> setIndex(i => (i+1)%Object.keys(VIBE_IMAGES).length), 2500);
-    return ()=> clearInterval(t);
-  }, []);
-  const keys = Object.keys(VIBE_IMAGES);
-  const current = keys[index];
-  return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-md flex items-center justify-center z-50" data-testid="attract-overlay">
-      <div className="w-[860px] max-w-[90vw] rounded-3xl overflow-hidden shadow-2xl border border-neutral-700 bg-white/5">
-        <div className="grid md:grid-cols-2">
-          <img alt={current} src={VIBE_IMAGES[current]} className="w-full h-[420px] object-cover" />
-          <div className="p-8 text-white flex flex-col justify-between" style={{background:"linear-gradient(120deg, rgba(21,21,21,.9), rgba(21,21,21,.75))"}}>
-            <div>
-              <div className="text-sm tracking-widest opacity-80">Evol Jewels</div>
-              <div className="text-4xl mt-2 font-serif">Meet Your Celebrity Stylist</div>
-              <div className="opacity-80 mt-3">Tap to begin your 60‑second personalized jewelry picks.</div>
-            </div>
-            <div className="mt-6">
-              <Button className="button-pill" data-testid="attract-start-button" onClick={onStart}>Start</Button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-// Parallax hook (reused for chat panel)
+// Parallax hook
 const useParallax = () => {
   const ref = useRef(null);
   const [offset, setOffset] = useState(0);
@@ -102,7 +81,7 @@ const useParallax = () => {
       const rect = ref.current.getBoundingClientRect();
       const viewH = window.innerHeight;
       const centerY = rect.top + rect.height/2;
-      const progress = (centerY - viewH/2) / viewH; // -1..1
+      const progress = (centerY - viewH/2) / viewH;
       const translate = Math.max(-20, Math.min(20, -progress * 30));
       setOffset(translate);
     };
@@ -113,7 +92,7 @@ const useParallax = () => {
   return { ref, offset };
 };
 
-// Intent parser for AI chat → maps text to survey inputs
+// Intent parser (INR aware)
 const parseIntent = (text) => {
   const t = (text||"").toLowerCase();
   const has = (k) => t.includes(k);
@@ -131,7 +110,101 @@ const parseIntent = (text) => {
   return { occasion: caps(occ), style: caps(st), budget };
 };
 
-// Embedded Chat Panel used on Recommendation page
+// Floating chat button component (navigates to stylist page)
+const StylistFab = () => (
+  <Link to="/stylist" className="fab-stylist button-pill" data-testid="fab-stylist">Ask Stylist</Link>
+);
+
+// Welcome with swipe to catalog
+const Welcome = () => {
+  useIdleReset();
+  const navigate = useNavigate();
+  const [showHint, setShowHint] = useState(false);
+  const touchStartY = useRef(null);
+
+  useEffect(()=>{ const t = setTimeout(()=> setShowHint(true), 1200); return ()=> clearTimeout(t); },[]);
+
+  const onTouchStart = (e) => { touchStartY.current = e.touches[0].clientY; };
+  const onTouchEnd = (e) => {
+    if (touchStartY.current == null) return;
+    const endY = e.changedTouches[0].clientY;
+    if (touchStartY.current - endY > 50) { navigate('/catalog'); }
+    touchStartY.current = null;
+  };
+
+  useEffect(() => { axios.get(`${API}/health`).catch(() => {}); }, []);
+
+  return (
+    <div className="kiosk-frame ej-gradient-accent" data-testid="welcome-screen" onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
+      <HeaderBar />
+      <section className="hero section">
+        <div className="container grid md:grid-cols-2 gap-10 items-center">
+          <div>
+            <h1 className="hero-title text-5xl md:text-6xl leading-tight" data-testid="welcome-title">
+              Meet Your Celebrity Stylist
+            </h1>
+            <p className="subcopy mt-4 text-lg" data-testid="welcome-subcopy">
+              Swipe up to browse the catalogue. Tap the stylist anytime.
+            </p>
+            <div className="mt-8 flex gap-3">
+              <Button data-testid="browse-catalog-btn" className="button-pill" onClick={() => navigate("/catalog")}>Browse Catalogue</Button>
+              <Link className="link-underline self-center text-sm" to="/stylist" data-testid="go-stylist-link">Ask stylist</Link>
+            </div>
+            {showHint && <div className="text-xs subcopy mt-3">Hint: Swipe up to start</div>}
+          </div>
+          <div className="hidden md:block">
+            <div className="rounded-2xl overflow-hidden shadow-xl border border-neutral-200">
+              <img alt="Moodboard" src={VIBE_IMAGES["Hollywood Glam"]} className="w-full h-[520px] object-cover" data-testid="welcome-hero-image" />
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+};
+
+// Catalogue page – full list with INR, FAB to stylist
+const Catalogue = () => {
+  useIdleReset();
+  const [items, setItems] = useState([]);
+  const { toggle, has } = useWishlist();
+  useEffect(()=>{ axios.get(`${API}/products`).then(r=> setItems(r.data||[])).catch(()=>{}); },[]);
+  return (
+    <div className="kiosk-frame section" data-testid="catalogue-screen">
+      <HeaderBar />
+      <div className="container">
+        <div className="flex items-end justify-between mb-6">
+          <div>
+            <h2 className="card-title text-4xl">Catalogue</h2>
+            <p className="subcopy">Browse our collection. Tap the stylist for guidance.</p>
+          </div>
+          <Badge engine="rules" />
+        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 gap-5">
+          {items.map((p, idx)=> (
+            <Card key={p.id} data-testid={`catalogue-card-${idx}`} className="cursor-pointer">
+              <img alt={p.name} src={p.image_url} className="w-full h-48 object-cover rounded-t-xl" />
+              <CardContent>
+                <div className="font-semibold flex items-center justify-between">
+                  <span>{p.name}</span>
+                  <button
+                    data-testid={`catalogue-wishlist-toggle-${idx}`}
+                    className={`ml-3 text-xs px-2 py-1 rounded-full ${has(p.id)?'bg-emerald-100 text-emerald-800':'bg-neutral-100 text-neutral-700'}`}
+                    onClick={(e)=>{ e.stopPropagation(); toggle(p.id); }}
+                  >{has(p.id)? 'Saved' : 'Save'}</button>
+                </div>
+                <div className="text-sm subcopy">{nfINR.format(Math.round(p.price * USD_TO_INR))}</div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
+      <StylistFab />
+    </div>
+  );
+};
+
+// ChatInline reused from earlier (top of stylist page)
 const ChatInline = ({ onNewRecommendation }) => {
   const { ref, offset } = useParallax();
   const [input, setInput] = useState("");
@@ -148,7 +221,6 @@ const ChatInline = ({ onNewRecommendation }) => {
     setLoading(true);
     try {
       const intent = parseIntent(userMsg.content);
-      // Call survey to get full recommendations session
       const { data } = await axios.post(`${API}/survey`, intent);
       onNewRecommendation?.(data);
       const reply = `Your vibe: ${data.vibe}. ${data.explanation}`;
@@ -165,7 +237,7 @@ const ChatInline = ({ onNewRecommendation }) => {
       <CardHeader>
         <div className="flex items-center justify-between">
           <div className="card-title text-2xl">AI Stylist</div>
-          <div className="text-xs subcopy">Chat to refine picks</div>
+          <div className="text-xs subcopy">Describe your look</div>
         </div>
       </CardHeader>
       <CardContent>
@@ -194,373 +266,63 @@ const ChatInline = ({ onNewRecommendation }) => {
   );
 };
 
-// Floating chat dialog widget (kept for Welcome/Survey pages)
-const ChatWidget = () => {
-  const [open, setOpen] = useState(false);
-  const [input, setInput] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [messages, setMessages] = useState([
-    { role: 'assistant', content: 'Hi! I\'m your in-store stylist. Tell me the occasion and vibe you\'re going for, and your budget.' }
-  ]);
-
-  const send = async () => {
-    if (!input.trim()) return;
-    const userMsg = { role: 'user', content: input };
-    setMessages(prev => [...prev, userMsg]);
-    setInput("");
-    setLoading(true);
-    try {
-      const intent = parseIntent(userMsg.content);
-      const { data } = await axios.post(`${API}/ai/vibe`, intent);
-      const reply = `Your vibe: ${data.vibe}. ${data.explanation}`;
-      setMessages(prev => [...prev, { role: 'assistant', content: reply }]);
-    } catch (e) {
-      const intent = parseIntent(userMsg.content);
-      const reply = `Your vibe: ${intent.style === 'Minimal' ? 'Minimal Modern' : intent.style === 'Glam' ? 'Hollywood Glam' : 'Everyday Chic'}. Tailored to your inputs.`;
-      setMessages(prev => [...prev, { role: 'assistant', content: reply }]);
-    } finally { setLoading(false); }
-  };
-
-  return (
-    <>
-      <button
-        data-testid="chat-open-button"
-        onClick={()=>setOpen(true)}
-        className="fixed right-6 z-40 button-pill shadow-lg px-5 py-3"
-        style={{ bottom: 110 }}
-      >Ask Stylist</button>
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent data-testid="chat-dialog" className="sm:max-w-xl">
-          <DialogHeader>
-            <DialogTitle className="card-title text-2xl">Ask the Stylist</DialogTitle>
-          </DialogHeader>
-          <div className="max-h-[50vh] overflow-y-auto space-y-3 pr-1" data-testid="chat-messages">
-            {messages.map((m, idx) => (
-              <div key={idx} className={`text-sm ${m.role==='assistant'?'text-neutral-800':'text-neutral-700'}`} data-testid={`chat-message-${m.role}-${idx}`}>
-                <div className={`inline-block rounded-2xl px-3 py-2 ${m.role==='assistant'?'bg-neutral-100':'bg-emerald-50 text-emerald-800'}`}>{m.content}</div>
-              </div>
-            ))}
-          </div>
-          <DialogFooter>
-            <div className="w-full flex gap-2">
-              <input
-                data-testid="chat-input"
-                className="flex-1 h-11 rounded-md border border-neutral-300 px-3 shadow-sm focus:outline-none focus:ring-2 focus:ring-neutral-800"
-                placeholder="e.g., Wedding, minimal style, budget ₹25,000–₹65,000"
-                value={input}
-                onChange={(e)=>setInput(e.target.value)}
-                onKeyDown={(e)=>{ if(e.key==='Enter'){ e.preventDefault(); send(); } }}
-              />
-              <Button data-testid="chat-send-button" className="button-pill" disabled={loading} onClick={send}>{loading? 'Thinking…':'Send'}</Button>
-            </div>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </>
-  );
-};
-
-const Welcome = () => {
+// Stylist page – chat at top, auto-scrolling picks below
+const StylistPage = () => {
   useIdleReset();
-  const navigate = useNavigate();
-  const [showAttract, setShowAttract] = useState(false);
-  useEffect(() => { axios.get(`${API}/health`).catch(() => {}); }, []);
-  useEffect(()=>{
-    const show = () => setShowAttract(true);
-    const hide = () => setShowAttract(false);
-    const idleTimer = setTimeout(show, 20000);
-    const onAny = () => { clearTimeout(idleTimer); hide(); };
-    const events = ["click","mousemove","keydown","touchstart","scroll"];
-    events.forEach(e => window.addEventListener(e, onAny));
-    return ()=> { clearTimeout(idleTimer); events.forEach(e => window.removeEventListener(e, onAny)); };
-  }, []);
-  return (
-    <div className="kiosk-frame kiosk-container ej-gradient-accent" data-testid="welcome-screen">
-      <section className="hero section">
-        <div className="container grid md:grid-cols-2 gap-10 items-center">
-          <div>
-            <h1 className="hero-title text-5xl md:text-6xl leading-tight" data-testid="welcome-title">
-              Meet Your Celebrity Stylist
-            </h1>
-            <p className="subcopy mt-4 text-lg" data-testid="welcome-subcopy">
-              Personalized jewelry picks inspired by red carpet vibes. In under 60 seconds.
-            </p>
-            <div className="mt-8 flex gap-3">
-              <Button data-testid="start-survey-button" className="button-pill" onClick={() => navigate("/survey")}>Start</Button>
-              <a className="link-underline self-center text-sm" href="#learn" data-testid="learn-more-link">Learn more</a>
-            </div>
-          </div>
-          <div className="hidden md:block">
-            <div className="rounded-2xl overflow-hidden shadow-xl border border-neutral-200">
-              <img alt="Moodboard" src={VIBE_IMAGES["Hollywood Glam"]} className="w-full h-[520px] object-cover" data-testid="welcome-hero-image" />
-            </div>
-          </div>
-        </div>
-      </section>
-      {showAttract && <AttractOverlay onStart={() => { setShowAttract(false); navigate('/survey'); }} />}
-      <ChatWidget />
-    </div>
-  );
-};
-
-const Survey = () => {
-  useIdleReset();
-  const navigate = useNavigate();
-  const [occasion, setOccasion] = useState("");
-  const [style, setStyle] = useState("");
-  const [budget, setBudget] = useState("");
-  const [vibePref, setVibePref] = useState("");
-  const [loading, setLoading] = useState(false);
-
-  const submit = async () => {
-    if (!occasion || !style || !budget) return;
-    setLoading(true);
-    try {
-      const { data } = await axios.post(`${API}/survey`, { occasion, style, budget, vibe_preference: vibePref });
-      navigate(`/recommendation/${data.session_id}`, { state: data });
-    } catch (e) {
-      console.error(e);
-    } finally { setLoading(false); }
-  };
-
-  return (
-    <div className="kiosk-frame section" data-testid="survey-screen">
-      <div className="container max-w-2xl">
-        <Card>
-          <CardHeader>
-            <div className="flex items-center justify-between gap-3">
-              <div>
-                <h2 className="card-title text-3xl">Quick Style Survey</h2>
-                <p className="subcopy mt-1">Answer 3 questions to get your vibe and picks.</p>
-              </div>
-              <Badge engine="rules" />
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div>
-              <label className="block text-sm mb-2" htmlFor="occasion">Occasion</label>
-              <Select id="occasion" value={occasion} onChange={(e)=>setOccasion(e.target.value)} data-testid="occasion-select">
-                <SelectOption value="">Select occasion</SelectOption>
-                <SelectOption>Wedding</SelectOption>
-                <SelectOption>Red Carpet</SelectOption>
-                <SelectOption>Everyday</SelectOption>
-                <SelectOption>Office</SelectOption>
-                <SelectOption>Party</SelectOption>
-                <SelectOption>Festival</SelectOption>
-                <SelectOption>Date Night</SelectOption>
-              </Select>
-            </div>
-            <div>
-              <label className="block text-sm mb-2" htmlFor="style">Style Preference</label>
-              <Select id="style" value={style} onChange={(e)=>setStyle(e.target.value)} data-testid="style-select">
-                <SelectOption value="">Select style</SelectOption>
-                <SelectOption>Minimal</SelectOption>
-                <SelectOption>Bold</SelectOption>
-                <SelectOption>Glam</SelectOption>
-                <SelectOption>Editorial</SelectOption>
-                <SelectOption>Vintage</SelectOption>
-                <SelectOption>Boho</SelectOption>
-                <SelectOption>Classic</SelectOption>
-              </Select>
-            </div>
-            <div>
-              <label className="block text-sm mb-2" htmlFor="budget">Budget</label>
-              <Select id="budget" value={budget} onChange={(e)=>setBudget(e.target.value)} data-testid="budget-select">
-                <SelectOption value="">Select budget</SelectOption>
-                <SelectOption>Under ₹8,000</SelectOption>
-                <SelectOption>₹8,000–₹25,000</SelectOption>
-                <SelectOption>₹25,000–₹65,000</SelectOption>
-                <SelectOption>₹65,000+</SelectOption>
-              </Select>
-            </div>
-            <div>
-              <label className="block text-sm mb-2" htmlFor="vibe">Optional stylist vibe</label>
-              <Select id="vibe" value={vibePref} onChange={(e)=>setVibePref(e.target.value)} data-testid="vibe-select">
-                <SelectOption value="">No preference</SelectOption>
-                {Object.keys(VIBE_IMAGES).map(v => (
-                  <SelectOption key={v}>{v}</SelectOption>
-                ))}
-              </Select>
-            </div>
-          </CardContent>
-          <CardFooter className="flex justify-end gap-3">
-            <Button data-testid="survey-submit-button" disabled={loading || !occasion || !style || !budget} className="button-pill" onClick={submit}>{loading? 'Scouting looks…' : 'See My Picks'}</Button>
-          </CardFooter>
-        </Card>
-      </div>
-      <ChatWidget />
-    </div>
-  );
-};
-
-const ProductDialog = ({ open, onOpenChange, product, onToggleWishlist, inWishlist }) => {
-  if (!product) return null;
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent data-testid="product-dialog">
-        <DialogHeader>
-          <DialogTitle className="card-title text-2xl">{product.name}</DialogTitle>
-        </DialogHeader>
-        <div className="grid md:grid-cols-2 gap-4">
-          <img alt={product.name} src={product.image_url} className="w-full h-64 object-cover rounded-xl" data-testid="dialog-product-image" />
-          <div>
-            <div className="text-lg font-semibold">{nfINR.format(Math.round(product.price * USD_TO_INR))}</div>
-            {product.description && <div className="text-sm subcopy mt-2">{product.description}</div>}
-          </div>
-        </div>
-        <DialogFooter>
-          <Button className="button-pill" data-testid="dialog-toggle-wishlist" onClick={() => onToggleWishlist(product.id)}>
-            {inWishlist ? 'Remove from Wishlist' : 'Add to Wishlist'}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  );
-};
-
-const Recommendation = () => {
-  useIdleReset();
-  const { toggle, has, ids } = useWishlist();
-  const params = useParams();
-  const { state } = useLocation();
-  const [data, setData] = useState(state || null);
-  const [qr, setQr] = useState("");
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [activeProduct, setActiveProduct] = useState(null);
-  const sessionId = params.sessionId;
-
-  const { ref: parallaxRef, offset } = useParallax();
-  const passportLink = useMemo(()=> `${window.location.origin}/passport/${sessionId}`, [sessionId]);
+  const [picks, setPicks] = useState([]);
+  const [embla, setEmbla] = useState(null);
+  const { toggle, has } = useWishlist();
 
   useEffect(()=>{
-    if (!data && sessionId){
-      axios.get(`${API}/passport/${sessionId}`).then(res => {
-        const r = res.data;
-        setData({
-          session_id: r.session_id,
-          engine: r.engine || 'rules',
-          vibe: r.vibe,
-          explanation: r.explanation,
-          moodboard_image: VIBE_IMAGES[r.vibe] || VIBE_IMAGES["Everyday Chic"],
-          recommendations: r.recommendations,
-          created_at: r.created_at,
-        });
-      });
-    }
-  }, [sessionId, data]);
+    // Default: first 10 products
+    axios.get(`${API}/products`).then(r => setPicks((r.data||[]).slice(0,10))).catch(()=>{});
+  },[]);
 
   useEffect(()=>{
-    if (!sessionId) return;
-    QRCode.toDataURL(passportLink, { margin: 1, width: 220 }).then(setQr).catch(()=>{});
-  }, [passportLink, sessionId]);
-
-  const openDetail = (p) => { setActiveProduct(p); setDialogOpen(true); };
-
-  if (!data) return <div className="section">Loading…</div>;
+    if (!embla) return;
+    const id = setInterval(()=>{ try { embla.scrollNext(); } catch {} }, 3000);
+    return ()=> clearInterval(id);
+  }, [embla]);
 
   return (
-    <div className="kiosk-frame section" data-testid="recommendation-screen">
-      <div className="container max-w-5xl">
-        <div className="grid md:grid-cols-2 gap-8 items-start">
-          <div className="order-2 md:order-1">
-            <div className="flex items-center justify-between gap-3">
-              <div>
-                <h2 className="card-title text-4xl" data-testid="vibe-title">Your Style Match: {data.vibe}</h2>
-                <p className="subcopy mt-2" data-testid="vibe-explanation">{data.explanation}</p>
-              </div>
-              <div className="flex items-center gap-3">
-                <Badge engine={data.engine || 'rules'} />
-                <div className="text-xs subcopy" data-testid="wishlist-count">Wishlist: {ids.length}</div>
-              </div>
-            </div>
-          </div>
-          <div className="order-1 md:order-2 space-y-6">
-            <Card ref={parallaxRef} className="will-change-transform" style={{transform:`translateY(${offset}px)`}} data-testid="chat-inline">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div className="card-title text-2xl">AI Stylist</div>
-                  <div className="text-xs subcopy">Chat to refine picks</div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <ChatInline onNewRecommendation={(rec) => {
-                  setData({
-                    session_id: rec.session_id,
-                    engine: rec.engine || 'ai',
-                    vibe: rec.vibe,
-                    explanation: rec.explanation,
-                    moodboard_image: rec.moodboard_image,
-                    recommendations: rec.recommendations,
-                    created_at: rec.created_at,
-                  });
-                  const link = `${window.location.origin}/passport/${rec.session_id}`;
-                  QRCode.toDataURL(link, { margin: 1, width: 220 }).then(setQr).catch(()=>{});
-                }} />
-              </CardContent>
-            </Card>
+    <div className="kiosk-frame section" data-testid="stylist-screen">
+      <HeaderBar />
+      <div className="container max-w-5xl space-y-8">
+        <ChatInline onNewRecommendation={(data)=> setPicks(data.recommendations?.map(r=> r.product) || [])} />
 
-            {/* AI Top Picks carousel with subtle parallax */}
-            <div className="relative">
-              <div className="pointer-events-none absolute inset-x-0 -top-8 h-40" style={{
-                background: "radial-gradient(600px 160px at 50% 0%, rgba(200,169,126,0.12), transparent 60%)"
-              }} />
-              <div data-testid="ai-top-picks-carousel" className="will-change-transform" style={{transform:`translateY(${offset * 0.4}px)`}}>
-                <Carousel opts={{ align: "start", dragFree: true, loop: false }}>
-                  <CarouselContent>
-                    {data.recommendations?.map((rec, idx) => (
-                      <CarouselItem key={rec.product.id} className="basis-[78%] sm:basis-[48%] lg:basis-[38%]">
-                        <Card data-testid={`product-card-${idx}`} onClick={() => openDetail(rec.product)} className="cursor-pointer">
-                          <div className="overflow-hidden rounded-t-xl">
-                            <img
-                              alt={rec.product.name}
-                              src={rec.product.image_url}
-                              className="w-full h-56 object-cover"
-                              style={{ transform: `translateY(${offset * 0.25}px)` }}
-                            />
-                          </div>
-                          <CardContent>
-                            <div className="font-semibold flex items-center justify-between">
-                              <span>{rec.product.name}</span>
-                              <button
-                                data-testid={`wishlist-toggle-${idx}`}
-                                className={`ml-3 text-xs px-2 py-1 rounded-full ${has(rec.product.id)?'bg-emerald-100 text-emerald-800':'bg-neutral-100 text-neutral-700'}`}
-                                onClick={(e)=>{ e.stopPropagation(); toggle(rec.product.id); }}
-                              >{has(rec.product.id)? 'Saved' : 'Save'}</button>
-                            </div>
-                            <div className="text-sm subcopy">{nfINR.format(Math.round(rec.product.price * USD_TO_INR))}</div>
-                            <div className="text-xs mt-2 text-neutral-600">{rec.reason}</div>
-                          </CardContent>
-                        </Card>
-                      </CarouselItem>
-                    ))}
-                  </CarouselContent>
-                  <CarouselPrevious data-testid="carousel-prev" />
-                  <CarouselNext data-testid="carousel-next" />
-                </Carousel>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-4">
-              {qr && <img src={qr} alt="QR" className="w-[160px] h-[160px] border border-neutral-300 rounded-lg" data-testid="passport-qr"/>}
-              <div>
-                <div className="text-sm font-medium">Take it with you</div>
-                <div className="text-xs subcopy break-all" data-testid="passport-link">{passportLink}</div>
-                <div className="text-xs mt-2 text-neutral-600" data-testid="passport-cta-copy">Your picks are saved in your Jewelry Passport. Scan the QR to open it on your phone — continue exploring, save favorites, and purchase securely on Evol Jewels.</div>
-              </div>
-            </div>
-          </div>
+        <div data-testid="stylist-picks-carousel">
+          <Carousel opts={{ align: "start", dragFree: true, loop: true }} setApi={setEmbla}>
+            <CarouselContent>
+              {picks.map((p, idx)=> (
+                <CarouselItem key={p.id} className="basis-[78%] sm:basis-[48%] lg:basis-[38%]">
+                  <Card data-testid={`stylist-pick-${idx}`} className="cursor-pointer">
+                    <img alt={p.name} src={p.image_url} className="w-full h-56 object-cover rounded-t-xl" />
+                    <CardContent>
+                      <div className="font-semibold flex items-center justify-between">
+                        <span>{p.name}</span>
+                        <button
+                          data-testid={`stylist-wishlist-toggle-${idx}`}
+                          className={`ml-3 text-xs px-2 py-1 rounded-full ${has(p.id)?'bg-emerald-100 text-emerald-800':'bg-neutral-100 text-neutral-700'}`}
+                          onClick={(e)=>{ e.stopPropagation(); toggle(p.id); }}
+                        >{has(p.id)? 'Saved' : 'Save'}</button>
+                      </div>
+                      <div className="text-sm subcopy">{nfINR.format(Math.round(p.price * USD_TO_INR))}</div>
+                    </CardContent>
+                  </Card>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious data-testid="stylist-prev" />
+            <CarouselNext data-testid="stylist-next" />
+          </Carousel>
         </div>
       </div>
-      <ProductDialog
-        open={dialogOpen}
-        onOpenChange={setDialogOpen}
-        product={activeProduct}
-        onToggleWishlist={toggle}
-        inWishlist={activeProduct ? ids.includes(activeProduct.id) : false}
-      />
     </div>
   );
 };
+
+// Passport page is unchanged from previous response – omitted here for brevity in this patch
+// ... bringing the previous Passport implementation to keep build consistent
 
 const Passport = () => {
   useIdleReset();
@@ -568,12 +330,11 @@ const Passport = () => {
   const { sessionId } = useParams();
   const [data, setData] = useState(null);
   const [feedback, setFeedback] = useState(null);
-  useEffect(()=>{
-    axios.get(`${API}/passport/${sessionId}`).then(res => setData(res.data)).catch(()=>{});
-  }, [sessionId]);
+  useEffect(()=>{ axios.get(`${API}/passport/${sessionId}`).then(res => setData(res.data)).catch(()=>{}); }, [sessionId]);
   if (!data) return <div className="section">Loading…</div>;
   return (
     <div className="kiosk-frame section" data-testid="passport-screen">
+      <HeaderBar />
       <div className="container max-w-3xl">
         <div className="flex items-center justify-between gap-3">
           <div>
@@ -634,8 +395,8 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Welcome />} />
-          <Route path="/survey" element={<Survey />} />
-          <Route path="/recommendation/:sessionId" element={<Recommendation />} />
+          <Route path="/catalog" element={<Catalogue />} />
+          <Route path="/stylist" element={<StylistPage />} />
           <Route path="/passport/:sessionId" element={<Passport />} />
         </Routes>
       </BrowserRouter>
