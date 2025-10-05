@@ -26,7 +26,7 @@ const VIBE_IMAGES = {
 };
 
 // 120s idle reset hook
-const useIdleReset = (ms = 120000) => {
+const useIdleReset = (ms = 60000) => {
   const navigate = useNavigate();
   const timer = useRef(null);
   const resetTimer = () => {
