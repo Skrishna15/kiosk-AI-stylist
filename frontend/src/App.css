@@ -53,3 +53,11 @@ body { background: var(--bg); color: var(--ink); font-family: Inter, -apple-syst
 .kiosk-frame { width: 100%; min-height: 100vh; animation: fadeIn .25s ease; }
 
 .fab-stylist { position: fixed; right: 24px; bottom: 110px; z-index: 40; }
+
+/* Sticky prompt footer (avoid overlap with emergent badge) */
+.sticky-prompt { position: fixed; left: 0; right: 0; bottom: 0; z-index: 39; }
+.sticky-prompt-inner { max-width: 1080px; margin: 0 auto; }
+.sticky-prompt-card { margin: 10px 16px; border-radius: 16px; backdrop-filter: blur(12px); background: rgba(255,255,255,.75); border:1px solid rgba(0,0,0,.06); box-shadow: 0 8px 24px rgba(0,0,0,.06); }
+
+/* Add bottom padding to pages that use sticky footer */
+.with-sticky-padding { padding-bottom: 90px; }
