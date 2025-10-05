@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectOption } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardFooter } from "@/components/ui/card";
 import QRCode from "qrcode";
+// Attempt to use shadcn dialog components
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -21,6 +23,7 @@ const VIBE_IMAGES = {
   "Bold Statement": "https://images.unsplash.com/photo-1623321673989-830eff0fd59f?crop=entropy&cs=srgb&fm=jpg&q=85",
 };
 
+// 120s idle reset hook
 const useIdleReset = (ms = 120000) => {
   const navigate = useNavigate();
   const timer = useRef(null);
@@ -36,6 +39,19 @@ const useIdleReset = (ms = 120000) => {
   }, [ms]);
 };
 
+// Wishlist hook using localStorage
+const useWishlist = () => {
+  const [ids, setIds] = useState(()=>{
+    try { return JSON.parse(localStorage.getItem("ej_wishlist")||"[]"); } catch { return []; }
+  });
+  useEffect(()=>{ localStorage.setItem("ej_wishlist", JSON.stringify(ids)); }, [ids]);
+  const has = (id) => ids.includes(id);
+  const add = (id) => setIds(prev => prev.includes(id)? prev : [...prev, id]);
+  const remove = (id) => setIds(prev => prev.filter(x => x!==id));
+  const toggle = (id) => setIds(prev => prev.includes(id)? prev.filter(x=>x!==id) : [...prev, id]);
+  return { ids, has, add, remove, toggle };
+};
+
 const Badge = ({ engine }) => (
   <div data-testid="ai-status-badge" className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs ${engine === 'ai' ? 'bg-emerald-100 text-emerald-800' : 'bg-neutral-100 text-neutral-700'}`}>
     <span className="w-2 h-2 rounded-full" style={{backgroundColor: engine === 'ai' ? '#10b981' : '#9ca3af'}}></span>
@@ -43,10 +59,50 @@ const Badge = ({ engine }) => (
   </div>
 );
 
+// Attract overlay for Welcome (appears after 20s idle on Welcome only)
+const AttractOverlay = ({ onStart }) => {
+  const [index, setIndex] = useState(0);
+  useEffect(()=>{
+    const t = setInterval(()=> setIndex(i => (i+1)%Object.keys(VIBE_IMAGES).length), 2500);
+    return ()=> clearInterval(t);
+  }, []);
+  const keys = Object.keys(VIBE_IMAGES);
+  const current = keys[index];
+  return (
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-md flex items-center justify-center z-50" data-testid="attract-overlay">
+      <div className="w-[860px] max-w-[90vw] rounded-3xl overflow-hidden shadow-2xl border border-neutral-700 bg-white/5">
+        <div className="grid md:grid-cols-2">
+          <img alt={current} src={VIBE_IMAGES[current]} className="w-full h-[420px] object-cover" />
+          <div className="p-8 text-white flex flex-col justify-between" style={{background:"linear-gradient(120deg, rgba(21,21,21,.9), rgba(21,21,21,.75))"}}>
+            <div>
+              <div className="text-sm tracking-widest opacity-80">Evol Jewels</div>
+              <div className="text-4xl mt-2 font-serif">Meet Your Celebrity Stylist</div>
+              <div className="opacity-80 mt-3">Tap to begin your 60‑second personalized jewelry picks.</div>
+            </div>
+            <div className="mt-6">
+              <Button className="button-pill" data-testid="attract-start-button" onClick={onStart}>Start</Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const Welcome = () => {
   useIdleReset();
   const navigate = useNavigate();
+  const [showAttract, setShowAttract] = useState(false);
   useEffect(() => { axios.get(`${API}/health`).catch(() => {}); }, []);
+  useEffect(()=>{
+    const show = () => setShowAttract(true);
+    const hide = () => setShowAttract(false);
+    const idleTimer = setTimeout(show, 20000);
+    const onAny = () => { clearTimeout(idleTimer); hide(); };
+    const events = ["click","mousemove","keydown","touchstart","scroll"];
+    events.forEach(e => window.addEventListener(e, onAny));
+    return ()=> { clearTimeout(idleTimer); events.forEach(e => window.removeEventListener(e, onAny)); };
+  }, []);
   return (
     <div className="kiosk-frame kiosk-container ej-gradient-accent" data-testid="welcome-screen">
       <section className="hero section">
@@ -70,6 +126,7 @@ const Welcome = () => {
           </div>
         </div>
       </section>
+      {showAttract && <AttractOverlay onStart={() => { setShowAttract(false); navigate('/survey'); }} />}
     </div>
   );
 };
@@ -163,12 +220,40 @@ const Survey = () => {
   );
 };
 
+const ProductDialog = ({ open, onOpenChange, product, onToggleWishlist, inWishlist }) => {
+  if (!product) return null;
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent data-testid="product-dialog">
+        <DialogHeader>
+          <DialogTitle className="card-title text-2xl">{product.name}</DialogTitle>
+        </DialogHeader>
+        <div className="grid md:grid-cols-2 gap-4">
+          <img alt={product.name} src={product.image_url} className="w-full h-64 object-cover rounded-xl" data-testid="dialog-product-image" />
+          <div>
+            <div className="text-lg font-semibold">${product.price.toFixed(2)}</div>
+            {product.description && <div className="text-sm subcopy mt-2">{product.description}</div>}
+          </div>
+        </div>
+        <DialogFooter>
+          <Button className="button-pill" data-testid="dialog-toggle-wishlist" onClick={() => onToggleWishlist(product.id)}>
+            {inWishlist ? 'Remove from Wishlist' : 'Add to Wishlist'}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
 const Recommendation = () => {
   useIdleReset();
+  const { toggle, has, ids } = useWishlist();
   const params = useParams();
   const { state } = useLocation();
   const [data, setData] = useState(state || null);
   const [qr, setQr] = useState("");
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [activeProduct, setActiveProduct] = useState(null);
   const sessionId = params.sessionId;
 
   const passportLink = useMemo(()=> `${window.location.origin}/passport/${sessionId}`, [sessionId]);
@@ -195,6 +280,8 @@ const Recommendation = () => {
     QRCode.toDataURL(passportLink, { margin: 1, width: 220 }).then(setQr).catch(()=>{});
   }, [passportLink, sessionId]);
 
+  const openDetail = (p) => { setActiveProduct(p); setDialogOpen(true); };
+
   if (!data) return <div className="section">Loading…</div>;
 
   return (
@@ -207,14 +294,24 @@ const Recommendation = () => {
                 <h2 className="card-title text-4xl" data-testid="vibe-title">Your Style Match: {data.vibe}</h2>
                 <p className="subcopy mt-2" data-testid="vibe-explanation">{data.explanation}</p>
               </div>
-              <Badge engine={data.engine || 'rules'} />
+              <div className="flex items-center gap-3">
+                <Badge engine={data.engine || 'rules'} />
+                <div className="text-xs subcopy" data-testid="wishlist-count">Wishlist: {ids.length}</div>
+              </div>
             </div>
             <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-5">
               {data.recommendations?.map((rec, idx) => (
-                <Card key={rec.product.id} data-testid={`product-card-${idx}`}>
+                <Card key={rec.product.id} data-testid={`product-card-${idx}`} onClick={() => openDetail(rec.product)} className="cursor-pointer">
                   <img alt={rec.product.name} src={rec.product.image_url} className="w-full h-44 object-cover rounded-t-xl" />
                   <CardContent>
-                    <div className="font-semibold">{rec.product.name}</div>
+                    <div className="font-semibold flex items-center justify-between">
+                      <span>{rec.product.name}</span>
+                      <button
+                        data-testid={`wishlist-toggle-${idx}`}
+                        className={`ml-3 text-xs px-2 py-1 rounded-full ${has(rec.product.id)?'bg-emerald-100 text-emerald-800':'bg-neutral-100 text-neutral-700'}`}
+                        onClick={(e)=>{ e.stopPropagation(); toggle(rec.product.id); }}
+                      >{has(rec.product.id)? 'Saved' : 'Save'}</button>
+                    </div>
                     <div className="text-sm subcopy">${rec.product.price.toFixed(2)}</div>
                     <div className="text-xs mt-2 text-neutral-600">{rec.reason}</div>
                   </CardContent>
@@ -236,12 +333,20 @@ const Recommendation = () => {
           </div>
         </div>
       </div>
+      <ProductDialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        product={activeProduct}
+        onToggleWishlist={toggle}
+        inWishlist={activeProduct ? ids.includes(activeProduct.id) : false}
+      />
     </div>
   );
 };
 
 const Passport = () => {
   useIdleReset();
+  const { toggle, has } = useWishlist();
   const { sessionId } = useParams();
   const [data, setData] = useState(null);
   useEffect(()=>{
@@ -273,7 +378,14 @@ const Passport = () => {
                 <Card key={rec.product.id} data-testid={`passport-product-${idx}`}>
                   <img alt={rec.product.name} src={rec.product.image_url} className="w-full h-40 object-cover rounded-t-xl" />
                   <CardContent>
-                    <div className="font-semibold">{rec.product.name}</div>
+                    <div className="font-semibold flex items-center justify-between">
+                      <span>{rec.product.name}</span>
+                      <button
+                        data-testid={`passport-wishlist-toggle-${idx}`}
+                        className={`ml-3 text-xs px-2 py-1 rounded-full ${has(rec.product.id)?'bg-emerald-100 text-emerald-800':'bg-neutral-100 text-neutral-700'}`}
+                        onClick={(e)=>{ e.stopPropagation(); toggle(rec.product.id); }}
+                      >{has(rec.product.id)? 'Saved' : 'Save'}</button>
+                    </div>
                     <div className="text-sm subcopy">${rec.product.price.toFixed(2)}</div>
                   </CardContent>
                 </Card>

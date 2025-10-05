@@ -23,7 +23,7 @@
 }
 
 html, body, #root { height:100%; }
-body { background: var(--bg); color: var(--ink); font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+body { background: var(--bg); color: var(--ink); font-family: Inter, -apple-system, "Segoe UI", Roboto, sans-serif; }
 
 .ej-gradient-accent { /* decorative only, < 20% area */
   background: radial-gradient(1200px 600px at 85% -10%, rgba(200,169,126,0.18), transparent 60%),
@@ -34,7 +34,7 @@ body { background: var(--bg); color: var(--ink); font-family: Inter, system-ui, 
   border-radius: 999px;
   background-color: var(--ink);
   color: #fff;
-  padding: 12px 20px;
+  padding: 16px 24px; /* larger touch target */
   font-weight: 600;
   letter-spacing: 0.2px;
   transition: background-color .2s ease, box-shadow .2s ease;
