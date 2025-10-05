@@ -226,11 +226,107 @@ const Catalogue = () => {
   );
 };
 
-// ChatInline, StylistPage, Passport, Welcome remain as previously defined
-// ... (the rest of the file remains unchanged from previous patch)
+const ChatInline = ({ onNewRecommendation }) => {
+  // Placeholder ChatInline component
+  return (
+    <div className="chat-inline">
+      <p>Chat functionality placeholder</p>
+    </div>
+  );
+};
 
-// Re-export/define the remaining components here by importing previous definitions
-// For brevity, assume they are present below in the file in your current environment.
+const StylistPage = () => {
+  useIdleReset();
+  const [picks, setPicks] = useState([]);
+  const [embla, setEmbla] = useState(null);
+  const [sessionId, setSessionId] = useState(null);
+  const [qr, setQr] = useState("");
+  const { toggle, has } = useWishlist();
+
+  useEffect(()=>{
+    // Default: first 10 products
+    axios.get(`${API}/products`).then(r => setPicks((r.data||[]).slice(0,10))).catch(()=>{});
+  },[]);
+
+  useEffect(()=>{
+    if (!embla) return;
+    const id = setInterval(()=>{ try { embla.scrollNext(); } catch {} }, 3000);
+    return ()=> clearInterval(id);
+  }, [embla]);
+
+  const passportLink = useMemo(() => sessionId ? `${window.location.origin}/passport/${sessionId}` : "", [sessionId]);
+
+  useEffect(()=>{
+    if (!passportLink) return;
+    QRCode.toDataURL(passportLink, { margin: 1, width: 160 }).then(setQr).catch(()=>{});
+  }, [passportLink]);
+
+  return (
+    <div className="kiosk-frame section" data-testid="stylist-screen">
+      <HeaderBar />
+      <div className="container max-w-5xl space-y-8">
+        <ChatInline onNewRecommendation={(data)=> {
+          setPicks(data.recommendations?.map(r=> r.product) || []);
+          setSessionId(data.session_id);
+        }} />
+
+        <div data-testid="stylist-picks-carousel">
+          <Carousel opts={{ align: "start", dragFree: true, loop: true }} setApi={setEmbla}>
+            <CarouselContent>
+              {picks.map((p, idx)=> (
+                <CarouselItem key={p.id} className="basis-[78%] sm:basis-[48%] lg:basis-[38%]">
+                  <Card data-testid={`stylist-pick-${idx}`} className="cursor-pointer">
+                    <img alt={p.name} src={p.image_url} className="w-full h-56 object-cover rounded-t-xl" />
+                    <CardContent>
+                      <div className="font-semibold flex items-center justify-between">
+                        <span>{p.name}</span>
+                        <button
+                          data-testid={`stylist-wishlist-toggle-${idx}`}
+                          className={`ml-3 text-xs px-2 py-1 rounded-full ${has(p.id)?'bg-emerald-100 text-emerald-800':'bg-neutral-100 text-neutral-700'}`}
+                          onClick={(e)=>{ e.stopPropagation(); toggle(p.id); }}
+                        >{has(p.id)? 'Saved' : 'Save'}</button>
+                      </div>
+                      <div className="text-sm subcopy">{nfINR.format(Math.round(p.price * USD_TO_INR))}</div>
+                    </CardContent>
+                  </Card>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious data-testid="stylist-prev" />
+            <CarouselNext data-testid="stylist-next" />
+          </Carousel>
+        </div>
+      </div>
+
+      {sessionId && qr && (
+        <div className="fixed left-6 bottom-6 z-40 flex items-center gap-3 bg-white/85 backdrop-blur-md border border-neutral-200 rounded-xl px-3 py-2 shadow" data-testid="floating-qr">
+          <img src={qr} alt="QR" className="w-[120px] h-[120px] rounded" />
+          <div className="text-xs subcopy">
+            <div data-testid="floating-qr-cta-copy">Your picks are saved in your Jewelry Passport. Scan to open on your phone.</div>
+            <div className="mt-1 break-all" data-testid="floating-qr-link">{passportLink}</div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+const Passport = () => {
+  // Placeholder Passport component
+  return (
+    <div className="passport">
+      <p>Passport functionality placeholder</p>
+    </div>
+  );
+};
+
+const Welcome = () => {
+  // Placeholder Welcome component
+  return (
+    <div className="welcome">
+      <p>Welcome functionality placeholder</p>
+    </div>
+  );
 
 export default function App(){
   return (
