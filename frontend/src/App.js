@@ -497,24 +497,45 @@ const Recommendation = () => {
               </CardContent>
             </Card>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5" data-testid="ai-top-picks">
-              {data.recommendations?.map((rec, idx) => (
-                <Card key={rec.product.id} data-testid={`product-card-${idx}`} onClick={() => openDetail(rec.product)} className="cursor-pointer">
-                  <img alt={rec.product.name} src={rec.product.image_url} className="w-full h-44 object-cover rounded-t-xl" />
-                  <CardContent>
-                    <div className="font-semibold flex items-center justify-between">
-                      <span>{rec.product.name}</span>
-                      <button
-                        data-testid={`wishlist-toggle-${idx}`}
-                        className={`ml-3 text-xs px-2 py-1 rounded-full ${has(rec.product.id)?'bg-emerald-100 text-emerald-800':'bg-neutral-100 text-neutral-700'}`}
-                        onClick={(e)=>{ e.stopPropagation(); toggle(rec.product.id); }}
-                      >{has(rec.product.id)? 'Saved' : 'Save'}</button>
-                    </div>
-                    <div className="text-sm subcopy">{nfINR.format(Math.round(rec.product.price * USD_TO_INR))}</div>
-                    <div className="text-xs mt-2 text-neutral-600">{rec.reason}</div>
-                  </CardContent>
-                </Card>
-              ))}
+            {/* AI Top Picks carousel with subtle parallax */}
+            <div className="relative">
+              <div className="pointer-events-none absolute inset-x-0 -top-8 h-40" style={{
+                background: "radial-gradient(600px 160px at 50% 0%, rgba(200,169,126,0.12), transparent 60%)"
+              }} />
+              <div data-testid="ai-top-picks-carousel" className="will-change-transform" style={{transform:`translateY(${offset * 0.4}px)`}}>
+                <Carousel opts={{ align: "start", dragFree: true, loop: false }}>
+                  <CarouselContent>
+                    {data.recommendations?.map((rec, idx) => (
+                      <CarouselItem key={rec.product.id} className="basis-[78%] sm:basis-[48%] lg:basis-[38%]">
+                        <Card data-testid={`product-card-${idx}`} onClick={() => openDetail(rec.product)} className="cursor-pointer">
+                          <div className="overflow-hidden rounded-t-xl">
+                            <img
+                              alt={rec.product.name}
+                              src={rec.product.image_url}
+                              className="w-full h-56 object-cover"
+                              style={{ transform: `translateY(${offset * 0.25}px)` }}
+                            />
+                          </div>
+                          <CardContent>
+                            <div className="font-semibold flex items-center justify-between">
+                              <span>{rec.product.name}</span>
+                              <button
+                                data-testid={`wishlist-toggle-${idx}`}
+                                className={`ml-3 text-xs px-2 py-1 rounded-full ${has(rec.product.id)?'bg-emerald-100 text-emerald-800':'bg-neutral-100 text-neutral-700'}`}
+                                onClick={(e)=>{ e.stopPropagation(); toggle(rec.product.id); }}
+                              >{has(rec.product.id)? 'Saved' : 'Save'}</button>
+                            </div>
+                            <div className="text-sm subcopy">{nfINR.format(Math.round(rec.product.price * USD_TO_INR))}</div>
+                            <div className="text-xs mt-2 text-neutral-600">{rec.reason}</div>
+                          </CardContent>
+                        </Card>
+                      </CarouselItem>
+                    ))}
+                  </CarouselContent>
+                  <CarouselPrevious data-testid="carousel-prev" />
+                  <CarouselNext data-testid="carousel-next" />
+                </Carousel>
+              </div>
             </div>
 
             <div className="flex items-center gap-4">
