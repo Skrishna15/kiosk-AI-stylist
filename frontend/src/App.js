@@ -7,6 +7,7 @@ import { Select, SelectOption } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardFooter } from "@/components/ui/card";
 import QRCode from "qrcode";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Heart, ThumbsUp, Meh, HelpCircle, ThumbsDown } from "lucide-react";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
