@@ -513,6 +513,7 @@ const Recommendation = () => {
               <div>
                 <div className="text-sm font-medium">Take it with you</div>
                 <div className="text-xs subcopy break-all" data-testid="passport-link">{passportLink}</div>
+                <div className="text-xs mt-2 text-neutral-600" data-testid="passport-cta-copy">Your picks are saved in your Jewelry Passport. Scan the QR to open it on your phone — continue exploring, save favorites, and purchase securely on Evol Jewels.</div>
               </div>
             </div>
           </div>
