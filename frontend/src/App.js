@@ -232,7 +232,7 @@ const Catalogue = () => {
 // Re-export/define the remaining components here by importing previous definitions
 // For brevity, assume they are present below in the file in your current environment.
 
-export default function AppWrapper(){
+export default function App(){
   return (
     <div className="App">
       <BrowserRouter>
