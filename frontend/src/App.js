@@ -226,7 +226,8 @@ const ChatWidget = () => {
       <button
         data-testid="chat-open-button"
         onClick={()=>setOpen(true)}
-        className="fixed bottom-6 right-6 z-40 button-pill shadow-lg px-5 py-3"
+        className="fixed right-6 z-40 button-pill shadow-lg px-5 py-3"
+        style={{ bottom: 110 }}
       >Ask Stylist</button>
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent data-testid="chat-dialog" className="sm:max-w-xl">
