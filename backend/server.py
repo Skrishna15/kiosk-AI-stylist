@@ -36,7 +36,7 @@ api = APIRouter(prefix="/api")
 class Product(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     name: str
-    price: float
+    price: float  # stored as USD internally
     image_url: str
     style_tags: List[str] = []
     occasion_tags: List[str] = []
@@ -101,15 +101,35 @@ VIBE_IMAGES: Dict[str, str] = {
     "Bold Statement": "https://images.unsplash.com/photo-1623321673989-830eff0fd59f?crop=entropy&cs=srgb&fm=jpg&q=85",
 }
 
-BUDGET_RANGES = {
-    "Under $100": (0, 100),
-    "$100–$300": (100, 300),
-    "$300–$800": (300, 800),
-    "$800+": (800, 999999),
+# Currency handling
+USD_TO_INR: float = float(os.environ.get("USD_TO_INR", "83.0"))
+
+BUDGET_RANGES_INR = {
+    "Under ₹8,000": (0, 8000),
+    "₹8,000–₹25,000": (8000, 25000),
+    "₹25,000–₹65,000": (25000, 65000),
+    "₹65,000+": (65000, 10**9),
 }
 
 def now_iso() -> str:
     return datetime.now(timezone.utc).isoformat()
+
+# Indian numbering format (approximate: 12,34,567)
+def format_inr(n: int) -> str:
+    s = str(abs(n))
+    if len(s) <= 3:
+        out = s
+    else:
+        last3 = s[-3:]
+        rest = s[:-3]
+        parts = []
+        while len(rest) > 2:
+            parts.insert(0, rest[-2:])
+            rest = rest[:-2]
+        if rest:
+            parts.insert(0, rest)
+        out = ",".join(parts + [last3])
+    return f"₹{out}"
 
 async def seed_products_if_needed():
     count = await db.products.count_documents({})
@@ -240,13 +260,12 @@ def vibe_explanation(vibe: str) -> str:
 
 # ------------------ OpenAI integration ------------------
 async def get_ai_vibe(payload: AIRequest) -> Optional[AIResponse]:
-    """Use OpenAI (via OPENAI_API_KEY) to classify vibe. Fallback returns None."""
     api_key = os.environ.get("OPENAI_API_KEY")
     if not api_key or AsyncOpenAI is None:
         return None
     try:
         client = AsyncOpenAI(api_key=api_key)
-        prefer = os.environ.get("OPENAI_MODEL", "gpt-5").strip()
+        prefer = os.environ.get("OPENAI_MODEL", "gpt-4o-mini").strip()
         fallbacks = [m for m in [prefer, "gpt-4o", "gpt-4.1", "gpt-4o-mini"] if m]
         system = (
             "You are a luxury jewelry stylist. Given the survey, return JSON only with keys 'vibe' and 'explanation'. "
@@ -301,7 +320,8 @@ async def get_ai_vibe(payload: AIRequest) -> Optional[AIResponse]:
     return None
 
 async def recommend_products(s: SurveyInput, vibe: str) -> List[RecommendationItem]:
-    min_b, max_b = BUDGET_RANGES.get(s.budget, (0, 999999))
+    # Compare budgets in INR using USD price converted
+    min_inr, max_inr = BUDGET_RANGES_INR.get(s.budget, (0, 10**12))
 
     style_q = s.style.lower().split()
     occ_q = s.occasion.lower().split()
@@ -311,8 +331,9 @@ async def recommend_products(s: SurveyInput, vibe: str) -> List[RecommendationIt
 
     scored: List[tuple[float, Dict[str, Any]]] = []
     for it in items:
-        price = float(it.get("price", 0))
-        if not (min_b <= price <= max_b):
+        price_usd = float(it.get("price", 0))
+        price_inr = price_usd * USD_TO_INR
+        if not (min_inr <= price_inr <= max_inr):
             continue
         score = 0.0
         tags = [t.lower() for t in it.get("style_tags", [])]
@@ -321,7 +342,8 @@ async def recommend_products(s: SurveyInput, vibe: str) -> List[RecommendationIt
         score += sum(1 for t in occs for q in occ_q if q in t) * 1.2
         if vibe.split()[0].lower() in tags:
             score += 1.0
-        score += 0.2 if 120 <= price <= 600 else 0
+        # bias towards mid INR price range
+        score += 0.2 if 8000 <= price_inr <= 65000 else 0
         scored.append((score, it))
 
     scored.sort(key=lambda x: x[0], reverse=True)
@@ -329,20 +351,22 @@ async def recommend_products(s: SurveyInput, vibe: str) -> List[RecommendationIt
 
     recs: List[RecommendationItem] = []
     for it in top:
+        price_usd = float(it.get("price", 0))
+        price_inr = int(round(price_usd * USD_TO_INR))
         reason_bits = []
         if any(k in (s.style.lower()) for k in it.get("style_tags", [])):
             reason_bits.append("matches your style preference")
         if any(k in (s.occasion.lower()) for k in it.get("occasion_tags", [])):
             reason_bits.append("perfect for your occasion")
-        price = it.get("price")
-        reason_bits.append(f"within your budget at ${price}")
+        reason_bits.append(f"within your budget at {format_inr(price_inr)}")
         reason = ", ".join(reason_bits) if reason_bits else "tailored to your inputs"
         recs.append(RecommendationItem(product=Product(**it), reason=reason))
     if len(recs) < 3:
         for it in items:
-            price = float(it.get("price", 0))
-            if min_b <= price <= max_b and all(r.product.id != it["id"] for r in recs):
-                recs.append(RecommendationItem(product=Product(**it), reason="great fit for your budget"))
+            price_usd = float(it.get("price", 0))
+            price_inr = int(round(price_usd * USD_TO_INR))
+            if min_inr <= price_inr <= max_inr and all(r.product.id != it["id"] for r in recs):
+                recs.append(RecommendationItem(product=Product(**it), reason=f"great fit for your budget at {format_inr(price_inr)}"))
             if len(recs) >= 4:
                 break
     return recs
@@ -416,7 +440,9 @@ async def get_passport(session_id: str):
     prods = await db.products.find({"id": {"$in": prod_ids}}).to_list(200)
     recs: List[RecommendationItem] = []
     for it in prods:
-        recs.append(RecommendationItem(product=Product(**it), reason="curated for your vibe"))
+        price_usd = float(it.get("price", 0))
+        price_inr = int(round(price_usd * USD_TO_INR))
+        recs.append(RecommendationItem(product=Product(**it), reason=f"curated for your vibe at {format_inr(price_inr)}"))
 
     survey = SurveyInput(**sess["survey"]) if isinstance(sess.get("survey"), dict) else SurveyInput(**{})
     engine = sess.get("engine", "rules")

@@ -11,6 +11,8 @@ import { Heart, ThumbsUp, Meh, HelpCircle, ThumbsDown } from "lucide-react";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
+const USD_TO_INR = 83;
+const nfINR = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 });
 
 const VIBE_IMAGES = {
   "Hollywood Glam": "https://images.unsplash.com/photo-1616837874254-8d5aaa63e273?crop=entropy&cs=srgb&fm=jpg&q=85",
@@ -117,11 +119,11 @@ const parseIntent = (text) => {
   const findOne = (list) => list.find(k => has(k));
   const occasions = ["wedding","red carpet","everyday","office","party","festival","date night"];
   const styles = ["minimal","bold","glam","editorial","vintage","boho","classic","modern","chic"];
-  let budget = "Under $100";
-  if ((has("100") && has("300")) || has("100-300") || has("$100–$300")) budget = "$100–$300";
-  else if ((has("300") && has("800")) || has("$300–$800")) budget = "$300–$800";
-  else if (has("800+") || has("over 800")) budget = "$800+";
-  else if (has("under 100") || has("<100") || has("below 100")) budget = "Under $100";
+  let budget = "Under ₹8,000";
+  if (has("100") && has("300")) budget = "₹8,000–₹25,000";
+  else if ((has("300") && has("800")) || has("$300–$800") || has("300-800")) budget = "₹25,000–₹65,000";
+  else if (has("800+") || has("over 800") || has("65000+")) budget = "₹65,000+";
+  else if (has("under 100") || has("<100") || has("below 100") || has("8000")) budget = "Under ₹8,000";
   const occ = findOne(occasions) || "everyday";
   const st = findOne(styles) || (has("diamond")? "glam" : (has("pearl")? "classic" : "minimal"));
   const caps = (s) => s.charAt(0).toUpperCase()+s.slice(1);
@@ -151,7 +153,6 @@ const ChatInline = ({ onNewRecommendation }) => {
       const reply = `Your vibe: ${data.vibe}. ${data.explanation}`;
       setMessages(prev => [...prev, { role: 'assistant', content: reply }]);
     } catch (e) {
-      // graceful fallback on any error
       const intent = parseIntent(userMsg.content);
       const reply = `Your vibe: ${intent.style === 'Minimal' ? 'Minimal Modern' : intent.style === 'Glam' ? 'Hollywood Glam' : 'Everyday Chic'}. Tailored to your inputs.`;
       setMessages(prev => [...prev, { role: 'assistant', content: reply }]);
@@ -180,7 +181,7 @@ const ChatInline = ({ onNewRecommendation }) => {
           <input
             data-testid="chat-input"
             className="flex-1 h-11 rounded-md border border-neutral-300 px-3 shadow-sm focus:outline-none focus:ring-2 focus:ring-neutral-800"
-            placeholder="e.g., Wedding, minimal style, budget $300–$800"
+            placeholder="e.g., Wedding, minimal style, budget ₹25,000–₹65,000"
             value={input}
             onChange={(e)=>setInput(e.target.value)}
             onKeyDown={(e)=>{ if(e.key==='Enter'){ e.preventDefault(); send(); } }}
@@ -243,7 +244,7 @@ const ChatWidget = () => {
               <input
                 data-testid="chat-input"
                 className="flex-1 h-11 rounded-md border border-neutral-300 px-3 shadow-sm focus:outline-none focus:ring-2 focus:ring-neutral-800"
-                placeholder="e.g., Wedding, minimal style, budget around $300–$800"
+                placeholder="e.g., Wedding, minimal style, budget ₹25,000–₹65,000"
                 value={input}
                 onChange={(e)=>setInput(e.target.value)}
                 onKeyDown={(e)=>{ if(e.key==='Enter'){ e.preventDefault(); send(); } }}
@@ -364,10 +365,10 @@ const Survey = () => {
               <label className="block text-sm mb-2" htmlFor="budget">Budget</label>
               <Select id="budget" value={budget} onChange={(e)=>setBudget(e.target.value)} data-testid="budget-select">
                 <SelectOption value="">Select budget</SelectOption>
-                <SelectOption>Under $100</SelectOption>
-                <SelectOption>$100–$300</SelectOption>
-                <SelectOption>$300–$800</SelectOption>
-                <SelectOption>$800+</SelectOption>
+                <SelectOption>Under ₹8,000</SelectOption>
+                <SelectOption>₹8,000–₹25,000</SelectOption>
+                <SelectOption>₹25,000–₹65,000</SelectOption>
+                <SelectOption>₹65,000+</SelectOption>
               </Select>
             </div>
             <div>
@@ -401,7 +402,7 @@ const ProductDialog = ({ open, onOpenChange, product, onToggleWishlist, inWishli
         <div className="grid md:grid-cols-2 gap-4">
           <img alt={product.name} src={product.image_url} className="w-full h-64 object-cover rounded-xl" data-testid="dialog-product-image" />
           <div>
-            <div className="text-lg font-semibold">${product.price.toFixed(2)}</div>
+            <div className="text-lg font-semibold">{nfINR.format(Math.round(product.price * USD_TO_INR))}</div>
             {product.description && <div className="text-sm subcopy mt-2">{product.description}</div>}
           </div>
         </div>
@@ -426,6 +427,7 @@ const Recommendation = () => {
   const [activeProduct, setActiveProduct] = useState(null);
   const sessionId = params.sessionId;
 
+  const { ref: parallaxRef, offset } = useParallax();
   const passportLink = useMemo(()=> `${window.location.origin}/passport/${sessionId}`, [sessionId]);
 
   useEffect(()=>{
@@ -458,7 +460,6 @@ const Recommendation = () => {
     <div className="kiosk-frame section" data-testid="recommendation-screen">
       <div className="container max-w-5xl">
         <div className="grid md:grid-cols-2 gap-8 items-start">
-          {/* Left: Title and copy only */}
           <div className="order-2 md:order-1">
             <div className="flex items-center justify-between gap-3">
               <div>
@@ -471,23 +472,30 @@ const Recommendation = () => {
               </div>
             </div>
           </div>
-
-          {/* Right: Chat panel replacing moodboard, then AI top picks grid, then QR */}
           <div className="order-1 md:order-2 space-y-6">
-            <ChatInline onNewRecommendation={(rec) => {
-              setData({
-                session_id: rec.session_id,
-                engine: rec.engine || 'ai',
-                vibe: rec.vibe,
-                explanation: rec.explanation,
-                moodboard_image: rec.moodboard_image,
-                recommendations: rec.recommendations,
-                created_at: rec.created_at,
-              });
-              // Update QR for new session
-              const link = `${window.location.origin}/passport/${rec.session_id}`;
-              QRCode.toDataURL(link, { margin: 1, width: 220 }).then(setQr).catch(()=>{});
-            }} />
+            <Card ref={parallaxRef} className="will-change-transform" style={{transform:`translateY(${offset}px)`}} data-testid="chat-inline">
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div className="card-title text-2xl">AI Stylist</div>
+                  <div className="text-xs subcopy">Chat to refine picks</div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <ChatInline onNewRecommendation={(rec) => {
+                  setData({
+                    session_id: rec.session_id,
+                    engine: rec.engine || 'ai',
+                    vibe: rec.vibe,
+                    explanation: rec.explanation,
+                    moodboard_image: rec.moodboard_image,
+                    recommendations: rec.recommendations,
+                    created_at: rec.created_at,
+                  });
+                  const link = `${window.location.origin}/passport/${rec.session_id}`;
+                  QRCode.toDataURL(link, { margin: 1, width: 220 }).then(setQr).catch(()=>{});
+                }} />
+              </CardContent>
+            </Card>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5" data-testid="ai-top-picks">
               {data.recommendations?.map((rec, idx) => (
@@ -502,7 +510,7 @@ const Recommendation = () => {
                         onClick={(e)=>{ e.stopPropagation(); toggle(rec.product.id); }}
                       >{has(rec.product.id)? 'Saved' : 'Save'}</button>
                     </div>
-                    <div className="text-sm subcopy">${rec.product.price.toFixed(2)}</div>
+                    <div className="text-sm subcopy">{nfINR.format(Math.round(rec.product.price * USD_TO_INR))}</div>
                     <div className="text-xs mt-2 text-neutral-600">{rec.reason}</div>
                   </CardContent>
                 </Card>
@@ -536,11 +544,11 @@ const Passport = () => {
   const { toggle, has } = useWishlist();
   const { sessionId } = useParams();
   const [data, setData] = useState(null);
+  const [feedback, setFeedback] = useState(null);
   useEffect(()=>{
     axios.get(`${API}/passport/${sessionId}`).then(res => setData(res.data)).catch(()=>{});
   }, [sessionId]);
   if (!data) return <div className="section">Loading…</div>;
-  const [feedback, setFeedback] = useState(null);
   return (
     <div className="kiosk-frame section" data-testid="passport-screen">
       <div className="container max-w-3xl">
@@ -575,7 +583,7 @@ const Passport = () => {
                         onClick={(e)=>{ e.stopPropagation(); toggle(rec.product.id); }}
                       >{has(rec.product.id)? 'Saved' : 'Save'}</button>
                     </div>
-                    <div className="text-sm subcopy">${rec.product.price.toFixed(2)}</div>
+                    <div className="text-sm subcopy">{nfINR.format(Math.round(rec.product.price * USD_TO_INR))}</div>
                   </CardContent>
                 </Card>
               ))}
