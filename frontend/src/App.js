@@ -632,8 +632,8 @@ const NewFlow = () => {
   };
 
   const handleViewDetails = (product) => {
-    // TODO: Implement product details modal/page
-    console.log('View details for:', product);
+    setSelectedProduct(product);
+    setCurrentStep(5); // Navigate to AI chat with product context
   };
 
   return (
