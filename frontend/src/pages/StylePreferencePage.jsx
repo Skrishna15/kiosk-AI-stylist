@@ -35,7 +35,7 @@ export default function StylePreferencePage({ onNext, initialValue }) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-neutral-900 via-neutral-800 to-neutral-900" data-testid="style-preference-page">
+    <div className="min-h-screen bg-white" data-testid="style-preference-page">
       <div className="container mx-auto px-8 py-16 max-w-4xl">
         {/* Header */}
         <motion.div 
@@ -44,15 +44,21 @@ export default function StylePreferencePage({ onNext, initialValue }) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
         >
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-neutral-600/30 bg-neutral-800/50 backdrop-blur-sm mb-4">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-yellow-300 bg-yellow-50 backdrop-blur-sm mb-4">
             <div className="w-2 h-2 rounded-full bg-gradient-to-r from-yellow-400 to-yellow-600"></div>
-            <span className="text-xs font-medium tracking-[0.2em] text-neutral-300 uppercase">Step 1 of 4</span>
+            <span className="text-xs font-medium tracking-[0.2em] text-yellow-700 uppercase">Step 1 of 4</span>
           </div>
           
-          <h1 className="text-5xl font-light text-white mb-4" style={{fontFamily: "'Playfair Display', serif"}}>
+          <h1 className="text-5xl font-light mb-4" style={{
+            fontFamily: "'Playfair Display', serif",
+            background: "linear-gradient(135deg, #d4af37 0%, #b8860b 50%, #daa520 100%)",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+            backgroundClip: "text"
+          }}>
             Your Style Preference
           </h1>
-          <p className="text-xl text-neutral-300 font-light">
+          <p className="text-xl text-gray-600 font-light">
             Choose the style that speaks to your personality
           </p>
         </motion.div>
