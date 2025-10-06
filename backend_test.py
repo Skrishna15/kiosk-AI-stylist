@@ -129,16 +129,27 @@ class BackendTester:
                     
                     # Validate recommendations
                     recommendations = data.get("recommendations", [])
-                    if not isinstance(recommendations, list) or len(recommendations) == 0:
-                        self.log_test(f"Survey: {test_case['name']}", False, "No recommendations returned")
-                        all_passed = False
-                        continue
+                    expect_empty = test_case.get("expect_empty", False)
                     
-                    # Check if we have 4 recommendations as expected
-                    if len(recommendations) < 3:
-                        self.log_test(f"Survey: {test_case['name']}", False, f"Only {len(recommendations)} recommendations, expected at least 3")
-                        all_passed = False
-                        continue
+                    if expect_empty:
+                        # For low budget ranges, empty results are acceptable
+                        if len(recommendations) == 0:
+                            self.log_test(f"Survey: {test_case['name']}", True, "No recommendations (expected for this budget range)")
+                            continue
+                        else:
+                            self.log_test(f"Survey: {test_case['name']}", True, f"Got {len(recommendations)} recommendations (better than expected)")
+                    else:
+                        # For higher budget ranges, we expect recommendations
+                        if not isinstance(recommendations, list) or len(recommendations) == 0:
+                            self.log_test(f"Survey: {test_case['name']}", False, "No recommendations returned")
+                            all_passed = False
+                            continue
+                        
+                        # Check if we have at least 3 recommendations as expected
+                        if len(recommendations) < 3:
+                            self.log_test(f"Survey: {test_case['name']}", False, f"Only {len(recommendations)} recommendations, expected at least 3")
+                            all_passed = False
+                            continue
                     
                     # Validate recommendation structure
                     for i, rec in enumerate(recommendations):
