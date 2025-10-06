@@ -121,6 +121,18 @@ backend:
         comment: "✅ COMPREHENSIVE BACKEND TESTING COMPLETED: All 3 key API endpoints working correctly. Health Check (GET /api/health) returns proper status. Survey Submission (POST /api/survey) successfully processes all 4 INR budget ranges with proper AI/rules-based vibe detection and product recommendations. Passport Retrieval (GET /api/passport/{session_id}) correctly returns saved session data. Budget filtering works accurately - Under ₹8,000 returns no products (expected, as cheapest product is ₹14,998), while ₹8,000–₹25,000, ₹25,000–₹65,000, and ₹65,000+ ranges return 4 relevant recommendations each. AI integration with OpenAI GPT-4o-mini is functional, providing personalized vibe explanations. Product database contains 346 items with proper INR price conversion (USD to INR rate: 83.0). Session management and data persistence working correctly. All APIs respond with proper JSON structure and 200 status codes."
 
 frontend:
+  - task: "AI Chat Widget Integration"
+    implemented: true
+    working: "NA"
+    file: "App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "AI Chat Widget restored to jewelry recommendation flow. ChatWidget component available throughout NewFlow with 'Ask Stylist' button, dialog functionality, chat input/response, and AI integration with fallback responses."
+
   - task: "New Multi-Step Survey Flow (7 Pages)"  
     implemented: true
     working: true
