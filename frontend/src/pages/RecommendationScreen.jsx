@@ -3,11 +3,24 @@ import { Button } from "@/components/ui/button";
 import { useEffect } from "react";
 
 export default function RecommendationScreen({ data, onViewDetails, onGetOnPhone, onOpenAIChat }){
+  
+  // Automatically open AI chat after showing recommendations for 3 seconds
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (onOpenAIChat) {
+        onOpenAIChat();
+      }
+    }, 3000); // 3 seconds delay
+
+    return () => clearTimeout(timer);
+  }, [onOpenAIChat]);
+
   return (
     <div className="kiosk-frame container py-10 space-y-6" data-testid="recommendation-screen-page">
       <div>
         <div className="text-sm tracking-widest text-neutral-500">Your Perfect Matches</div>
         <h2 className="card-title text-4xl mt-2">Tailored to your preferences</h2>
+        <div className="text-sm text-yellow-600 mt-2">AI Stylist will open automatically in a moment...</div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
