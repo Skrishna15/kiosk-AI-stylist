@@ -24,14 +24,28 @@ export default function AIJewelryStylistPage({ onContinue, onBack, selectedProdu
   const [loading, setLoading] = useState(false);
   const [showQuickQuestions, setShowQuickQuestions] = useState(true);
 
-  const quickQuestions = [
-    "Tell me more about the diamond ring",
-    "What's trending this season?",
-    "Help me choose between pieces", 
-    "Care instructions for jewelry",
-    "Sizing guide for rings",
-    "Custom design options"
-  ];
+  const getQuickQuestions = () => {
+    if (selectedProduct) {
+      return [
+        `Tell me more about ${selectedProduct.name}`,
+        "What occasions is this perfect for?",
+        "Care instructions for this piece",
+        "Does this come in other styles?", 
+        "What makes this special?",
+        "How should I style this?"
+      ];
+    }
+    return [
+      "Tell me more about the diamond ring",
+      "What's trending this season?",
+      "Help me choose between pieces", 
+      "Care instructions for jewelry",
+      "Sizing guide for rings",
+      "Custom design options"
+    ];
+  };
+
+  const quickQuestions = getQuickQuestions();
 
   const handleQuickQuestion = async (question) => {
     const userMsg = { role: 'user', content: question };
