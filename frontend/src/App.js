@@ -549,11 +549,11 @@ const Recommendation = () => {
   );
 };
 
-// New 8-Step Flow Component (Welcome + 4 Survey Pages + AI Chat + Recommendations + QR)
+// New 8-Step Flow Component (Welcome + 4 Survey Pages + Recommendations + AI Chat + QR)
 const NewFlow = () => {
   useIdleReset();
   const navigate = useNavigate();
-  const [currentStep, setCurrentStep] = useState(0); // 0: Welcome, 1: Style, 2: Occasion, 3: Budget, 4: Metal, 5: AI Chat, 6: Recommendations, 7: QR
+  const [currentStep, setCurrentStep] = useState(0); // 0: Welcome, 1: Style, 2: Occasion, 3: Budget, 4: Metal, 5: Recommendations, 6: AI Chat, 7: QR
   const [surveyData, setSurveyData] = useState({
     style: "",
     occasion: "",
