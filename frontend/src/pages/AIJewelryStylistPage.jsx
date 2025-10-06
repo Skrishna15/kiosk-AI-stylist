@@ -116,7 +116,7 @@ export default function AIJewelryStylistPage({ onContinue, onBack }) {
 
       {/* Chat Area */}
       <div className="container mx-auto max-w-4xl p-6">
-        <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
+        <div className="bg-white rounded-2xl shadow-lg border border-yellow-200 p-6 mb-6">
           {/* Messages */}
           <div className="space-y-4 mb-6 max-h-96 overflow-y-auto">
             {messages.map((message, index) => (
@@ -129,19 +129,19 @@ export default function AIJewelryStylistPage({ onContinue, onBack }) {
               >
                 <div className={`flex items-start gap-3 max-w-md ${message.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
                   {message.role === 'assistant' && (
-                    <div className="w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center flex-shrink-0">
+                    <div className="w-8 h-8 bg-gradient-to-r from-yellow-400 to-yellow-500 rounded-full flex items-center justify-center flex-shrink-0">
                       <span className="text-white text-sm">🤖</span>
                     </div>
                   )}
                   {message.role === 'user' && (
-                    <div className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center flex-shrink-0">
+                    <div className="w-8 h-8 bg-gradient-to-r from-gray-400 to-gray-500 rounded-full flex items-center justify-center flex-shrink-0">
                       <span className="text-white text-sm">👤</span>
                     </div>
                   )}
                   <div className={`px-4 py-3 rounded-2xl ${
                     message.role === 'user' 
-                      ? 'bg-orange-100 text-gray-800' 
-                      : 'bg-gray-100 text-gray-800'
+                      ? 'bg-gray-100 text-gray-800 border border-gray-200' 
+                      : 'bg-yellow-50 text-gray-800 border border-yellow-200'
                   }`}>
                     <p className="text-sm leading-relaxed">{message.content}</p>
                   </div>
@@ -151,14 +151,14 @@ export default function AIJewelryStylistPage({ onContinue, onBack }) {
             {loading && (
               <div className="flex justify-start">
                 <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center">
+                  <div className="w-8 h-8 bg-gradient-to-r from-yellow-400 to-yellow-500 rounded-full flex items-center justify-center">
                     <span className="text-white text-sm">🤖</span>
                   </div>
-                  <div className="bg-gray-100 px-4 py-3 rounded-2xl">
+                  <div className="bg-yellow-50 border border-yellow-200 px-4 py-3 rounded-2xl">
                     <div className="flex space-x-1">
-                      <div className="w-2 h-2 bg-purple-400 rounded-full animate-bounce"></div>
-                      <div className="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
-                      <div className="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
+                      <div className="w-2 h-2 bg-yellow-400 rounded-full animate-bounce"></div>
+                      <div className="w-2 h-2 bg-yellow-400 rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
+                      <div className="w-2 h-2 bg-yellow-400 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
                     </div>
                   </div>
                 </div>
