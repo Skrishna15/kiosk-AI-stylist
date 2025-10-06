@@ -59,5 +59,14 @@ body { background: var(--bg); color: var(--ink); font-family: Inter, -apple-syst
 .sticky-prompt-inner { max-width: 1080px; margin: 0 auto; }
 .sticky-prompt-card { margin: 10px 16px; border-radius: 16px; backdrop-filter: blur(12px); background: rgba(255,255,255,.75); border:1px solid rgba(0,0,0,.06); box-shadow: 0 8px 24px rgba(0,0,0,.06); }
 
+/* Ensure floating emergent badge does not overlap important UI */
+#emergent-made-with, .made-with-emergent {
+  bottom: 12px !important;
+  right: 12px !important;
+  z-index: 30 !important;
+}
+.fab-stylist { bottom: 110px; }
+[data-testid="passport-qr"] { z-index: 31; }
+
 /* Add bottom padding to pages that use sticky footer */
 .with-sticky-padding { padding-bottom: 90px; }
