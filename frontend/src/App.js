@@ -21,6 +21,7 @@ import StylePreferencePage from "@/pages/StylePreferencePage";
 import OccasionPage from "@/pages/OccasionPage";
 import BudgetRangePage from "@/pages/BudgetRangePage";
 import MetalTypePage from "@/pages/MetalTypePage";
+import AIJewelryStylistPage from "@/pages/AIJewelryStylistPage";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
