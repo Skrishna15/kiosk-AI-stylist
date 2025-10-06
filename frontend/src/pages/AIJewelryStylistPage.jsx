@@ -15,6 +15,7 @@ export default function AIJewelryStylistPage({ onContinue, onBack }) {
   ]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showQuickQuestions, setShowQuickQuestions] = useState(true);
 
   const quickQuestions = [
     "Tell me more about the diamond ring",
