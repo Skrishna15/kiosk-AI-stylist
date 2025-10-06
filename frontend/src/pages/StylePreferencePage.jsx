@@ -116,8 +116,8 @@ export default function StylePreferencePage({ onNext, initialValue }) {
             data-testid="style-next-button"
             className={`px-10 py-4 text-lg font-medium rounded-full transition-all duration-300 
               ${selected 
-                ? 'bg-yellow-400 hover:bg-yellow-500 text-black shadow-lg hover:shadow-xl' 
-                : 'bg-neutral-700 text-neutral-400 cursor-not-allowed'
+                ? 'bg-yellow-400 hover:bg-yellow-500 text-white shadow-lg hover:shadow-xl' 
+                : 'bg-gray-200 text-gray-400 cursor-not-allowed'
               }`}
           >
             Continue to Occasion
