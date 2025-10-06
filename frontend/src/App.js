@@ -10,6 +10,12 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Heart, ThumbsUp, Meh, HelpCircle, ThumbsDown } from "lucide-react";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 
+// Import new page components
+import WelcomeScreen from "@/pages/WelcomeScreen";
+import SurveyScreen from "@/pages/SurveyScreen";  
+import RecommendationScreen from "@/pages/RecommendationScreen";
+import QRCodeScreen from "@/pages/QRCodeScreen";
+
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 const USD_TO_INR = 83;
