@@ -191,13 +191,13 @@ export default function AIJewelryStylistPage({ onContinue, onBack }) {
               onChange={(e) => setInput(e.target.value)}
               onKeyPress={handleKeyPress}
               placeholder="Ask me anything about jewelry, styling, or these recommendations"
-              className="flex-1 px-4 py-3 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              className="flex-1 px-4 py-3 border border-yellow-200 rounded-full focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400"
               data-testid="chat-input"
             />
             <button
               onClick={handleSendMessage}
               disabled={!input.trim() || loading}
-              className="w-12 h-12 bg-purple-600 hover:bg-purple-700 disabled:bg-gray-300 text-white rounded-full flex items-center justify-center transition-colors"
+              className="w-12 h-12 bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 disabled:bg-gray-300 text-white rounded-full flex items-center justify-center transition-colors shadow-lg"
               data-testid="send-button"
             >
               <Send size={18} />
