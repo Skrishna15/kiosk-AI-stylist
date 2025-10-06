@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardFooter } from "@/components/ui/card"
 import QRCode from "qrcode";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Heart, ThumbsUp, Meh, HelpCircle, ThumbsDown } from "lucide-react";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -91,7 +92,7 @@ const AttractOverlay = ({ onStart }) => {
   );
 };
 
-// Parallax hook for chat card
+// Parallax hook for cards
 const useParallax = () => {
   const ref = useRef(null);
   const [offset, setOffset] = useState(0);
@@ -101,8 +102,8 @@ const useParallax = () => {
       const rect = ref.current.getBoundingClientRect();
       const viewH = window.innerHeight;
       const centerY = rect.top + rect.height/2;
-      const progress = (centerY - viewH/2) / viewH; // -1..1
-      const translate = Math.max(-20, Math.min(20, -progress * 30)); // cap to ±20px
+      const progress = (centerY - viewH/2) / viewH;
+      const translate = Math.max(-20, Math.min(20, -progress * 30));
       setOffset(translate);
     };
     onScroll();
@@ -178,7 +179,7 @@ const ChatWidget = () => {
   );
 };
 
-// Intent parser for AI chat → maps text to survey inputs (INR aware)
+// Intent parser (INR aware)
 const parseIntent = (text) => {
   const t = (text||"").toLowerCase();
   const has = (k) => t.includes(k);
@@ -196,32 +197,71 @@ const parseIntent = (text) => {
   return { occasion: caps(occ), style: caps(st), budget };
 };
 
-// Product quick view dialog
-const ProductDialog = ({ open, onOpenChange, product, onToggleWishlist, inWishlist }) => {
-  if (!product) return null;
+// Reusable chat card (supports fixed half-screen height)
+const ChatInline = ({ onNewRecommendation, fixedHeightVH }) => {
+  const { ref, offset } = useParallax();
+  const [input, setInput] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [messages, setMessages] = useState([
+    { role: 'assistant', content: 'Tell me the occasion, your style vibe, and budget. I\'ll curate top picks instantly.' }
+  ]);
+
+  const send = async () => {
+    if (!input.trim()) return;
+    const userMsg = { role: 'user', content: input };
+    setMessages(prev => [...prev, userMsg]);
+    setInput("");
+    setLoading(true);
+    try {
+      const intent = parseIntent(userMsg.content);
+      const { data } = await axios.post(`${API}/survey`, intent);
+      onNewRecommendation?.(data);
+      const reply = `Your vibe: ${data.vibe}. ${data.explanation}`;
+      setMessages(prev => [...prev, { role: 'assistant', content: reply }]);
+    } catch (e) {
+      const intent = parseIntent(userMsg.content);
+      const reply = `Your vibe: ${intent.style === 'Minimal' ? 'Minimal Modern' : intent.style === 'Glam' ? 'Hollywood Glam' : 'Everyday Chic'}. Tailored to your inputs.`;
+      setMessages(prev => [...prev, { role: 'assistant', content: reply }]);
+    } finally { setLoading(false); }
+  };
+
+  const cardStyle = fixedHeightVH ? { height: `${fixedHeightVH}vh` } : { transform: `translateY(${offset}px)` };
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent data-testid="product-dialog">
-        <DialogHeader>
-          <DialogTitle className="card-title text-2xl">{product.name}</DialogTitle>
-        </DialogHeader>
-        <div className="grid md:grid-cols-2 gap-4">
-          <img alt={product.name} src={product.image_url} className="w-full h-64 object-cover rounded-xl" data-testid="dialog-product-image" />
-          <div>
-            <div className="text-lg font-semibold">{nfINR.format(Math.round(product.price * USD_TO_INR))}</div>
-            {product.description && <div className="text-sm subcopy mt-2">{product.description}</div>}
-          </div>
+    <Card ref={ref} className="will-change-transform" style={cardStyle} data-testid="chat-inline">
+      <CardHeader>
+        <div className="flex items-center justify-between">
+          <div className="card-title text-2xl">AI Stylist</div>
+          <div className="text-xs subcopy">Chat to refine picks</div>
         </div>
-        <DialogFooter>
-          <Button className="button-pill" data-testid="dialog-toggle-wishlist" onClick={() => onToggleWishlist(product.id)}>
-            {inWishlist ? 'Remove from Wishlist' : 'Add to Wishlist'}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+      </CardHeader>
+      <CardContent className="h-full flex flex-col">
+        <div className="flex-1 overflow-y-auto space-y-3 pr-1" data-testid="chat-messages">
+          {messages.map((m, idx) => (
+            <div key={idx} className={`text-sm ${m.role==='assistant'?'text-neutral-800':'text-neutral-700'}`} data-testid={`chat-message-${m.role}-${idx}`}>
+              <div className={`inline-block rounded-2xl px-3 py-2 ${m.role==='assistant'?'bg-neutral-100':'bg-emerald-50 text-emerald-800'}`}>{m.content}</div>
+            </div>
+          ))}
+        </div>
+      </CardContent>
+      <CardFooter>
+        <div className="w-full flex gap-2">
+          <input
+            data-testid="chat-input"
+            className="flex-1 h-11 rounded-md border border-neutral-300 px-3 shadow-sm focus:outline-none focus:ring-2 focus:ring-neutral-800"
+            placeholder="e.g., Wedding, minimal style, budget ₹25,000–₹65,000"
+            value={input}
+            onChange={(e)=>setInput(e.target.value)}
+            onKeyDown={(e)=>{ if(e.key==='Enter'){ e.preventDefault(); send(); } }}
+          />
+          <Button data-testid="chat-send-button" className="button-pill" disabled={loading} onClick={send}>{loading? 'Thinking…':'Send'}</Button>
+        </div>
+      </CardFooter>
+    </Card>
   );
 };
 
+// Welcome
 const Welcome = () => {
   useIdleReset();
   const navigate = useNavigate();
@@ -248,7 +288,7 @@ const Welcome = () => {
               Personalized jewelry picks inspired by red carpet vibes. In under 60 seconds.
             </p>
             <div className="mt-8 flex gap-3">
-              <Button data-testid="start-survey-button" className="button-pill" onClick={() => navigate("/survey")}>Start</Button>
+              <Button data-testid="start-survey-button" className="button-pill" onClick={() => navigate("/stylist")}>Start</Button>
               <a className="link-underline self-center text-sm" href="#learn" data-testid="learn-more-link">Learn more</a>
             </div>
           </div>
@@ -259,11 +299,79 @@ const Welcome = () => {
           </div>
         </div>
       </section>
-      {showAttract && <AttractOverlay onStart={() => { setShowAttract(false); navigate('/survey'); }} />}
+      {showAttract && <AttractOverlay onStart={() => { setShowAttract(false); navigate('/stylist'); }} />}
       <ChatWidget />
     </div>
   );
 };
+
+// Stylist page: chat (half page) + auto-scrolling picks below with QR bottom-left after session
+const StylistPage = () => {
+  useIdleReset();
+  const [picks, setPicks] = useState([]);
+  const [embla, setEmbla] = useState(null);
+  const [sessionId, setSessionId] = useState(null);
+  const [qr, setQr] = useState("");
+  const { toggle, has } = useWishlist();
+
+  useEffect(()=>{ axios.get(`${API}/products`).then(r => setPicks((r.data||[]).slice(0,10))).catch(()=>{}); },[]);
+
+  useEffect(()=>{
+    if (!embla) return;
+    const id = setInterval(()=>{ try { embla.scrollNext(); } catch {} }, 3000);
+    return ()=> clearInterval(id);
+  }, [embla]);
+
+  const passportLink = useMemo(() => sessionId ? `${window.location.origin}/passport/${sessionId}` : "", [sessionId]);
+  useEffect(()=>{ if (passportLink) { QRCode.toDataURL(passportLink, { margin: 1, width: 160 }).then(setQr).catch(()=>{}); } }, [passportLink]);
+
+  return (
+    <div className="kiosk-frame section" data-testid="stylist-screen">
+      <div className="container max-w-5xl space-y-8">
+        <ChatInline fixedHeightVH={50} onNewRecommendation={(data)=> { setPicks(data.recommendations?.map(r=> r.product) || []); setSessionId(data.session_id); }} />
+
+        <div data-testid="stylist-picks-carousel">
+          <Carousel opts={{ align: "start", dragFree: true, loop: true }} setApi={setEmbla}>
+            <CarouselContent>
+              {picks.map((p, idx)=> (
+                <CarouselItem key={p.id} className="basis-[78%] sm:basis-[48%] lg:basis-[38%]">
+                  <Card data-testid={`stylist-pick-${idx}`} className="cursor-pointer">
+                    <img alt={p.name} src={p.image_url} className="w-full h-56 object-cover rounded-t-xl" />
+                    <CardContent>
+                      <div className="font-semibold flex items-center justify-between">
+                        <span>{p.name}</span>
+                        <button
+                          data-testid={`stylist-wishlist-toggle-${idx}`}
+                          className={`ml-3 text-xs px-2 py-1 rounded-full ${has(p.id)?'bg-emerald-100 text-emerald-800':'bg-neutral-100 text-neutral-700'}`}
+                          onClick={(e)=>{ e.stopPropagation(); toggle(p.id); }}
+                        >{has(p.id)? 'Saved' : 'Save'}</button>
+                      </div>
+                      <div className="text-sm subcopy">{nfINR.format(Math.round(p.price * USD_TO_INR))}</div>
+                    </CardContent>
+                  </Card>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious data-testid="stylist-prev" />
+            <CarouselNext data-testid="stylist-next" />
+          </Carousel>
+        </div>
+      </div>
+
+      {sessionId && qr && (
+        <div className="fixed left-6 bottom-6 z-40 flex items-center gap-3 bg-white/85 backdrop-blur-md border border-neutral-200 rounded-xl px-3 py-2 shadow" data-testid="floating-qr">
+          <img src={qr} alt="QR" className="w-[120px] h-[120px] rounded" />
+          <div className="text-xs subcopy">
+            <div data-testid="floating-qr-cta-copy">Your picks are saved in your Jewelry Passport. Scan to open on your phone.</div>
+            <div className="mt-1 break-all" data-testid="floating-qr-link">{passportLink}</div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// The rest of pages unchanged (Survey, Recommendation, Passport)
 
 const Survey = () => {
   useIdleReset();
@@ -355,68 +463,6 @@ const Survey = () => {
   );
 };
 
-// Inline chat card replacing moodboard on Recommendation page
-const ChatInline = ({ onNewRecommendation }) => {
-  const { ref, offset } = useParallax();
-  const [input, setInput] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [messages, setMessages] = useState([
-    { role: 'assistant', content: 'Tell me the occasion, your style vibe, and budget. I\'ll curate top picks instantly.' }
-  ]);
-
-  const send = async () => {
-    if (!input.trim()) return;
-    const userMsg = { role: 'user', content: input };
-    setMessages(prev => [...prev, userMsg]);
-    setInput("");
-    setLoading(true);
-    try {
-      const intent = parseIntent(userMsg.content);
-      const { data } = await axios.post(`${API}/survey`, intent);
-      onNewRecommendation?.(data);
-      const reply = `Your vibe: ${data.vibe}. ${data.explanation}`;
-      setMessages(prev => [...prev, { role: 'assistant', content: reply }]);
-    } catch (e) {
-      const intent = parseIntent(userMsg.content);
-      const reply = `Your vibe: ${intent.style === 'Minimal' ? 'Minimal Modern' : intent.style === 'Glam' ? 'Hollywood Glam' : 'Everyday Chic'}. Tailored to your inputs.`;
-      setMessages(prev => [...prev, { role: 'assistant', content: reply }]);
-    } finally { setLoading(false); }
-  };
-
-  return (
-    <Card ref={ref} className="will-change-transform" style={{transform:`translateY(${offset}px)`}} data-testid="chat-inline">
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <div className="card-title text-2xl">AI Stylist</div>
-          <div className="text-xs subcopy">Chat to refine picks</div>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <div className="max-h-[44vh] overflow-y-auto space-y-3 pr-1" data-testid="chat-messages">
-          {messages.map((m, idx) => (
-            <div key={idx} className={`text-sm ${m.role==='assistant'?'text-neutral-800':'text-neutral-700'}`} data-testid={`chat-message-${m.role}-${idx}`}>
-              <div className={`inline-block rounded-2xl px-3 py-2 ${m.role==='assistant'?'bg-neutral-100':'bg-emerald-50 text-emerald-800'}`}>{m.content}</div>
-            </div>
-          ))}
-        </div>
-      </CardContent>
-      <CardFooter>
-        <div className="w-full flex gap-2">
-          <input
-            data-testid="chat-input"
-            className="flex-1 h-11 rounded-md border border-neutral-300 px-3 shadow-sm focus:outline-none focus:ring-2 focus:ring-neutral-800"
-            placeholder="e.g., Wedding, minimal style, budget ₹25,000–₹65,000"
-            value={input}
-            onChange={(e)=>setInput(e.target.value)}
-            onKeyDown={(e)=>{ if(e.key==='Enter'){ e.preventDefault(); send(); } }}
-          />
-          <Button data-testid="chat-send-button" className="button-pill" disabled={loading} onClick={send}>{loading? 'Thinking…':'Send'}</Button>
-        </div>
-      </CardFooter>
-    </Card>
-  );
-};
-
 const Recommendation = () => {
   useIdleReset();
   const { toggle, has, ids } = useWishlist();
@@ -451,7 +497,7 @@ const Recommendation = () => {
     QRCode.toDataURL(passportLink, { margin: 1, width: 220 }).then(setQr).catch(()=>{});
   }, [passportLink, sessionId]);
 
-  const openDetail = (p) => { /* product details in dialog */ };
+  const openDetail = (p) => {};
 
   if (!data) return <div className="section">Loading…</div>;
 
@@ -516,7 +562,6 @@ const Recommendation = () => {
           </div>
         </div>
       </div>
-      {/* Optional ProductDialog wired later */}
     </div>
   );
 };
@@ -593,6 +638,7 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Welcome />} />
+          <Route path="/stylist" element={<StylistPage />} />
           <Route path="/survey" element={<Survey />} />
           <Route path="/recommendation/:sessionId" element={<Recommendation />} />
           <Route path="/passport/:sessionId" element={<Passport />} />
