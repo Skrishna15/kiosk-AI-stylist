@@ -562,6 +562,7 @@ const NewFlow = () => {
   });
   const [recommendations, setRecommendations] = useState(null);
   const [sessionId, setSessionId] = useState(null);
+  const [selectedProduct, setSelectedProduct] = useState(null);
 
   const handleStart = () => {
     setCurrentStep(1);
