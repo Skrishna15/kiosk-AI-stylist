@@ -225,7 +225,7 @@ const ChatInline = ({ onNewRecommendation, fixedHeightVH }) => {
     } finally { setLoading(false); }
   };
 
-  const cardStyle = fixedHeightVH ? { height: `${fixedHeightVH}vh` } : { transform: `translateY(${offset}px)` };
+  const cardStyle = fixedHeightVH ? { height: `50svh` } : { transform: `translateY(${offset}px)` };
 
   return (
     <Card ref={ref} className="will-change-transform" style={cardStyle} data-testid="chat-inline">
