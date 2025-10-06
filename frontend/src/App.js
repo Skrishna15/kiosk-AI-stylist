@@ -584,6 +584,75 @@ const Recommendation = () => {
   );
 };
 
+// New 4-Page Flow Component
+const NewFlow = () => {
+  useIdleReset();
+  const navigate = useNavigate();
+  const [currentStep, setCurrentStep] = useState(0); // 0: Welcome, 1: Survey, 2: Recommendation, 3: QR
+  const [surveyData, setSurveyData] = useState(null);
+  const [recommendations, setRecommendations] = useState(null);
+  const [sessionId, setSessionId] = useState(null);
+
+  const handleStart = () => {
+    setCurrentStep(1);
+  };
+
+  const handleSurveySubmit = async (data) => {
+    try {
+      setSurveyData(data);
+      const payload = {
+        occasion: data.occasion,
+        style: data.style, 
+        budget: data.budget,
+        vibe_preference: null
+      };
+      const response = await axios.post(`${API}/survey`, payload);
+      setRecommendations(response.data);
+      setSessionId(response.data.session_id);
+      setCurrentStep(2);
+    } catch (error) {
+      console.error('Survey submission failed:', error);
+    }
+  };
+
+  const handleGetOnPhone = () => {
+    setCurrentStep(3);
+  };
+
+  const handleRestart = () => {
+    setCurrentStep(0);
+    setSurveyData(null);
+    setRecommendations(null);
+    setSessionId(null);
+  };
+
+  const handleViewDetails = (product) => {
+    // TODO: Implement product details modal/page
+    console.log('View details for:', product);
+  };
+
+  return (
+    <div data-testid="new-flow-container">
+      {currentStep === 0 && <WelcomeScreen onStart={handleStart} />}
+      {currentStep === 1 && <SurveyScreen onSubmit={handleSurveySubmit} />}
+      {currentStep === 2 && recommendations && (
+        <RecommendationScreen 
+          data={recommendations.recommendations?.map(r => r.product) || []}
+          onViewDetails={handleViewDetails}
+          onGetOnPhone={handleGetOnPhone}
+        />
+      )}
+      {currentStep === 3 && sessionId && (
+        <QRCodeScreen 
+          sessionId={sessionId}
+          onRestart={handleRestart}
+        />
+      )}
+    </div>
+  );
+};
+
+// Passport
 const Passport = () => {
   useIdleReset();
   const { toggle, has } = useWishlist();
