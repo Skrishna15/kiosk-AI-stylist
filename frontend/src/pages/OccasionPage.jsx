@@ -117,7 +117,7 @@ export default function OccasionPage({ onNext, onBack, initialValue }) {
           <Button
             onClick={onBack}
             data-testid="occasion-back-button"
-            className="px-8 py-3 text-lg font-medium rounded-full bg-neutral-700 hover:bg-neutral-600 text-white border border-neutral-600"
+            className="px-8 py-3 text-lg font-medium rounded-full bg-gray-200 hover:bg-gray-300 text-gray-700 border border-gray-300"
           >
             Back
           </Button>
@@ -128,8 +128,8 @@ export default function OccasionPage({ onNext, onBack, initialValue }) {
             data-testid="occasion-next-button"
             className={`px-10 py-4 text-lg font-medium rounded-full transition-all duration-300 
               ${selected 
-                ? 'bg-yellow-400 hover:bg-yellow-500 text-black shadow-lg hover:shadow-xl' 
-                : 'bg-neutral-700 text-neutral-400 cursor-not-allowed'
+                ? 'bg-yellow-400 hover:bg-yellow-500 text-white shadow-lg hover:shadow-xl' 
+                : 'bg-gray-200 text-gray-400 cursor-not-allowed'
               }`}
           >
             Continue to Budget
