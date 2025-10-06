@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import QRCode from "qrcode";
 import { Button } from "@/components/ui/button";
+import { Heart, ThumbsUp, Meh, HelpCircle, ThumbsDown } from "lucide-react";
 
 export default function QRCodeScreen({ sessionId, onRestart }){
   const [qr, setQr] = useState("");
