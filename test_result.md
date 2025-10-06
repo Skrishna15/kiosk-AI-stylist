@@ -101,3 +101,74 @@
 #====================================================================================================
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
+
+user_problem_statement: "Add feedback UI below the QR code on QRCodeScreen.jsx, then wire up the navigation and data flow for the new Welcome, Survey, Recommendation, and QR Code pages."
+
+backend:
+  - task: "Survey API Integration"
+    implemented: true
+    working: "NA"  
+    file: "server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Existing API endpoints (/api/survey, /api/passport) are available and should work with new flow. Need to test with updated survey data."
+
+frontend:
+  - task: "New 4-Page Flow Navigation"  
+    implemented: true
+    working: "NA"
+    file: "App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Added NewFlow component with step management, survey submission, and navigation between WelcomeScreen → SurveyScreen → RecommendationScreen → QRCodeScreen"
+        
+  - task: "QR Screen Feedback UI"
+    implemented: true  
+    working: "NA"
+    file: "pages/QRCodeScreen.jsx"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Added feedback icons (Heart, ThumbsUp, Meh, HelpCircle, ThumbsDown) below QR code with state management"
+
+  - task: "Survey Budget INR Update"
+    implemented: true
+    working: "NA" 
+    file: "pages/SurveyScreen.jsx"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Updated budget options to use INR ranges matching backend (Under ₹8,000, ₹8,000–₹25,000, ₹25,000–₹65,000, ₹65,000+)"
+
+metadata:
+  created_by: "main_agent"
+  version: "1.0"
+  test_sequence: 1
+  run_ui: false
+
+test_plan:
+  current_focus:
+    - "Survey API Integration"
+    - "New 4-Page Flow Navigation"
+    - "QR Screen Feedback UI"
+  stuck_tasks: []
+  test_all: false
+  test_priority: "high_first"
+
+agent_communication:
+  - agent: "main"
+    message: "Implemented new 4-page flow with navigation, feedback UI, and INR budget updates. Ready for backend testing of survey API integration and then frontend flow testing. Added route /new-flow to test the complete experience."
