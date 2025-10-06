@@ -672,7 +672,6 @@ const NewFlow = () => {
           data={recommendations.recommendations?.map(r => r.product) || []}
           onViewDetails={handleViewDetails}
           onGetOnPhone={handleGetOnPhone}
-          onOpenAIChat={handleOpenAIChat}
         />
       )}
       {currentStep === 6 && (
