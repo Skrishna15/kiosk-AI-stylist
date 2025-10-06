@@ -33,7 +33,7 @@ export default function SurveyScreen({ onSubmit }){
 
       <Section title="Style preference" name="style" value={q.style} onChange={v=>setQ(s=>({...s, style:v}))} options={["Classic","Modern","Vintage","Bohemian"]} />
       <Section title="Occasion" name="occasion" value={q.occasion} onChange={v=>setQ(s=>({...s, occasion:v}))} options={["Everyday","Special Events","Work","Romantic"]} />
-      <Section title="Budget range" name="budget" value={q.budget} onChange={v=>setQ(s=>({...s, budget:v}))} options={["Under $500","$500-$1,500","$1,500-$5,000","Above $5,000"]} />
+      <Section title="Budget range" name="budget" value={q.budget} onChange={v=>setQ(s=>({...s, budget:v}))} options={["Under ₹8,000","₹8,000–₹25,000","₹25,000–₹65,000","₹65,000+"]} />
       <Section title="Metal type" name="metal" value={q.metal} onChange={v=>setQ(s=>({...s, metal:v}))} options={["Gold","Silver","Platinum","Rose Gold"]} />
 
       <div className="flex justify-end">
