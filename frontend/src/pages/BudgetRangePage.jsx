@@ -86,25 +86,25 @@ export default function BudgetRangePage({ onNext, onBack, initialValue }) {
                 data-testid={`budget-${budget.name.toLowerCase().replace(/[^\w]/g, '-')}`}
                 className={`w-full p-6 rounded-2xl border-2 transition-all duration-300 text-left group flex items-center
                   ${selected === budget.name 
-                    ? 'border-yellow-400 bg-yellow-400/10 shadow-lg shadow-yellow-400/20' 
-                    : 'border-neutral-600/30 bg-neutral-800/50 hover:border-neutral-500 hover:bg-neutral-700/50'
+                    ? 'border-yellow-400 bg-yellow-50 shadow-lg shadow-yellow-400/20' 
+                    : 'border-gray-200 bg-white hover:border-yellow-300 hover:bg-yellow-50/50'
                   }`}
               >
-                <div className={`w-14 h-14 rounded-full bg-gradient-to-br ${budget.gradient} flex items-center justify-center shadow-lg mr-6`}>
-                  <div className="text-xl">₹</div>
+                <div className={`w-14 h-14 rounded-full bg-gradient-to-br ${budget.gradient} flex items-center justify-center shadow-lg mr-6 border-2 border-yellow-200`}>
+                  <div className="text-xl font-semibold text-gray-700">₹</div>
                 </div>
                 
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-1">
-                    <h3 className="text-2xl font-medium text-white">{budget.name}</h3>
+                    <h3 className="text-2xl font-medium text-gray-800">{budget.name}</h3>
                     {budget.popular && (
-                      <span className="px-3 py-1 text-xs font-medium bg-yellow-400 text-black rounded-full">
+                      <span className="px-3 py-1 text-xs font-medium bg-yellow-400 text-white rounded-full">
                         Most Popular
                       </span>
                     )}
                   </div>
-                  <p className="text-neutral-400 text-sm mb-1">{budget.description}</p>
-                  <span className="text-yellow-400 text-sm font-medium">{budget.range}</span>
+                  <p className="text-gray-600 text-sm mb-1">{budget.description}</p>
+                  <span className="text-yellow-600 text-sm font-medium">{budget.range}</span>
                 </div>
                 
                 {selected === budget.name && (
