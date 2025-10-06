@@ -98,17 +98,17 @@ export default function AIJewelryStylistPage({ onContinue, onBack }) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-white" data-testid="ai-jewelry-stylist-page">
+    <div className="min-h-screen bg-white" data-testid="ai-jewelry-stylist-page">
       {/* Header */}
-      <div className="bg-gradient-to-r from-purple-600 to-purple-700 text-white p-6">
+      <div className="bg-gradient-to-r from-yellow-400 to-yellow-500 text-white p-6 border-b border-yellow-200">
         <div className="container mx-auto max-w-4xl">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center">
-              <span className="text-purple-600 font-bold text-lg">✨</span>
+              <span className="text-yellow-600 font-bold text-lg">✨</span>
             </div>
             <div>
               <h1 className="text-2xl font-bold">AI Jewelry Stylist</h1>
-              <p className="text-purple-100 text-sm">Get personalized advice about your jewelry selections</p>
+              <p className="text-yellow-100 text-sm">Get personalized advice about your jewelry selections</p>
             </div>
           </div>
         </div>
