@@ -197,64 +197,76 @@ const parseIntent = (text) => {
   return { occasion: caps(occ), style: caps(st), budget };
 };
 
-// Reusable chat card (supports fixed half-screen height)
+// Reusable chat card (supports fixed half-screen height) with multiple-choice flow
 const ChatInline = ({ onNewRecommendation, fixedHeightVH }) => {
   const { ref, offset } = useParallax();
-  const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
-  const [messages, setMessages] = useState([
-    { role: 'assistant', content: 'Tell me the occasion, your style vibe, and budget. I\'ll curate top picks instantly.' }
-  ]);
+  const [occasion, setOccasion] = useState("");
+  const [style, setStyle] = useState("");
+  const [budget, setBudget] = useState("");
 
-  const send = async () => {
-    if (!input.trim()) return;
-    const userMsg = { role: 'user', content: input };
-    setMessages(prev => [...prev, userMsg]);
-    setInput("");
+  const OCCASIONS = ["Wedding","Red Carpet","Everyday","Office","Party","Festival","Date Night"];
+  const STYLES = ["Minimal","Bold","Glam","Editorial","Vintage","Boho","Classic","Modern","Chic"];
+  const BUDGETS = ["Under ₹8,000","₹8,000–₹25,000","₹25,000–₹65,000","₹65,000+"];
+
+  const submitChoices = async () => {
+    if (!occasion || !style || !budget) return;
     setLoading(true);
     try {
-      const intent = parseIntent(userMsg.content);
-      const { data } = await axios.post(`${API}/survey`, intent);
+      const { data } = await axios.post(`${API}/survey`, { occasion, style, budget });
       onNewRecommendation?.(data);
-      const reply = `Your vibe: ${data.vibe}. ${data.explanation}`;
-      setMessages(prev => [...prev, { role: 'assistant', content: reply }]);
     } catch (e) {
-      const intent = parseIntent(userMsg.content);
-      const reply = `Your vibe: ${intent.style === 'Minimal' ? 'Minimal Modern' : intent.style === 'Glam' ? 'Hollywood Glam' : 'Everyday Chic'}. Tailored to your inputs.`;
-      setMessages(prev => [...prev, { role: 'assistant', content: reply }]);
+      // no-op; keeps UI responsive
     } finally { setLoading(false); }
   };
 
   const cardStyle = fixedHeightVH ? { height: `50svh` } : { transform: `translateY(${offset}px)` };
+
+  const Chip = ({ active, children, onClick, testid }) => (
+    <button
+      data-testid={testid}
+      onClick={onClick}
+      className={`px-3 py-2 rounded-full text-xs border transition-colors ${active? 'bg-emerald-100 text-emerald-800 border-emerald-300':'bg-neutral-50 text-neutral-800 border-neutral-200 hover:bg-neutral-100'}`}
+    >{children}</button>
+  );
 
   return (
     <Card ref={ref} className="will-change-transform" style={cardStyle} data-testid="chat-inline">
       <CardHeader>
         <div className="flex items-center justify-between">
           <div className="card-title text-2xl">AI Stylist</div>
-          <div className="text-xs subcopy">Chat to refine picks</div>
+          <div className="text-xs subcopy">Choose to refine picks</div>
         </div>
       </CardHeader>
-      <CardContent className="h-full flex flex-col">
-        <div className="flex-1 overflow-y-auto space-y-3 pr-1" data-testid="chat-messages">
-          {messages.map((m, idx) => (
-            <div key={idx} className={`text-sm ${m.role==='assistant'?'text-neutral-800':'text-neutral-700'}`} data-testid={`chat-message-${m.role}-${idx}`}>
-              <div className={`inline-block rounded-2xl px-3 py-2 ${m.role==='assistant'?'bg-neutral-100':'bg-emerald-50 text-emerald-800'}`}>{m.content}</div>
-            </div>
-          ))}
+      <CardContent className="h-full overflow-y-auto space-y-5 pr-1">
+        <div>
+          <div className="text-sm font-medium mb-2">Occasion</div>
+          <div className="flex flex-wrap gap-2" data-testid="choices-occasion">
+            {OCCASIONS.map(o => (
+              <Chip key={o} testid={`choice-occasion-${o}`} active={occasion===o} onClick={()=>setOccasion(o)}>{o}</Chip>
+            ))}
+          </div>
+        </div>
+        <div>
+          <div className="text-sm font-medium mb-2">Style</div>
+          <div className="flex flex-wrap gap-2" data-testid="choices-style">
+            {STYLES.map(s => (
+              <Chip key={s} testid={`choice-style-${s}`} active={style===s} onClick={()=>setStyle(s)}>{s}</Chip>
+            ))}
+          </div>
+        </div>
+        <div>
+          <div className="text-sm font-medium mb-2">Budget</div>
+          <div className="flex flex-wrap gap-2" data-testid="choices-budget">
+            {BUDGETS.map(b => (
+              <Chip key={b} testid={`choice-budget-${b}`} active={budget===b} onClick={()=>setBudget(b)}>{b}</Chip>
+            ))}
+          </div>
         </div>
       </CardContent>
       <CardFooter>
-        <div className="w-full flex gap-2">
-          <input
-            data-testid="chat-input"
-            className="flex-1 h-11 rounded-md border border-neutral-300 px-3 shadow-sm focus:outline-none focus:ring-2 focus:ring-neutral-800"
-            placeholder="e.g., Wedding, minimal style, budget ₹25,000–₹65,000"
-            value={input}
-            onChange={(e)=>setInput(e.target.value)}
-            onKeyDown={(e)=>{ if(e.key==='Enter'){ e.preventDefault(); send(); } }}
-          />
-          <Button data-testid="chat-send-button" className="button-pill" disabled={loading} onClick={send}>{loading? 'Thinking…':'Send'}</Button>
+        <div className="w-full flex justify-end">
+          <Button data-testid="show-picks-button" className="button-pill" disabled={loading || !occasion || !style || !budget} onClick={submitChoices}>{loading? 'Curating…':'Show Picks'}</Button>
         </div>
       </CardFooter>
     </Card>
