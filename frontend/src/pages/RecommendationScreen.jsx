@@ -1,6 +1,8 @@
 import { Button } from "@/components/ui/button";
 
-export default function RecommendationScreen({ data, onViewDetails, onGetOnPhone }){
+import { useEffect } from "react";
+
+export default function RecommendationScreen({ data, onViewDetails, onGetOnPhone, onOpenAIChat }){
   return (
     <div className="kiosk-frame container py-10 space-y-6" data-testid="recommendation-screen-page">
       <div>
