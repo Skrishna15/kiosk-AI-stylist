@@ -168,13 +168,13 @@ export default function AIJewelryStylistPage({ onContinue, onBack }) {
 
           {/* Quick Questions */}
           <div className="mb-6">
-            <p className="text-purple-600 font-medium mb-3 text-center">Or choose a quick question:</p>
+            <p className="text-yellow-600 font-medium mb-3 text-center">Or choose a quick question:</p>
             <div className="grid grid-cols-2 gap-3">
               {quickQuestions.map((question, index) => (
                 <button
                   key={index}
                   onClick={() => handleQuickQuestion(question)}
-                  className="p-3 text-sm bg-orange-100 hover:bg-orange-200 text-gray-800 rounded-lg border border-orange-200 transition-colors"
+                  className="p-3 text-sm bg-yellow-50 hover:bg-yellow-100 text-gray-800 rounded-lg border border-yellow-200 hover:border-yellow-300 transition-colors"
                   data-testid={`quick-question-${index}`}
                 >
                   {question}
