@@ -30,6 +30,7 @@ export default function AIJewelryStylistPage({ onContinue, onBack }) {
     const userMsg = { role: 'user', content: question };
     setMessages(prev => [...prev, userMsg]);
     setLoading(true);
+    setShowQuickQuestions(false); // Hide quick questions after selection
     
     try {
       // Mock AI response for quick questions
