@@ -16,8 +16,16 @@ export default function RecommendationScreen({ data, onViewDetails, onGetOnPhone
               <div className="font-semibold">{p.name}</div>
               <div className="text-sm subcopy">{p.description || 'Beautifully crafted piece for your look.'}</div>
               <div className="text-sm mt-2">₹{Math.round(p.price*83).toLocaleString('en-IN')}</div>
-              <div className="mt-3">
-                <Button onClick={()=> onViewDetails(p)} data-testid={`rec-view-${idx}`} className="button-pill">View Details</Button>
+              <div className="mt-3 space-y-2">
+                <Button onClick={()=> onViewDetails(p)} data-testid={`rec-view-${idx}`} className="button-pill w-full">View Details</Button>
+                <Button 
+                  onClick={()=> onViewDetails(p)} 
+                  data-testid={`rec-chat-${idx}`} 
+                  className="w-full px-4 py-2 text-sm bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-white rounded-full font-medium transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2"
+                >
+                  <span className="text-lg">💬</span>
+                  Chat with AI Stylist
+                </Button>
               </div>
             </div>
           </div>
