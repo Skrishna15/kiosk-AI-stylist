@@ -634,7 +634,7 @@ const NewFlow = () => {
 
   const handleViewDetails = (product) => {
     setSelectedProduct(product);
-    setCurrentStep(5); // Navigate to AI chat with product context
+    setCurrentStep(6); // Navigate to AI chat with product context
   };
 
   return (
