@@ -285,50 +285,7 @@ const ChatInline = ({ onNewRecommendation, fixedHeightVH }) => {
   );
 };
 
-// Welcome
-const Welcome = () => {
-  useIdleReset();
-  const navigate = useNavigate();
-  const [showAttract, setShowAttract] = useState(false);
-  useEffect(() => { axios.get(`${API}/health`).catch(() => {}); }, []);
-  useEffect(()=>{
-    const show = () => setShowAttract(true);
-    const hide = () => setShowAttract(false);
-    const idleTimer = setTimeout(show, 20000);
-    const onAny = () => { clearTimeout(idleTimer); hide(); };
-    const events = ["click","mousemove","keydown","touchstart","scroll"];
-    events.forEach(e => window.addEventListener(e, onAny));
-    return ()=> { clearTimeout(idleTimer); events.forEach(e => window.removeEventListener(e, onAny)); };
-  }, []);
-  return (
-    <div className="kiosk-frame kiosk-container ej-gradient-accent" data-testid="welcome-screen">
-      <section className="hero section">
-        <div className="container grid md:grid-cols-2 gap-10 items-center">
-          <div>
-            <h1 className="hero-title text-5xl md:text-6xl leading-tight" data-testid="welcome-title">
-              Meet Your Celebrity Stylist
-            </h1>
-            <p className="subcopy mt-4 text-lg" data-testid="welcome-subcopy">
-              Personalized jewelry picks inspired by red carpet vibes. In under 60 seconds.
-            </p>
-            <div className="mt-8 flex gap-3">
-              <Button data-testid="start-survey-button" className="button-pill" onClick={() => navigate("/stylist")}>Start</Button>
-              <Button data-testid="new-flow-button" className="button-pill bg-emerald-600 hover:bg-emerald-700" onClick={() => navigate("/new-flow")}>New Experience</Button>
-              <a className="link-underline self-center text-sm" href="#learn" data-testid="learn-more-link">Learn more</a>
-            </div>
-          </div>
-          <div className="hidden md:block">
-            <div className="rounded-2xl overflow-hidden shadow-xl border border-neutral-200">
-              <img alt="Moodboard" src={VIBE_IMAGES["Hollywood Glam"]} className="w-full h-[520px] object-cover" data-testid="welcome-hero-image" />
-            </div>
-          </div>
-        </div>
-      </section>
-      {showAttract && <AttractOverlay onStart={() => { setShowAttract(false); navigate('/stylist'); }} />}
-      <ChatWidget />
-    </div>
-  );
-};
+// Old Welcome component removed - now using NewFlow as the main experience
 
 // Stylist page: chat (half page) + auto-scrolling picks below with QR bottom-left after session
 const StylistPage = () => {
