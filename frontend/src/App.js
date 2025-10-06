@@ -671,18 +671,19 @@ const NewFlow = () => {
           initialValue={surveyData.metal}
         />
       )}
-      {currentStep === 5 && (
-        <AIJewelryStylistPage 
-          onContinue={handleAIChatContinue}
-          onBack={() => selectedProduct ? setCurrentStep(6) : setCurrentStep(4)}
-          selectedProduct={selectedProduct}
-        />
-      )}
-      {currentStep === 6 && recommendations && (
+      {currentStep === 5 && recommendations && (
         <RecommendationScreen 
           data={recommendations.recommendations?.map(r => r.product) || []}
           onViewDetails={handleViewDetails}
           onGetOnPhone={handleGetOnPhone}
+          onOpenAIChat={handleOpenAIChat}
+        />
+      )}
+      {currentStep === 6 && (
+        <AIJewelryStylistPage 
+          onContinue={handleAIChatContinue}
+          onBack={() => selectedProduct ? setCurrentStep(5) : setCurrentStep(4)}
+          selectedProduct={selectedProduct}
         />
       )}
       {currentStep === 7 && sessionId && (
