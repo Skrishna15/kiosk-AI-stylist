@@ -673,6 +673,8 @@ const NewFlow = () => {
           onRestart={handleRestart}
         />
       )}
+      {/* AI Chat Widget - Available throughout the entire flow */}
+      <ChatWidget />
     </div>
   );
 };
