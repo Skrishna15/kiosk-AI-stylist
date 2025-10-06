@@ -591,12 +591,17 @@ const Recommendation = () => {
   );
 };
 
-// New 4-Page Flow Component
+// New 6-Step Flow Component (Welcome + 4 Survey Pages + Recommendations + QR)
 const NewFlow = () => {
   useIdleReset();
   const navigate = useNavigate();
-  const [currentStep, setCurrentStep] = useState(0); // 0: Welcome, 1: Survey, 2: Recommendation, 3: QR
-  const [surveyData, setSurveyData] = useState(null);
+  const [currentStep, setCurrentStep] = useState(0); // 0: Welcome, 1: Style, 2: Occasion, 3: Budget, 4: Metal, 5: Recommendations, 6: QR
+  const [surveyData, setSurveyData] = useState({
+    style: "",
+    occasion: "",
+    budget: "",
+    metal: ""
+  });
   const [recommendations, setRecommendations] = useState(null);
   const [sessionId, setSessionId] = useState(null);
 
@@ -604,31 +609,61 @@ const NewFlow = () => {
     setCurrentStep(1);
   };
 
-  const handleSurveySubmit = async (data) => {
+  const handleStyleNext = (style) => {
+    setSurveyData(prev => ({ ...prev, style }));
+    setCurrentStep(2);
+  };
+
+  const handleOccasionNext = (occasion) => {
+    setSurveyData(prev => ({ ...prev, occasion }));
+    setCurrentStep(3);
+  };
+
+  const handleOccasionBack = () => {
+    setCurrentStep(1);
+  };
+
+  const handleBudgetNext = (budget) => {
+    setSurveyData(prev => ({ ...prev, budget }));
+    setCurrentStep(4);
+  };
+
+  const handleBudgetBack = () => {
+    setCurrentStep(2);
+  };
+
+  const handleMetalNext = async (metal) => {
+    const finalData = { ...surveyData, metal };
+    setSurveyData(finalData);
+    
     try {
-      setSurveyData(data);
+      // Submit complete survey data to backend
       const payload = {
-        occasion: data.occasion,
-        style: data.style, 
-        budget: data.budget,
-        vibe_preference: null
+        occasion: finalData.occasion,
+        style: finalData.style, 
+        budget: finalData.budget,
+        vibe_preference: null // Can be enhanced later
       };
       const response = await axios.post(`${API}/survey`, payload);
       setRecommendations(response.data);
       setSessionId(response.data.session_id);
-      setCurrentStep(2);
+      setCurrentStep(5);
     } catch (error) {
       console.error('Survey submission failed:', error);
     }
   };
 
-  const handleGetOnPhone = () => {
+  const handleMetalBack = () => {
     setCurrentStep(3);
+  };
+
+  const handleGetOnPhone = () => {
+    setCurrentStep(6);
   };
 
   const handleRestart = () => {
     setCurrentStep(0);
-    setSurveyData(null);
+    setSurveyData({ style: "", occasion: "", budget: "", metal: "" });
     setRecommendations(null);
     setSessionId(null);
   };
@@ -641,15 +676,41 @@ const NewFlow = () => {
   return (
     <div data-testid="new-flow-container">
       {currentStep === 0 && <WelcomeScreen onStart={handleStart} />}
-      {currentStep === 1 && <SurveyScreen onSubmit={handleSurveySubmit} />}
-      {currentStep === 2 && recommendations && (
+      {currentStep === 1 && (
+        <StylePreferencePage 
+          onNext={handleStyleNext}
+          initialValue={surveyData.style}
+        />
+      )}
+      {currentStep === 2 && (
+        <OccasionPage 
+          onNext={handleOccasionNext}
+          onBack={handleOccasionBack}
+          initialValue={surveyData.occasion}
+        />
+      )}
+      {currentStep === 3 && (
+        <BudgetRangePage 
+          onNext={handleBudgetNext}
+          onBack={handleBudgetBack}
+          initialValue={surveyData.budget}
+        />
+      )}
+      {currentStep === 4 && (
+        <MetalTypePage 
+          onNext={handleMetalNext}
+          onBack={handleMetalBack}
+          initialValue={surveyData.metal}
+        />
+      )}
+      {currentStep === 5 && recommendations && (
         <RecommendationScreen 
           data={recommendations.recommendations?.map(r => r.product) || []}
           onViewDetails={handleViewDetails}
           onGetOnPhone={handleGetOnPhone}
         />
       )}
-      {currentStep === 3 && sessionId && (
+      {currentStep === 6 && sessionId && (
         <QRCodeScreen 
           sessionId={sessionId}
           onRestart={handleRestart}
