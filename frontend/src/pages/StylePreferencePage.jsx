@@ -86,8 +86,8 @@ export default function StylePreferencePage({ onNext, initialValue }) {
                   <div className="w-8 h-8 rounded-full bg-white/80"></div>
                 </div>
                 
-                <h3 className="text-2xl font-medium text-white mb-2">{style.name}</h3>
-                <p className="text-neutral-400 leading-relaxed">{style.description}</p>
+                <h3 className="text-2xl font-medium text-gray-800 mb-2">{style.name}</h3>
+                <p className="text-gray-600 leading-relaxed">{style.description}</p>
                 
                 {selected === style.name && (
                   <motion.div
