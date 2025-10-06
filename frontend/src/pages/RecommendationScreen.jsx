@@ -17,7 +17,13 @@ export default function RecommendationScreen({ data, onViewDetails, onGetOnPhone
               <div className="text-sm subcopy">{p.description || 'Beautifully crafted piece for your look.'}</div>
               <div className="text-sm mt-2">₹{Math.round(p.price*83).toLocaleString('en-IN')}</div>
               <div className="mt-3 space-y-2">
-                <Button onClick={()=> onViewDetails(p)} data-testid={`rec-view-${idx}`} className="button-pill w-full">View Details</Button>
+                <Button 
+                  onClick={()=> onViewDetails(p)} 
+                  data-testid={`rec-view-${idx}`} 
+                  className="w-full px-4 py-2 text-sm bg-white hover:bg-gray-50 text-gray-800 rounded-full font-medium transition-all border border-gray-200 hover:border-gray-300 shadow-sm hover:shadow-md"
+                >
+                  View Details
+                </Button>
                 <Button 
                   onClick={()=> onViewDetails(p)} 
                   data-testid={`rec-chat-${idx}`} 
