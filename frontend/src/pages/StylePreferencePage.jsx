@@ -78,8 +78,8 @@ export default function StylePreferencePage({ onNext, initialValue }) {
                 data-testid={`style-${style.name.toLowerCase()}`}
                 className={`w-full p-8 rounded-2xl border-2 transition-all duration-300 text-left group
                   ${selected === style.name 
-                    ? 'border-yellow-400 bg-yellow-400/10 shadow-lg shadow-yellow-400/20' 
-                    : 'border-neutral-600/30 bg-neutral-800/50 hover:border-neutral-500 hover:bg-neutral-700/50'
+                    ? 'border-yellow-400 bg-yellow-50 shadow-lg shadow-yellow-400/20' 
+                    : 'border-gray-200 bg-white hover:border-yellow-300 hover:bg-yellow-50/50'
                   }`}
               >
                 <div className={`w-16 h-16 rounded-full bg-gradient-to-br ${style.gradient} mb-4 flex items-center justify-center shadow-lg`}>
