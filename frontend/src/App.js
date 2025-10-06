@@ -620,10 +620,6 @@ const NewFlow = () => {
     setCurrentStep(7); // Go to QR
   };
 
-  const handleOpenAIChat = () => {
-    setCurrentStep(6); // Go to AI Chat
-  };
-
   const handleGetOnPhone = () => {
     setCurrentStep(7); // Go to QR
   };
