@@ -4,52 +4,51 @@ import { Button } from "@/components/ui/button";
 export default function WelcomeScreen({ onStart }){
   return (
     <div 
-      className="relative min-h-screen w-full overflow-hidden" 
-      style={{background: "linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 25%, #2a2a2a 50%, #1a1a1a 75%, #0a0a0a 100%)"}} 
+      className="relative min-h-screen w-full overflow-hidden bg-white" 
       data-testid="welcome-screen-page"
     >
-      {/* Luxury background elements */}
+      {/* Elegant background elements */}
       <motion.div 
-        className="absolute top-20 left-10 w-96 h-96 rounded-full opacity-10"
+        className="absolute top-20 left-10 w-96 h-96 rounded-full opacity-15"
         style={{background: "radial-gradient(circle, #d4af37 0%, transparent 70%)"}}
         animate={{ 
           scale: [1, 1.1, 1],
-          opacity: [0.1, 0.15, 0.1]
+          opacity: [0.15, 0.25, 0.15]
         }} 
         transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }} 
       />
       
       <motion.div 
-        className="absolute bottom-32 right-16 w-72 h-72 rounded-full opacity-8"
-        style={{background: "radial-gradient(circle, #c0c0c0 0%, transparent 60%)"}}
+        className="absolute bottom-32 right-16 w-72 h-72 rounded-full opacity-10"
+        style={{background: "radial-gradient(circle, #d4af37 0%, transparent 60%)"}}
         animate={{ 
           scale: [1, 1.05, 1],
-          opacity: [0.08, 0.12, 0.08]
+          opacity: [0.10, 0.20, 0.10]
         }} 
         transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }} 
       />
 
       {/* Premium jewelry showcase */}
       <div className="absolute top-0 left-0 w-full h-full">
-        <div className="absolute top-16 right-12 w-96 h-[500px] rounded-3xl overflow-hidden shadow-2xl border border-neutral-700/30">
+        <div className="absolute top-16 right-12 w-96 h-[500px] rounded-3xl overflow-hidden shadow-2xl border border-gold-200">
           <div className="relative h-full">
             <img 
               alt="Luxury pearl necklace" 
               src="https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Nzd8MHwxfHNlYXJjaHwxfHxsdXh1cnklMjBqZXdlbHJ5fGVufDB8fHx8MTc1OTc1NzU1Mnww&ixlib=rb-4.1.0&q=85" 
               className="w-full h-full object-cover" 
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent"></div>
+            <div className="absolute inset-0 bg-gradient-to-t from-white/10 via-transparent to-transparent"></div>
           </div>
         </div>
         
         {/* Secondary jewelry accent */}
-        <div className="absolute bottom-20 left-8 w-72 h-72 rounded-2xl overflow-hidden shadow-xl border border-neutral-600/20 opacity-75">
+        <div className="absolute bottom-20 left-8 w-72 h-72 rounded-2xl overflow-hidden shadow-xl border border-yellow-200 opacity-90">
           <img 
             alt="Blue gemstone ring" 
             src="https://images.unsplash.com/photo-1606623546924-a4f3ae5ea3e8?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Nzd8MHwxfHNlYXJjaHwzfHxsdXh1cnklMjBqZXdlbHJ5fGVufDB8fHx8MTc1OTc1NzU1Mnww&ixlib=rb-4.1.0&q=85" 
             className="w-full h-full object-cover" 
           />
-          <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-black/30"></div>
+          <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-white/20"></div>
         </div>
       </div>
 
@@ -63,18 +62,18 @@ export default function WelcomeScreen({ onStart }){
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 0.5 }}
           >
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-neutral-600/30 bg-neutral-900/20 backdrop-blur-sm">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-yellow-400/30 bg-yellow-50/50 backdrop-blur-sm">
               <div className="w-2 h-2 rounded-full bg-gradient-to-r from-yellow-400 to-yellow-600"></div>
-              <span className="text-xs font-medium tracking-[0.2em] text-neutral-300 uppercase">Welcome to</span>
+              <span className="text-xs font-medium tracking-[0.2em] text-yellow-700 uppercase">Welcome to</span>
             </div>
           </motion.div>
           
           {/* Brand name with luxury typography */}
           <motion.h1 
-            className="text-8xl md:text-9xl font-light text-white mb-6 tracking-tight"
+            className="text-8xl md:text-9xl font-light mb-6 tracking-tight"
             style={{
               fontFamily: "'Playfair Display', serif",
-              background: "linear-gradient(135deg, #ffffff 0%, #f5f5f5 50%, #d4af37 100%)",
+              background: "linear-gradient(135deg, #d4af37 0%, #b8860b 50%, #daa520 100%)",
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
               backgroundClip: "text"
@@ -88,7 +87,7 @@ export default function WelcomeScreen({ onStart }){
           
           {/* Luxury tagline */}
           <motion.p 
-            className="text-2xl text-neutral-200 mb-4 font-light tracking-wide"
+            className="text-2xl text-gray-700 mb-4 font-light tracking-wide"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 1.2 }}
@@ -97,7 +96,7 @@ export default function WelcomeScreen({ onStart }){
           </motion.p>
           
           <motion.p 
-            className="text-lg text-neutral-400 mb-12 max-w-lg mx-auto font-light leading-relaxed"
+            className="text-lg text-gray-600 mb-12 max-w-lg mx-auto font-light leading-relaxed"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 1.4 }}
@@ -115,23 +114,23 @@ export default function WelcomeScreen({ onStart }){
             <button 
               data-testid="start-journey-button"
               onClick={onStart}
-              className="group relative px-10 py-4 bg-gradient-to-r from-neutral-800 via-neutral-900 to-black text-white font-medium tracking-wide border border-neutral-600/30 rounded-full hover:shadow-2xl hover:shadow-yellow-400/20 transition-all duration-500 overflow-hidden"
+              className="group relative px-10 py-4 bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 text-white font-medium tracking-wide border border-yellow-300 rounded-full hover:shadow-2xl hover:shadow-yellow-400/30 transition-all duration-500 overflow-hidden"
             >
-              <span className="relative z-10 flex items-center gap-3 text-lg">
+              <span className="relative z-10 flex items-center gap-3 text-lg font-semibold">
                 Start Your Journey
                 <motion.div
-                  className="w-1 h-1 rounded-full bg-yellow-400"
+                  className="w-1 h-1 rounded-full bg-white"
                   animate={{ scale: [1, 1.5, 1] }}
                   transition={{ duration: 2, repeat: Infinity }}
                 />
               </span>
-              <div className="absolute inset-0 bg-gradient-to-r from-yellow-400/0 via-yellow-400/5 to-yellow-400/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
             </button>
           </motion.div>
           
           {/* Refined instruction */}
           <motion.p 
-            className="text-sm text-neutral-500 font-light tracking-widest uppercase"
+            className="text-sm text-gray-500 font-light tracking-widest uppercase"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 1, delay: 2 }}
@@ -143,9 +142,9 @@ export default function WelcomeScreen({ onStart }){
 
       {/* Luxury brand watermark */}
       <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2">
-        <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-black/20 backdrop-blur-sm border border-neutral-700/20">
+        <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-yellow-50/80 backdrop-blur-sm border border-yellow-200">
           <div className="w-2 h-2 rounded-full bg-gradient-to-r from-yellow-400 to-yellow-600"></div>
-          <span className="text-xs text-neutral-400 tracking-widest font-light">LUXURY JEWELRY EXPERIENCE</span>
+          <span className="text-xs text-yellow-700 tracking-widest font-medium">LUXURY JEWELRY EXPERIENCE</span>
         </div>
       </div>
     </div>
