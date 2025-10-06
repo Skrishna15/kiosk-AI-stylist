@@ -248,7 +248,7 @@ const Welcome = () => {
               Personalized jewelry picks inspired by red carpet vibes. In under 60 seconds.
             </p>
             <div className="mt-8 flex gap-3">
-              <Button data-testid="start-survey-button" className="button-pill" onClick={() => navigate("/stylist")}>Start</Button>
+              <Button data-testid="start-survey-button" className="button-pill" onClick={() => navigate("/survey")}>Start</Button>
               <a className="link-underline self-center text-sm" href="#learn" data-testid="learn-more-link">Learn more</a>
             </div>
           </div>
