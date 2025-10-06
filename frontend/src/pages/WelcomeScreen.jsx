@@ -108,7 +108,7 @@ export default function WelcomeScreen({ onStart }){
           
           {/* Refined instruction */}
           <motion.p 
-            className="text-sm text-gray-500 font-light tracking-widest uppercase"
+            className="text-base text-gray-700 font-medium tracking-wide"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 1, delay: 2 }}
