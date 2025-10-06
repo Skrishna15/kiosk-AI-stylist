@@ -167,8 +167,8 @@ class BackendTester:
                             break
                     
                     if all_passed:
-                        # Store session_id for passport test
-                        if not self.session_id:
+                        # Store session_id for passport test (use first non-empty result)
+                        if not self.session_id and len(recommendations) > 0:
                             self.session_id = data["session_id"]
                         
                         self.log_test(
