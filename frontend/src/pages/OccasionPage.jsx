@@ -82,16 +82,16 @@ export default function OccasionPage({ onNext, onBack, initialValue }) {
                 data-testid={`occasion-${occasion.name.toLowerCase().replace(' ', '-')}`}
                 className={`w-full p-8 rounded-2xl border-2 transition-all duration-300 text-left group
                   ${selected === occasion.name 
-                    ? 'border-yellow-400 bg-yellow-400/10 shadow-lg shadow-yellow-400/20' 
-                    : 'border-neutral-600/30 bg-neutral-800/50 hover:border-neutral-500 hover:bg-neutral-700/50'
+                    ? 'border-yellow-400 bg-yellow-50 shadow-lg shadow-yellow-400/20' 
+                    : 'border-gray-200 bg-white hover:border-yellow-300 hover:bg-yellow-50/50'
                   }`}
               >
-                <div className={`w-16 h-16 rounded-full bg-gradient-to-br ${occasion.gradient} mb-4 flex items-center justify-center shadow-lg text-2xl`}>
+                <div className={`w-16 h-16 rounded-full bg-gradient-to-br ${occasion.gradient} mb-4 flex items-center justify-center shadow-lg text-2xl border-2 border-yellow-200`}>
                   {occasion.icon}
                 </div>
                 
-                <h3 className="text-2xl font-medium text-white mb-2">{occasion.name}</h3>
-                <p className="text-neutral-400 leading-relaxed">{occasion.description}</p>
+                <h3 className="text-2xl font-medium text-gray-800 mb-2">{occasion.name}</h3>
+                <p className="text-gray-600 leading-relaxed">{occasion.description}</p>
                 
                 {selected === occasion.name && (
                   <motion.div
