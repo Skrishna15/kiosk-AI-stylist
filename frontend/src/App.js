@@ -606,7 +606,7 @@ const NewFlow = () => {
       const response = await axios.post(`${API}/survey`, payload);
       setRecommendations(response.data);
       setSessionId(response.data.session_id);
-      setCurrentStep(5); // Go to AI Chat next
+      setCurrentStep(5); // Go to Recommendations next
     } catch (error) {
       console.error('Survey submission failed:', error);
     }
