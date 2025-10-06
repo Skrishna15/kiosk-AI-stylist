@@ -28,29 +28,7 @@ export default function WelcomeScreen({ onStart }){
         transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }} 
       />
 
-      {/* Premium jewelry showcase */}
-      <div className="absolute top-0 left-0 w-full h-full">
-        <div className="absolute top-16 right-12 w-96 h-[500px] rounded-3xl overflow-hidden shadow-2xl border border-gold-200">
-          <div className="relative h-full">
-            <img 
-              alt="Luxury pearl necklace" 
-              src="https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Nzd8MHwxfHNlYXJjaHwxfHxsdXh1cnklMjBqZXdlbHJ5fGVufDB8fHx8MTc1OTc1NzU1Mnww&ixlib=rb-4.1.0&q=85" 
-              className="w-full h-full object-cover" 
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-white/10 via-transparent to-transparent"></div>
-          </div>
-        </div>
-        
-        {/* Secondary jewelry accent */}
-        <div className="absolute bottom-20 left-8 w-72 h-72 rounded-2xl overflow-hidden shadow-xl border border-yellow-200 opacity-90">
-          <img 
-            alt="Blue gemstone ring" 
-            src="https://images.unsplash.com/photo-1606623546924-a4f3ae5ea3e8?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Nzd8MHwxfHNlYXJjaHwzfHxsdXh1cnklMjBqZXdlbHJ5fGVufDB8fHx8MTc1OTc1NzU1Mnww&ixlib=rb-4.1.0&q=85" 
-            className="w-full h-full object-cover" 
-          />
-          <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-white/20"></div>
-        </div>
-      </div>
+      {/* Jewelry showcase images removed for cleaner design */}
 
       {/* Main luxury content */}
       <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-8 text-center">
