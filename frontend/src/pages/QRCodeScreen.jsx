@@ -27,6 +27,18 @@ export default function QRCodeScreen({ sessionId, onRestart }){
         <div className="text-sm subcopy mt-3 text-center">Open your camera and point to the code. Tap the link that appears.</div>
       </div>
 
+      {/* Feedback UI */}
+      <div className="max-w-md mx-auto">
+        <div className="text-sm font-medium mb-3 text-center">How helpful were these recommendations?</div>
+        <div className="flex items-center justify-center gap-4" data-testid="qr-feedback">
+          <button aria-label="Loved it" data-testid="qr-feedback-love" className={`h-10 w-10 rounded-full border flex items-center justify-center ${feedback==='love'?'bg-emerald-100 border-emerald-300':'border-neutral-300 hover:bg-neutral-50'}`} onClick={()=>setFeedback('love')}><Heart size={18} /></button>
+          <button aria-label="Great" data-testid="qr-feedback-great" className={`h-10 w-10 rounded-full border flex items-center justify-center ${feedback==='up'?'bg-emerald-100 border-emerald-300':'border-neutral-300 hover:bg-neutral-50'}`} onClick={()=>setFeedback('up')}><ThumbsUp size={18} /></button>
+          <button aria-label="Okay" data-testid="qr-feedback-okay" className={`h-10 w-10 rounded-full border flex items-center justify-center ${feedback==='meh'?'bg-emerald-100 border-emerald-300':'border-neutral-300 hover:bg-neutral-50'}`} onClick={()=>setFeedback('meh')}><Meh size={18} /></button>
+          <button aria-label="Not sure" data-testid="qr-feedback-unsure" className={`h-10 w-10 rounded-full border flex items-center justify-center ${feedback==='help'?'bg-emerald-100 border-emerald-300':'border-neutral-300 hover:bg-neutral-50'}`} onClick={()=>setFeedback('help')}><HelpCircle size={18} /></button>
+          <button aria-label="Didn't help" data-testid="qr-feedback-down" className={`h-10 w-10 rounded-full border flex items-center justify-center ${feedback==='down'?'bg-emerald-100 border-emerald-300':'border-neutral-300 hover:bg-neutral-50'}`} onClick={()=>setFeedback('down')}><ThumbsDown size={18} /></button>
+        </div>
+      </div>
+
       <div className="text-center text-sm subcopy">This screen will restart in {seconds}s</div>
 
       <div className="flex justify-center">
