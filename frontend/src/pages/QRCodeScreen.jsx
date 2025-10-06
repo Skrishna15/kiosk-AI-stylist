@@ -5,6 +5,7 @@ import { Heart, ThumbsUp, Meh, HelpCircle, ThumbsDown } from "lucide-react";
 
 export default function QRCodeScreen({ sessionId, onRestart }){
   const [qr, setQr] = useState("");
+  const [feedback, setFeedback] = useState(null);
   const link = useMemo(()=> `${window.location.origin}/passport/${sessionId}`, [sessionId]);
   useEffect(()=>{ if (sessionId) QRCode.toDataURL(link, { margin: 1, width: 240 }).then(setQr); }, [link, sessionId]);
 
