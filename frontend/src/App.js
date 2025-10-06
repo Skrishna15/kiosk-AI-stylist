@@ -665,21 +665,25 @@ const NewFlow = () => {
           initialValue={surveyData.metal}
         />
       )}
-      {currentStep === 5 && recommendations && (
+      {currentStep === 5 && (
+        <AIJewelryStylistPage 
+          onContinue={handleAIChatContinue}
+          onBack={() => setCurrentStep(4)}
+        />
+      )}
+      {currentStep === 6 && recommendations && (
         <RecommendationScreen 
           data={recommendations.recommendations?.map(r => r.product) || []}
           onViewDetails={handleViewDetails}
           onGetOnPhone={handleGetOnPhone}
         />
       )}
-      {currentStep === 6 && sessionId && (
+      {currentStep === 7 && sessionId && (
         <QRCodeScreen 
           sessionId={sessionId}
           onRestart={handleRestart}
         />
       )}
-      {/* AI Chat Widget - Available throughout the entire flow */}
-      <ChatWidget />
     </div>
   );
 };
