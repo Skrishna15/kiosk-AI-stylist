@@ -629,6 +629,7 @@ const NewFlow = () => {
     setSurveyData({ style: "", occasion: "", budget: "", metal: "" });
     setRecommendations(null);
     setSessionId(null);
+    setSelectedProduct(null);
   };
 
   const handleViewDetails = (product) => {
