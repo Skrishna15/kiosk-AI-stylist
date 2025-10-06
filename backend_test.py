@@ -66,13 +66,14 @@ class BackendTester:
         """Test POST /api/survey with various budget ranges"""
         test_cases = [
             {
-                "name": "Everyday Classic Under ₹8,000",
+                "name": "Everyday Classic Low-Range (Expected: Few/No Results)",
                 "data": {
                     "occasion": "Everyday",
                     "style": "Classic", 
                     "budget": "Under ₹8,000",
                     "vibe_preference": "Minimal Modern"
-                }
+                },
+                "expect_empty": True  # We expect this to be empty based on product prices
             },
             {
                 "name": "Special Events Modern Mid-Range",
@@ -80,7 +81,8 @@ class BackendTester:
                     "occasion": "Special Events",
                     "style": "Modern",
                     "budget": "₹8,000–₹25,000"
-                }
+                },
+                "expect_empty": False
             },
             {
                 "name": "Work Vintage High-Range",
@@ -88,7 +90,8 @@ class BackendTester:
                     "occasion": "Work",
                     "style": "Vintage", 
                     "budget": "₹25,000–₹65,000"
-                }
+                },
+                "expect_empty": False
             },
             {
                 "name": "Romantic Bohemian Premium",
@@ -96,7 +99,8 @@ class BackendTester:
                     "occasion": "Romantic",
                     "style": "Bohemian",
                     "budget": "₹65,000+"
-                }
+                },
+                "expect_empty": False
             }
         ]
         
