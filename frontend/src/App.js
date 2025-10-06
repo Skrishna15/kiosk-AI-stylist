@@ -615,8 +615,12 @@ const NewFlow = () => {
     setCurrentStep(3);
   };
 
+  const handleAIChatContinue = () => {
+    setCurrentStep(6); // Go to Recommendations
+  };
+
   const handleGetOnPhone = () => {
-    setCurrentStep(6);
+    setCurrentStep(7); // Go to QR
   };
 
   const handleRestart = () => {
