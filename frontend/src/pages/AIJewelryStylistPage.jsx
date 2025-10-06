@@ -209,7 +209,7 @@ export default function AIJewelryStylistPage({ onContinue, onBack }) {
         <div className="text-center">
           <Button
             onClick={onContinue}
-            className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-4 rounded-full text-lg font-medium"
+            className="bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-white px-8 py-4 rounded-full text-lg font-medium shadow-lg hover:shadow-xl transition-all"
             data-testid="continue-to-phone-button"
           >
             Continue to Get Results on Phone
