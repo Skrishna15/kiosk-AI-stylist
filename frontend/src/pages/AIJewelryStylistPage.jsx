@@ -6,11 +6,18 @@ import axios from 'axios';
 
 const API = process.env.REACT_APP_BACKEND_URL || "";
 
-export default function AIJewelryStylistPage({ onContinue, onBack }) {
+export default function AIJewelryStylistPage({ onContinue, onBack, selectedProduct }) {
+  const getInitialMessage = () => {
+    if (selectedProduct) {
+      return `Hello! I see you're interested in the ${selectedProduct.name}. This beautiful piece costs ₹${Math.round(selectedProduct.price*83).toLocaleString('en-IN')} and would be perfect for your style preferences. What would you like to know about this jewelry piece?`;
+    }
+    return "Hello! I'm your personal jewelry stylist. Based on your preferences for modern style jewelry for special occasions, I'd love to help you find the perfect piece. What questions do you have about the recommendations?";
+  };
+
   const [messages, setMessages] = useState([
     {
       role: 'assistant',
-      content: "Hello! I'm your personal jewelry stylist. Based on your preferences for modern style jewelry for special occasions, I'd love to help you find the perfect piece. What questions do you have about the recommendations?"
+      content: getInitialMessage()
     }
   ]);
   const [input, setInput] = useState("");
