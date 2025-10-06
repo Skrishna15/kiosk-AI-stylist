@@ -307,6 +307,7 @@ const Welcome = () => {
             </p>
             <div className="mt-8 flex gap-3">
               <Button data-testid="start-survey-button" className="button-pill" onClick={() => navigate("/stylist")}>Start</Button>
+              <Button data-testid="new-flow-button" className="button-pill bg-emerald-600 hover:bg-emerald-700" onClick={() => navigate("/new-flow")}>New Experience</Button>
               <a className="link-underline self-center text-sm" href="#learn" data-testid="learn-more-link">Learn more</a>
             </div>
           </div>
