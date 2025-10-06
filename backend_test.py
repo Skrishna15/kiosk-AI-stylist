@@ -256,16 +256,16 @@ class BackendTester:
     def test_budget_filtering(self):
         """Test that budget filtering works correctly with INR ranges"""
         try:
-            # Test with lowest budget range
-            low_budget_data = {
+            # Test with mid-range budget that should have products
+            mid_budget_data = {
                 "occasion": "Everyday",
                 "style": "Classic",
-                "budget": "Under ₹8,000"
+                "budget": "₹8,000–₹25,000"
             }
             
             response = requests.post(
                 f"{API_BASE}/survey",
-                json=low_budget_data,
+                json=mid_budget_data,
                 headers={"Content-Type": "application/json"},
                 timeout=15
             )
@@ -273,6 +273,10 @@ class BackendTester:
             if response.status_code == 200:
                 data = response.json()
                 recommendations = data.get("recommendations", [])
+                
+                if len(recommendations) == 0:
+                    self.log_test("Budget Filtering", False, "No recommendations returned for mid-range budget")
+                    return False
                 
                 # Check if all recommended products are within budget
                 all_within_budget = True
@@ -283,13 +287,13 @@ class BackendTester:
                     price_usd = product.get("price", 0)
                     price_inr = price_usd * usd_to_inr
                     
-                    if price_inr > 8000:  # Should be under ₹8,000
+                    if not (8000 <= price_inr <= 25000):  # Should be within ₹8,000–₹25,000
                         all_within_budget = False
-                        self.log_test("Budget Filtering", False, f"Product {product['name']} at ₹{price_inr:.0f} exceeds budget")
+                        self.log_test("Budget Filtering", False, f"Product {product['name']} at ₹{price_inr:.0f} outside budget range")
                         break
                 
                 if all_within_budget:
-                    self.log_test("Budget Filtering", True, f"All {len(recommendations)} products within ₹8,000 budget")
+                    self.log_test("Budget Filtering", True, f"All {len(recommendations)} products within ₹8,000–₹25,000 budget")
                     return True
                 else:
                     return False
