@@ -54,20 +54,38 @@ export default function AIJewelryStylistPage({ onContinue, onBack, selectedProdu
     setShowQuickQuestions(false); // Hide quick questions after selection
     
     try {
-      // Mock AI response for quick questions
       let response = "";
-      if (question.includes("diamond ring")) {
-        response = "The Classic Diamond Solitaire Ring features a brilliant cut diamond that maximizes sparkle and light reflection. Given your preference for classic style, this timeless piece would complement any outfit and can transition beautifully from day to evening wear.";
-      } else if (question.includes("trending")) {
-        response = "This season, we're seeing a rise in minimalist designs, stackable rings, and vintage-inspired pieces. Layered necklaces and mixed metal combinations are also very popular right now.";
-      } else if (question.includes("choose between")) {
-        response = "I'd be happy to help you compare pieces! Could you tell me more about the specific items you're considering and what occasions you'll be wearing them for?";
-      } else if (question.includes("care instructions")) {
-        response = "For most fine jewelry: Clean with mild soap and warm water, store separately to avoid scratches, and have pieces professionally cleaned every 6 months. Avoid exposure to chemicals and remove before swimming or exercising.";
-      } else if (question.includes("sizing")) {
-        response = "For rings, measure your finger at the end of the day when it's slightly swollen. The ring should slide on easily but require slight pressure to remove. I can help you with a detailed sizing guide!";
+      
+      if (selectedProduct) {
+        // Product-specific responses
+        if (question.includes("Tell me more")) {
+          response = `The ${selectedProduct.name} is ${selectedProduct.description || 'a beautifully crafted piece'}. Priced at ₹${Math.round(selectedProduct.price*83).toLocaleString('en-IN')}, this piece combines quality craftsmanship with elegant design. It's perfect for someone with your sophisticated taste and style preferences.`;
+        } else if (question.includes("occasions")) {
+          response = `This ${selectedProduct.name} is incredibly versatile! Based on your survey preferences, it would be perfect for your selected occasions. The elegant design makes it suitable for both everyday wear and special events, allowing you to transition seamlessly from day to evening.`;
+        } else if (question.includes("care instructions")) {
+          response = `For your ${selectedProduct.name}: Clean gently with mild soap and warm water, store in a soft pouch to prevent scratches, and have it professionally cleaned every 6 months. Avoid exposure to harsh chemicals and remove before swimming or exercising to maintain its beauty.`;
+        } else if (question.includes("other styles")) {
+          response = `The ${selectedProduct.name} comes in our curated collection with complementary pieces. Based on your style preferences, I can recommend similar pieces that would create a beautiful coordinated look. Would you like me to suggest matching items?`;
+        } else if (question.includes("makes this special")) {
+          response = `What makes the ${selectedProduct.name} special is its perfect alignment with your style preferences. The quality craftsmanship, timeless design, and attention to detail make it a piece you'll treasure. At ₹${Math.round(selectedProduct.price*83).toLocaleString('en-IN')}, it offers excellent value for luxury jewelry.`;
+        } else {
+          response = `For styling the ${selectedProduct.name}, I'd recommend keeping your other accessories minimal to let this piece shine. Based on your preferences, it would pair beautifully with your existing wardrobe and can be the perfect finishing touch for any outfit.`;
+        }
       } else {
-        response = "That's a great question! I'd love to help you explore custom design options. We can create unique pieces tailored to your style preferences and budget.";
+        // General responses when no product selected
+        if (question.includes("diamond ring")) {
+          response = "The Classic Diamond Solitaire Ring features a brilliant cut diamond that maximizes sparkle and light reflection. Given your preference for classic style, this timeless piece would complement any outfit and can transition beautifully from day to evening wear.";
+        } else if (question.includes("trending")) {
+          response = "This season, we're seeing a rise in minimalist designs, stackable rings, and vintage-inspired pieces. Layered necklaces and mixed metal combinations are also very popular right now.";
+        } else if (question.includes("choose between")) {
+          response = "I'd be happy to help you compare pieces! Could you tell me more about the specific items you're considering and what occasions you'll be wearing them for?";
+        } else if (question.includes("care instructions")) {
+          response = "For most fine jewelry: Clean with mild soap and warm water, store separately to avoid scratches, and have pieces professionally cleaned every 6 months. Avoid exposure to chemicals and remove before swimming or exercising.";
+        } else if (question.includes("sizing")) {
+          response = "For rings, measure your finger at the end of the day when it's slightly swollen. The ring should slide on easily but require slight pressure to remove. I can help you with a detailed sizing guide!";
+        } else {
+          response = "That's a great question! I'd love to help you explore custom design options. We can create unique pieces tailored to your style preferences and budget.";
+        }
       }
       
       setMessages(prev => [...prev, { role: 'assistant', content: response }]);
