@@ -669,7 +669,8 @@ const NewFlow = () => {
       {currentStep === 5 && (
         <AIJewelryStylistPage 
           onContinue={handleAIChatContinue}
-          onBack={() => setCurrentStep(4)}
+          onBack={() => selectedProduct ? setCurrentStep(6) : setCurrentStep(4)}
+          selectedProduct={selectedProduct}
         />
       )}
       {currentStep === 6 && recommendations && (
