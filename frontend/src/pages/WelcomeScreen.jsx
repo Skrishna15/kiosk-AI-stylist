@@ -74,7 +74,7 @@ export default function WelcomeScreen({ onStart }){
           </motion.p>
           
           <motion.p 
-            className="text-lg text-gray-600 mb-12 max-w-lg mx-auto font-light leading-relaxed"
+            className="text-xl text-gray-800 mb-12 max-w-lg mx-auto font-medium leading-relaxed"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 1.4 }}
