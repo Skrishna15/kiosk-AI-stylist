@@ -792,8 +792,7 @@ function App() {
     <div className="App">
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Welcome />} />
-          <Route path="/new-flow" element={<NewFlow />} />
+          <Route path="/" element={<NewFlow />} />
           <Route path="/stylist" element={<StylistPage />} />
           <Route path="/survey" element={<Survey />} />
           <Route path="/recommendation/:sessionId" element={<Recommendation />} />
