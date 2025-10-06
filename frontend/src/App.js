@@ -16,6 +16,12 @@ import SurveyScreen from "@/pages/SurveyScreen";
 import RecommendationScreen from "@/pages/RecommendationScreen";
 import QRCodeScreen from "@/pages/QRCodeScreen";
 
+// Import individual survey pages
+import StylePreferencePage from "@/pages/StylePreferencePage";
+import OccasionPage from "@/pages/OccasionPage";
+import BudgetRangePage from "@/pages/BudgetRangePage";
+import MetalTypePage from "@/pages/MetalTypePage";
+
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 const USD_TO_INR = 83;
