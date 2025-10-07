@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Send } from "lucide-react";
+import { Send, Mic, MicOff } from "lucide-react";
 import axios from 'axios';
 
 const API = process.env.REACT_APP_BACKEND_URL || "";
