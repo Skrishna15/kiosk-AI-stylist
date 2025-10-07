@@ -718,8 +718,21 @@ async def import_evol_products():
         # Clear existing products
         await db.products.delete_many({})
         
-        # Insert real Evol products
-        result = await db.products.insert_many(EVOL_PRODUCTS)
+        # Transform and insert real Evol products
+        transformed_products = []
+        for product in EVOL_PRODUCTS:
+            transformed = {
+                "id": product["id"],
+                "name": product["name"],
+                "price": product["price"] / USD_TO_INR,  # Convert to USD for storage
+                "image_url": product["images"][0] if product["images"] else "",
+                "style_tags": product["style"],
+                "occasion_tags": product["occasion"],
+                "description": product["description"]
+            }
+            transformed_products.append(transformed)
+        
+        result = await db.products.insert_many(transformed_products)
         
         return {
             "success": True,
