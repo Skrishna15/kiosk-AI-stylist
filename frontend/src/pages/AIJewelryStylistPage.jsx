@@ -152,25 +152,23 @@ export default function AIJewelryStylistPage({ onContinue, onBack, selectedProdu
   };
 
   return (
-    <div className="min-h-screen bg-white" data-testid="ai-jewelry-stylist-page">
+    <div className="h-screen bg-white flex flex-col" data-testid="ai-jewelry-stylist-page">
       {/* Header */}
-      <div className="bg-gradient-to-r from-yellow-400 to-yellow-500 text-white p-6 border-b border-yellow-200">
-        <div className="container mx-auto max-w-4xl">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center">
-              <span className="text-yellow-600 font-bold text-lg">✨</span>
-            </div>
-            <div>
-              <h1 className="text-2xl font-bold">Your Celebrity Stylist AI</h1>
-              <p className="text-yellow-100 text-sm">Matching your vibe to celebrity styles and red carpet glamour</p>
-            </div>
+      <div className="bg-gradient-to-r from-yellow-400 to-yellow-500 text-white p-6 border-b border-yellow-200 flex-shrink-0">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center">
+            <span className="text-yellow-600 font-bold text-lg">✨</span>
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold">Your Celebrity Stylist AI</h1>
+            <p className="text-yellow-100 text-sm">Matching your vibe to celebrity styles and red carpet glamour</p>
           </div>
         </div>
       </div>
 
-      {/* Chat Area */}
-      <div className="container mx-auto max-w-4xl p-6">
-        <div className="bg-white rounded-2xl shadow-lg border border-yellow-200 p-6 mb-6">
+      {/* Chat Area - Full Screen */}
+      <div className="flex-1 flex flex-col p-6">
+        <div className="flex-1 bg-white rounded-2xl shadow-lg border border-yellow-200 p-6 mb-6 flex flex-col">
           {/* Messages */}
           <div className="space-y-4 mb-6 max-h-96 overflow-y-auto">
             {messages.map((message, index) => (
