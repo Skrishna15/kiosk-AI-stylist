@@ -43,8 +43,8 @@ export default function AIJewelryStylistPage({ onContinue, onBack, selectedProdu
         `What celebrities wear pieces like ${selectedProduct.name}?`,
         "How can I style this like a red carpet look?",
         "What makes this piece celebrity-worthy?",
-        "Which events would celebrities wear this to?", 
-        "How to achieve the Hollywood glamour with this?",
+        "How do I purchase this piece?", 
+        "Is this available for order?",
         "What's the celebrity inspiration behind this?"
       ];
     }
@@ -52,9 +52,9 @@ export default function AIJewelryStylistPage({ onContinue, onBack, selectedProdu
       "Which celebrity style matches my vibe?",
       "What's trending on red carpets this season?",
       "How do A-list celebrities accessorize?", 
-      "Show me Hollywood glamour pieces",
+      "How can I buy these recommendations?",
       "What would my celebrity stylist recommend?",
-      "Match me to celebrity fashion trends"
+      "Where can I purchase these pieces?"
     ];
   };
 
