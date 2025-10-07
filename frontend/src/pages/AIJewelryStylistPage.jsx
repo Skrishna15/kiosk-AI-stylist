@@ -112,32 +112,68 @@ export default function AIJewelryStylistPage({ onContinue, onBack, selectedProdu
     }
   };
 
+  const detectPurchaseIntent = (message) => {
+    const purchaseKeywords = [
+      'buy', 'purchase', 'price', 'cost', 'order', 'get this', 'want this', 
+      'how much', 'available', 'in stock', 'can i get', 'interested in buying',
+      'where to buy', 'how to order', 'payment', 'checkout'
+    ];
+    return purchaseKeywords.some(keyword => 
+      message.toLowerCase().includes(keyword)
+    );
+  };
+
   const handleSendMessage = async () => {
     if (!input.trim()) return;
     
     const userMsg = { role: 'user', content: input };
     setMessages(prev => [...prev, userMsg]);
+    const userInput = input;
     setInput("");
     setLoading(true);
 
     try {
-      // Call the AI API
-      const response = await axios.post(`${API}/ai/vibe`, {
-        occasion: "Special Events",
-        style: "Modern", 
-        budget: "₹25,000–₹65,000",
-        query: input
-      });
+      let response = "";
+      
+      // Check for purchase intent
+      if (detectPurchaseIntent(userInput)) {
+        if (selectedProduct) {
+          response = `I'm excited that you're interested in the ${selectedProduct.name}! To purchase this beautiful piece securely, you can scan the QR code that will appear at the end of our consultation. This will open your personalized Jewelry Passport where you can complete your purchase safely through Evol Jewels' official website. The QR code will save all your preferences and this specific product for easy checkout.`;
+        } else {
+          response = `I'm thrilled that you're interested in making a purchase! At the end of our consultation, you'll receive a QR code that opens your personalized Jewelry Passport. This will take you directly to Evol Jewels' secure website where you can purchase any of your recommended pieces safely. All your preferences and our conversation will be saved for a seamless shopping experience.`;
+        }
+      } else {
+        // Call the AI API for non-purchase queries
+        const response_data = await axios.post(`${API}/ai/vibe`, {
+          occasion: "Special Events",
+          style: "Modern", 
+          budget: "₹25,000–₹65,000",
+          query: userInput
+        });
+        
+        response = `Based on your query, here's my recommendation: ${response_data.data.explanation || response_data.data.vibe}`;
+        
+        // Add purchase guidance if the AI response might have sparked interest
+        if (selectedProduct) {
+          response += ` If you're interested in purchasing, just let me know and I'll guide you to our secure checkout through your Jewelry Passport!`;
+        }
+      }
       
       setMessages(prev => [...prev, { 
         role: 'assistant', 
-        content: `Based on your query, here's my recommendation: ${response.data.explanation || response.data.vibe}` 
+        content: response
       }]);
     } catch (error) {
-      // Fallback response
+      // Fallback response with purchase guidance
+      let fallbackResponse = "Thank you for your question! Based on your preferences, I'd recommend exploring our curated collection that matches your style and budget. Each piece is selected to complement your sophisticated taste.";
+      
+      if (detectPurchaseIntent(userInput)) {
+        fallbackResponse = `I understand you're interested in making a purchase! At the end of our styling consultation, you'll receive a QR code that opens your personalized Jewelry Passport on Evol Jewels' secure website. This ensures a safe and seamless shopping experience with all your preferences saved.`;
+      }
+      
       setMessages(prev => [...prev, { 
         role: 'assistant', 
-        content: "Thank you for your question! Based on your preferences, I'd recommend exploring our curated collection that matches your style and budget. Each piece is selected to complement your sophisticated taste." 
+        content: fallbackResponse
       }]);
     } finally {
       setLoading(false);
