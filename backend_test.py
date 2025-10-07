@@ -684,38 +684,60 @@ class BackendTester:
             return False
     
     def run_all_tests(self):
-        """Run all backend tests"""
-        print(f"🧪 Starting Backend API Tests")
+        """Run all enhanced backend tests"""
+        print(f"🧪 Starting Enhanced Backend API Tests for Luxury Jewelry Kiosk System")
         print(f"📍 Testing against: {API_BASE}")
-        print("=" * 60)
+        print(f"🎯 Testing the remaining 30% completion with real Evol Jewels data")
+        print("=" * 80)
         
-        # Run tests in order
+        # Run tests in order - enhanced features first
         tests = [
-            self.test_health_check,
-            self.test_survey_submission,
-            self.test_passport_retrieval,
-            self.test_invalid_session_passport,
-            self.test_budget_filtering
+            ("Basic Health Check", self.test_health_check),
+            ("Real Evol Jewels Product Import", self.test_evol_products_import),
+            ("Celebrity Style Database", self.test_celebrity_styles_database),
+            ("Enhanced Product Recommendations", self.test_enhanced_product_recommendations),
+            ("Data Integration Verification", self.test_data_integration_verification),
+            ("API Compatibility", self.test_api_compatibility),
+            ("Performance and Reliability", self.test_performance_and_reliability),
+            ("Legacy Survey Submission", self.test_survey_submission),
+            ("Legacy Passport Retrieval", self.test_passport_retrieval),
+            ("Legacy Invalid Session", self.test_invalid_session_passport),
+            ("Legacy Budget Filtering", self.test_budget_filtering)
         ]
         
         passed = 0
         total = 0
+        failed_tests = []
         
-        for test_func in tests:
+        for test_name, test_func in tests:
+            print(f"\n🔍 Running: {test_name}")
+            print("-" * 40)
             result = test_func()
             if result:
                 passed += 1
+            else:
+                failed_tests.append(test_name)
             total += 1
             print()  # Add spacing between tests
         
-        print("=" * 60)
-        print(f"📊 Test Summary: {passed}/{total} tests passed")
+        print("=" * 80)
+        print(f"📊 Enhanced Backend Test Summary: {passed}/{total} tests passed")
+        
+        if failed_tests:
+            print(f"❌ Failed Tests:")
+            for test in failed_tests:
+                print(f"   • {test}")
         
         if passed == total:
-            print("🎉 All backend tests PASSED!")
+            print("🎉 All enhanced backend tests PASSED!")
+            print("✅ Real Evol Jewels integration working correctly")
+            print("✅ Celebrity style database functional")
+            print("✅ Enhanced recommendations with real product data")
+            print("✅ System ready for production deployment")
             return True
         else:
             print(f"⚠️  {total - passed} tests FAILED")
+            print("🔧 Enhanced backend features need attention")
             return False
 
 def main():
