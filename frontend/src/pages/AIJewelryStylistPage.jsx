@@ -237,33 +237,33 @@ export default function AIJewelryStylistPage({ onContinue, onBack, selectedProdu
             </div>
           )}
 
-          {/* Input Area */}
-          <div className="flex gap-3">
+          {/* Input Area - Fixed at bottom */}
+          <div className="flex gap-3 flex-shrink-0">
             <input
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyPress={handleKeyPress}
-              placeholder="Ask me anything about jewelry, styling, or these recommendations"
-              className="flex-1 px-4 py-3 border border-yellow-200 rounded-full focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400"
+              placeholder="Ask me anything about jewelry, styling, or celebrity looks..."
+              className="flex-1 px-6 py-4 border border-yellow-200 rounded-full focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 text-lg"
               data-testid="chat-input"
             />
             <button
               onClick={handleSendMessage}
               disabled={!input.trim() || loading}
-              className="w-12 h-12 bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 disabled:bg-gray-300 text-white rounded-full flex items-center justify-center transition-colors shadow-lg"
+              className="w-14 h-14 bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 disabled:bg-gray-300 text-white rounded-full flex items-center justify-center transition-colors shadow-lg"
               data-testid="send-button"
             >
-              <Send size={18} />
+              <Send size={20} />
             </button>
           </div>
         </div>
 
-        {/* Continue Button */}
-        <div className="text-center">
+        {/* Continue Button - Full width at bottom */}
+        <div className="mt-6 flex-shrink-0">
           <Button
             onClick={onContinue}
-            className="bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-white px-8 py-4 rounded-full text-lg font-medium shadow-lg hover:shadow-xl transition-all"
+            className="w-full bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-white px-8 py-5 rounded-2xl text-xl font-medium shadow-lg hover:shadow-xl transition-all"
             data-testid="continue-to-phone-button"
           >
             Continue to Get Results on Phone
