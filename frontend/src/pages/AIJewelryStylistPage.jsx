@@ -169,8 +169,8 @@ export default function AIJewelryStylistPage({ onContinue, onBack, selectedProdu
       {/* Chat Area - Full Screen */}
       <div className="flex-1 flex flex-col p-6">
         <div className="flex-1 bg-white rounded-2xl shadow-lg border border-yellow-200 p-6 mb-6 flex flex-col">
-          {/* Messages */}
-          <div className="space-y-4 mb-6 max-h-96 overflow-y-auto">
+          {/* Messages - Expandable */}
+          <div className="space-y-4 mb-6 flex-1 overflow-y-auto">
             {messages.map((message, index) => (
               <motion.div
                 key={index}
