@@ -472,9 +472,243 @@ app.add_middleware(
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
+# Real Evol Jewels Product Data
+EVOL_PRODUCTS = [
+    {
+        "id": str(uuid4()),
+        "name": "Talia Diamond Ring",
+        "price": 14998,
+        "category": "Rings",
+        "metal_types": ["Rose Gold", "White Gold", "Yellow Gold"],
+        "karat_options": ["14 KT", "18 KT"],
+        "sizes": list(range(5, 17)),
+        "images": [
+            "https://cdn.shopify.com/s/files/1/0674/7665/2346/products/SRNG332381-RG-PV_3024x.jpg?v=1711002550",
+            "https://cdn.shopify.com/s/files/1/0674/7665/2346/products/SRNG332381-RG-T2V_3024x.jpg?v=1711002550"
+        ],
+        "url": "https://evoljewels.com/collections/all-products/products/talia-diamond-ring",
+        "description": "Elegant diamond ring perfect for modern sophistication",
+        "occasion": ["Special Events", "Romantic"],
+        "style": ["Classic", "Modern"],
+        "celebrity_vibe": "Editorial Chic"
+    },
+    {
+        "id": str(uuid4()),
+        "name": "Orbis Diamond Ring", 
+        "price": 15323,
+        "category": "Rings",
+        "metal_types": ["Rose Gold", "White Gold", "Yellow Gold"],
+        "karat_options": ["14 KT", "18 KT"],
+        "sizes": list(range(5, 17)),
+        "images": [
+            "https://cdn.shopify.com/s/files/1/0674/7665/2346/files/SRNG570647__06_3024x.webp?v=1734329931",
+            "https://cdn.shopify.com/s/files/1/0674/7665/2346/files/SRNG570647__05_3024x.webp?v=1734329931"
+        ],
+        "url": "https://evoljewels.com/collections/all-products/products/orbis-diamond-ring",
+        "description": "Contemporary diamond design for the modern woman",
+        "occasion": ["Everyday", "Work"],
+        "style": ["Modern", "Classic"],
+        "celebrity_vibe": "Hollywood Glam"
+    },
+    {
+        "id": str(uuid4()),
+        "name": "Hold Me Closer Diamond Ring",
+        "price": 21153,
+        "category": "Rings", 
+        "metal_types": ["Rose Gold", "White Gold", "Yellow Gold"],
+        "karat_options": ["14 KT", "18 KT"],
+        "sizes": list(range(5, 17)),
+        "images": [
+            "https://cdn.shopify.com/s/files/1/0674/7665/2346/files/PMA-RN-R-51407-M-20-YG-PV_3024x.png?v=1715927703",
+            "https://cdn.shopify.com/s/files/1/0674/7665/2346/files/PMA-RN-R-51407-M-20-YG-T2V_3024x.png?v=1715927703"
+        ],
+        "url": "https://evoljewels.com/collections/all-products/products/hold-me-closer-diamond-ring",
+        "description": "Romantic diamond ring for intimate moments",
+        "occasion": ["Romantic", "Special Events"],
+        "style": ["Vintage", "Classic"],
+        "celebrity_vibe": "Vintage Romance"
+    },
+    {
+        "id": str(uuid4()),
+        "name": "Dazzling Dewdrop Diamond Studs",
+        "price": 22319,
+        "category": "Earrings",
+        "metal_types": ["Rose Gold", "White Gold", "Yellow Gold"],
+        "karat_options": ["14 KT", "18 KT"],
+        "sizes": ["One Size"],
+        "images": [
+            "https://cdn.shopify.com/s/files/1/0674/7665/2346/files/PMA-ER-R-51821-Lot5-S17-YG-PV_3024x.png?v=1721109858",
+            "https://cdn.shopify.com/s/files/1/0674/7665/2346/files/PMA-ER-R-51821-Lot5-S17-YG-TV_3024x.png?v=1721109858"
+        ],
+        "url": "https://evoljewels.com/collections/all-products/products/dazzling-dewdrop-diamond-studs",
+        "description": "Brilliant diamond studs for everyday glamour",
+        "occasion": ["Everyday", "Work", "Special Events"],
+        "style": ["Classic", "Modern"],
+        "celebrity_vibe": "Editorial Chic"
+    },
+    {
+        "id": str(uuid4()),
+        "name": "Wain Marquise Diamond Ring",
+        "price": 22699,
+        "category": "Rings",
+        "metal_types": ["Rose Gold", "White Gold", "Yellow Gold"],
+        "karat_options": ["14 KT", "18 KT"],
+        "sizes": list(range(5, 17)),
+        "images": [
+            "https://cdn.shopify.com/s/files/1/0674/7665/2346/products/SRNG333668-WG-PV_3024x.jpg?v=1680196025",
+            "https://cdn.shopify.com/s/files/1/0674/7665/2346/products/SRNG333668-WG-T2V_3024x.jpg?v=1680196025"
+        ],
+        "url": "https://evoljewels.com/collections/all-products/products/wain-marquise-diamond-ring",
+        "description": "Sophisticated marquise diamond for the discerning woman",
+        "occasion": ["Special Events", "Romantic"],
+        "style": ["Vintage", "Classic"],
+        "celebrity_vibe": "Hollywood Glam"
+    },
+    {
+        "id": str(uuid4()),
+        "name": "First-Crush Diamond Necklace",
+        "price": 23685,
+        "category": "Necklaces",
+        "metal_types": ["Rose Gold", "White Gold", "Yellow Gold"],
+        "karat_options": ["14 KT", "18 KT"],
+        "sizes": ["16 inch", "18 inch", "20 inch"],
+        "images": [
+            "https://cdn.shopify.com/s/files/1/0674/7665/2346/files/PMA-OTH-R-31347-PT60314-YG-PV_3024x.jpg?v=1753343172",
+            "https://cdn.shopify.com/s/files/1/0674/7665/2346/files/PMA-OTH-R-31347-PT60314-YG-FV_3024x.jpg?v=1753343172"
+        ],
+        "url": "https://evoljewels.com/collections/all-products/products/first-crush-diamond-necklace",
+        "description": "Delicate diamond necklace for romantic occasions",
+        "occasion": ["Romantic", "Special Events"],
+        "style": ["Vintage", "Bohemian"],
+        "celebrity_vibe": "Boho Luxe"
+    },
+    {
+        "id": str(uuid4()),
+        "name": "Romance Diamond Ring",
+        "price": 25463,
+        "category": "Rings",
+        "metal_types": ["Rose Gold", "White Gold", "Yellow Gold"],
+        "karat_options": ["14 KT", "18 KT"],
+        "sizes": list(range(5, 17)),
+        "images": [
+            "https://cdn.shopify.com/s/files/1/0674/7665/2346/files/PMA-RN-R-51850-CST-1914-RN-SMP-PD-3478-YG-PV_3024x.png?v=1718012376",
+            "https://cdn.shopify.com/s/files/1/0674/7665/2346/files/PMA-RN-R-51850-CST-1914-RN-SMP-PD-3478-YG-TV_3024x.png?v=1718012375"
+        ],
+        "url": "https://evoljewels.com/collections/all-products/products/love-you-ring",
+        "description": "Romantic diamond ring expressing eternal love",
+        "occasion": ["Romantic", "Special Events"],
+        "style": ["Vintage", "Classic"],
+        "celebrity_vibe": "Vintage Romance"
+    }
+]
+
+# Enhanced Celebrity Style Database
+CELEBRITY_STYLE_DATABASE = {
+    "Emma Stone": {
+        "style_vibe": "Editorial Chic",
+        "signature_looks": ["minimalist earrings", "delicate necklaces", "classic rings"],
+        "occasions": ["red carpet premieres", "award shows", "film festivals"],
+        "jewelry_preferences": ["subtle elegance", "modern classics", "refined pieces"],
+        "quote": "I love jewelry that feels effortless but still makes a statement"
+    },
+    "Blake Lively": {
+        "style_vibe": "Hollywood Glam", 
+        "signature_looks": ["statement necklaces", "vintage-inspired pieces", "bold earrings"],
+        "occasions": ["Met Gala", "movie premieres", "fashion week"],
+        "jewelry_preferences": ["vintage glamour", "bold statements", "layered pieces"],
+        "quote": "The right jewelry can transform any outfit into something magical"
+    },
+    "Cate Blanchett": {
+        "style_vibe": "Editorial Chic",
+        "signature_looks": ["architectural jewelry", "modern sculptures", "avant-garde pieces"],
+        "occasions": ["Cannes Film Festival", "award ceremonies", "fashion events"],
+        "jewelry_preferences": ["artistic designs", "unique silhouettes", "conversation pieces"],
+        "quote": "I gravitate toward jewelry that feels like wearable art"
+    },
+    "Margot Robbie": {
+        "style_vibe": "Hollywood Glam",
+        "signature_looks": ["diamond tennis bracelets", "statement earrings", "luxury watches"],
+        "occasions": ["Oscars", "Barbie premieres", "Chanel events"],
+        "jewelry_preferences": ["classic luxury", "pink gold accents", "timeless pieces"],
+        "quote": "I believe in investing in jewelry pieces that will be treasured forever"
+    },
+    "Zendaya": {
+        "style_vibe": "Editorial Chic",
+        "signature_looks": ["bold ear cuffs", "statement rings", "modern chains"],
+        "occasions": ["Spider-Man premieres", "Met Gala", "fashion campaigns"],
+        "jewelry_preferences": ["contemporary edge", "bold geometrics", "mixed metals"],
+        "quote": "Fashion and jewelry should be fun and express who you are"
+    }
+}
+
+# Update product filtering to use real data
+async def get_enhanced_recommendations(survey_data):
+    style = survey_data.get("style", "Classic")
+    occasion = survey_data.get("occasion", "Special Events")  
+    budget = survey_data.get("budget", "₹25,000–₹65,000")
+    
+    # Parse budget range
+    budget_max = 65000  # default
+    if "Under ₹8,000" in budget:
+        budget_max = 8000
+    elif "₹8,000–₹25,000" in budget:
+        budget_max = 25000
+    elif "₹25,000–₹65,000" in budget:
+        budget_max = 65000
+    
+    # Filter products based on criteria
+    filtered_products = []
+    for product in EVOL_PRODUCTS:
+        if (product["price"] <= budget_max and 
+            (style in product["style"] or occasion in product["occasion"])):
+            filtered_products.append(product)
+    
+    # If not enough products, add more from the range
+    if len(filtered_products) < 4:
+        for product in EVOL_PRODUCTS:
+            if product["price"] <= budget_max and product not in filtered_products:
+                filtered_products.append(product)
+                if len(filtered_products) >= 4:
+                    break
+    
+    return filtered_products[:4]
+
+@app.post("/api/admin/import-evol-products")
+async def import_evol_products():
+    """Import real Evol Jewels product data"""
+    try:
+        # Clear existing products
+        await db.products.delete_many({})
+        
+        # Insert real Evol products
+        result = await db.products.insert_many(EVOL_PRODUCTS)
+        
+        return {
+            "success": True,
+            "imported": len(result.inserted_ids),
+            "message": "Successfully imported Evol Jewels product data"
+        }
+    except Exception as e:
+        logger.error(f"Import error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/celebrity-styles")
+async def get_celebrity_styles():
+    """Get celebrity style database"""
+    return {
+        "celebrities": CELEBRITY_STYLE_DATABASE,
+        "style_vibes": ["Hollywood Glam", "Editorial Chic", "Vintage Romance", "Boho Luxe"]
+    }
+
 @app.on_event("startup")
 async def on_startup():
     await seed_products_if_needed()
+    # Auto-import Evol products on startup
+    try:
+        await import_evol_products()
+        logger.info("Evol Jewels products imported successfully")
+    except Exception as e:
+        logger.error(f"Failed to import Evol products: {e}")
 
 @app.on_event("shutdown")
 async def shutdown_db_client():
