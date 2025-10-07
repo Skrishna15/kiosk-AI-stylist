@@ -218,22 +218,24 @@ export default function AIJewelryStylistPage({ onContinue, onBack, selectedProdu
             )}
           </div>
 
-          {/* Quick Questions */}
-          <div className="mb-6">
-            <p className="text-yellow-600 font-medium mb-3 text-center">Or choose a quick question:</p>
-            <div className="grid grid-cols-2 gap-3">
-              {quickQuestions.map((question, index) => (
-                <button
-                  key={index}
-                  onClick={() => handleQuickQuestion(question)}
-                  className="p-3 text-sm bg-yellow-50 hover:bg-yellow-100 text-gray-800 rounded-lg border border-yellow-200 hover:border-yellow-300 transition-colors"
-                  data-testid={`quick-question-${index}`}
-                >
-                  {question}
-                </button>
-              ))}
+          {/* Quick Questions - Only show if no messages yet or fewer than 3 messages */}
+          {showQuickQuestions && messages.length <= 2 && (
+            <div className="mb-6 flex-shrink-0">
+              <p className="text-yellow-600 font-medium mb-3 text-center">Or choose a quick question:</p>
+              <div className="grid grid-cols-2 gap-3">
+                {quickQuestions.map((question, index) => (
+                  <button
+                    key={index}
+                    onClick={() => handleQuickQuestion(question)}
+                    className="p-4 text-sm bg-yellow-50 hover:bg-yellow-100 text-gray-800 rounded-lg border border-yellow-200 hover:border-yellow-300 transition-colors"
+                    data-testid={`quick-question-${index}`}
+                  >
+                    {question}
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Input Area */}
           <div className="flex gap-3">
