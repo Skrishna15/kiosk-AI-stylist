@@ -161,8 +161,8 @@ export default function AIJewelryStylistPage({ onContinue, onBack, selectedProdu
               <span className="text-yellow-600 font-bold text-lg">✨</span>
             </div>
             <div>
-              <h1 className="text-2xl font-bold">AI Jewelry Stylist</h1>
-              <p className="text-yellow-100 text-sm">Get personalized advice about your jewelry selections</p>
+              <h1 className="text-2xl font-bold">Your Celebrity Stylist AI</h1>
+              <p className="text-yellow-100 text-sm">Matching your vibe to celebrity styles and red carpet glamour</p>
             </div>
           </div>
         </div>
