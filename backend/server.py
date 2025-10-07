@@ -680,7 +680,35 @@ async def get_enhanced_recommendations(survey_data):
                 if len(filtered_products) >= 4:
                     break
     
-    return filtered_products[:4]
+    # Convert to RecommendationItem format
+    recommendations = []
+    for product_data in filtered_products[:4]:
+        # Convert price to INR for display
+        price_inr = int(round(product_data["price"]))
+        
+        # Create reason based on matching criteria
+        reason_parts = []
+        if style in product_data["style"]:
+            reason_parts.append("matches your style preference")
+        if occasion in product_data["occasion"]:
+            reason_parts.append("perfect for your occasion")
+        reason_parts.append(f"within your budget at {format_inr(price_inr)}")
+        reason = ", ".join(reason_parts) if reason_parts else "curated for your style"
+        
+        # Create Product object
+        product = Product(
+            id=product_data["id"],
+            name=product_data["name"],
+            price=product_data["price"] / USD_TO_INR,  # Convert back to USD for storage
+            image_url=product_data["images"][0] if product_data["images"] else "",
+            style_tags=product_data["style"],
+            occasion_tags=product_data["occasion"],
+            description=product_data["description"]
+        )
+        
+        recommendations.append(RecommendationItem(product=product, reason=reason))
+    
+    return recommendations
 
 @app.post("/api/admin/import-evol-products")
 async def import_evol_products():
