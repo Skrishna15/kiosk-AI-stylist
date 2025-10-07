@@ -6,6 +6,75 @@ import axios from 'axios';
 
 const API = process.env.REACT_APP_BACKEND_URL || "";
 
+// Voice Input Component
+const VoiceInputButton = ({ onTranscript, isLoading }) => {
+  const [isListening, setIsListening] = useState(false);
+  const [recognition, setRecognition] = useState(null);
+  const [isSupported, setIsSupported] = useState(false);
+
+  useEffect(() => {
+    // Check if speech recognition is supported
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SpeechRecognition) {
+      setIsSupported(true);
+      const speechRecognition = new SpeechRecognition();
+      speechRecognition.continuous = false;
+      speechRecognition.interimResults = false;
+      speechRecognition.lang = 'en-IN'; // Indian English for better local accent recognition
+      
+      speechRecognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        onTranscript(transcript);
+        setIsListening(false);
+      };
+      
+      speechRecognition.onend = () => {
+        setIsListening(false);
+      };
+      
+      speechRecognition.onerror = (event) => {
+        console.error('Speech recognition error:', event.error);
+        setIsListening(false);
+      };
+      
+      setRecognition(speechRecognition);
+    }
+  }, [onTranscript]);
+
+  const startListening = () => {
+    if (recognition && !isListening) {
+      setIsListening(true);
+      recognition.start();
+    }
+  };
+
+  const stopListening = () => {
+    if (recognition && isListening) {
+      recognition.stop();
+      setIsListening(false);
+    }
+  };
+
+  // Don't render if speech recognition is not supported
+  if (!isSupported) return null;
+
+  return (
+    <button
+      onClick={isListening ? stopListening : startListening}
+      disabled={isLoading}
+      className={`w-14 h-14 rounded-full flex items-center justify-center transition-all shadow-lg ${
+        isListening 
+          ? 'bg-red-500 hover:bg-red-600 text-white animate-pulse' 
+          : 'bg-gray-100 hover:bg-gray-200 text-gray-600 border-2 border-gray-200'
+      }`}
+      title={isListening ? "Tap to stop recording" : "Tap to speak your message"}
+      data-testid="voice-input-button"
+    >
+      {isListening ? <MicOff size={20} /> : <Mic size={20} />}
+    </button>
+  );
+};
+
 export default function AIJewelryStylistPage({ onContinue, onBack, selectedProduct }) {
   const getCelebrityStyleMatch = () => {
     // Map survey preferences to celebrity styles
