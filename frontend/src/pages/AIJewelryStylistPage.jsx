@@ -158,7 +158,15 @@ export default function AIJewelryStylistPage({ onContinue, onBack, selectedProdu
       } else {
         // General celebrity stylist responses
         if (question.includes("celebrity style matches")) {
-          response = `Based on your preferences, you have strong ${getCelebrityStyleMatch()} vibes! Think Blake Lively's effortless elegance or Emma Stone's sophisticated red carpet moments. Your style DNA matches celebrities who choose timeless pieces that make statements without being flashy.`;
+          const celebrityMatch = getCelebrityStyleMatch();
+          const celebrityData = {
+            "Hollywood Glam": { celebrity: "Blake Lively", signature: "vintage glamour and bold statements", quote: "The right jewelry can transform any outfit into something magical" },
+            "Editorial Chic": { celebrity: "Emma Stone", signature: "minimalist earrings and delicate necklaces", quote: "I love jewelry that feels effortless but still makes a statement" },
+            "Vintage Romance": { celebrity: "Margot Robbie", signature: "classic luxury and timeless pieces", quote: "I believe in investing in jewelry pieces that will be treasured forever" },
+            "Boho Luxe": { celebrity: "Zendaya", signature: "contemporary edge and bold geometrics", quote: "Fashion and jewelry should be fun and express who you are" }
+          };
+          const match = celebrityData[celebrityMatch] || celebrityData["Hollywood Glam"];
+          response = `Based on your preferences, you have strong ${celebrityMatch} vibes! You share the same aesthetic as ${match.celebrity}, known for ${match.signature}. As ${match.celebrity} says: "${match.quote}" - this perfectly captures your jewelry personality!`;
         } else if (question.includes("red carpets this season")) {
           response = "This season on red carpets, we're seeing a return to classic Hollywood glamour with modern twists! Celebrities are choosing statement earrings, delicate layered necklaces, and vintage-inspired rings. Think Margot Robbie's Chanel moments or Zendaya's bold but elegant choices.";
         } else if (question.includes("A-list celebrities accessorize")) {
