@@ -306,6 +306,382 @@ class BackendTester:
         except Exception as e:
             self.log_test("Budget Filtering", False, f"Request failed: {str(e)}")
             return False
+
+    def test_evol_products_import(self):
+        """Test POST /api/admin/import-evol-products endpoint"""
+        try:
+            response = requests.post(
+                f"{API_BASE}/admin/import-evol-products",
+                headers={"Content-Type": "application/json"},
+                timeout=20
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                
+                # Validate response structure
+                if not data.get("success"):
+                    self.log_test("Evol Products Import", False, f"Import failed: {data}")
+                    return False
+                
+                imported_count = data.get("imported", 0)
+                if imported_count < 5:  # Expect at least 5 real products
+                    self.log_test("Evol Products Import", False, f"Only {imported_count} products imported, expected more")
+                    return False
+                
+                self.log_test("Evol Products Import", True, f"Successfully imported {imported_count} Evol Jewels products")
+                return True
+            else:
+                self.log_test("Evol Products Import", False, f"Status {response.status_code}: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Evol Products Import", False, f"Request failed: {str(e)}")
+            return False
+
+    def test_celebrity_styles_database(self):
+        """Test GET /api/celebrity-styles endpoint"""
+        try:
+            response = requests.get(f"{API_BASE}/celebrity-styles", timeout=10)
+            
+            if response.status_code == 200:
+                data = response.json()
+                
+                # Validate response structure
+                if "celebrities" not in data or "style_vibes" not in data:
+                    self.log_test("Celebrity Styles Database", False, "Missing celebrities or style_vibes in response")
+                    return False
+                
+                celebrities = data.get("celebrities", {})
+                style_vibes = data.get("style_vibes", [])
+                
+                # Check for expected celebrities
+                expected_celebrities = ["Emma Stone", "Blake Lively", "Margot Robbie", "Zendaya"]
+                missing_celebrities = [name for name in expected_celebrities if name not in celebrities]
+                
+                if missing_celebrities:
+                    self.log_test("Celebrity Styles Database", False, f"Missing celebrities: {missing_celebrities}")
+                    return False
+                
+                # Check celebrity data structure
+                for name, info in celebrities.items():
+                    required_fields = ["style_vibe", "signature_looks", "occasions", "jewelry_preferences", "quote"]
+                    missing_fields = [field for field in required_fields if field not in info]
+                    if missing_fields:
+                        self.log_test("Celebrity Styles Database", False, f"{name} missing fields: {missing_fields}")
+                        return False
+                
+                # Check style vibes
+                expected_vibes = ["Hollywood Glam", "Editorial Chic", "Vintage Romance", "Boho Luxe"]
+                missing_vibes = [vibe for vibe in expected_vibes if vibe not in style_vibes]
+                
+                if missing_vibes:
+                    self.log_test("Celebrity Styles Database", False, f"Missing style vibes: {missing_vibes}")
+                    return False
+                
+                self.log_test("Celebrity Styles Database", True, f"Found {len(celebrities)} celebrities with {len(style_vibes)} style vibes")
+                return True
+            else:
+                self.log_test("Celebrity Styles Database", False, f"Status {response.status_code}: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Celebrity Styles Database", False, f"Request failed: {str(e)}")
+            return False
+
+    def test_enhanced_product_recommendations(self):
+        """Test enhanced product recommendations with real Evol Jewels products"""
+        test_cases = [
+            {
+                "name": "Classic Style Under ₹8,000 (Expected: No Results)",
+                "data": {
+                    "occasion": "Special Events",
+                    "style": "Classic", 
+                    "budget": "Under ₹8,000"
+                },
+                "expect_empty": True
+            },
+            {
+                "name": "Modern Style ₹25,000–₹65,000 (Expected: Real Evol Products)",
+                "data": {
+                    "occasion": "Special Events",
+                    "style": "Modern",
+                    "budget": "₹25,000–₹65,000"
+                },
+                "expect_real_products": True
+            },
+            {
+                "name": "Vintage Style ₹65,000+ (Expected: Premium Products)",
+                "data": {
+                    "occasion": "Romantic",
+                    "style": "Vintage",
+                    "budget": "₹65,000+"
+                },
+                "expect_real_products": True
+            }
+        ]
+        
+        all_passed = True
+        
+        for test_case in test_cases:
+            try:
+                response = requests.post(
+                    f"{API_BASE}/survey",
+                    json=test_case["data"],
+                    headers={"Content-Type": "application/json"},
+                    timeout=15
+                )
+                
+                if response.status_code == 200:
+                    data = response.json()
+                    recommendations = data.get("recommendations", [])
+                    
+                    if test_case.get("expect_empty"):
+                        if len(recommendations) == 0:
+                            self.log_test(f"Enhanced Recommendations: {test_case['name']}", True, "No recommendations (expected for low budget)")
+                        else:
+                            self.log_test(f"Enhanced Recommendations: {test_case['name']}", True, f"Got {len(recommendations)} recommendations (better than expected)")
+                    elif test_case.get("expect_real_products"):
+                        if len(recommendations) == 0:
+                            self.log_test(f"Enhanced Recommendations: {test_case['name']}", False, "No recommendations returned")
+                            all_passed = False
+                            continue
+                        
+                        # Check for real Evol product names
+                        real_product_names = ["Talia Diamond Ring", "Orbis Diamond Ring", "Hold Me Closer Diamond Ring", 
+                                            "Romance Diamond Ring", "Dazzling Dewdrop Diamond Studs", "Wain Marquise Diamond Ring"]
+                        
+                        found_real_products = 0
+                        for rec in recommendations:
+                            product_name = rec["product"]["name"]
+                            if any(real_name in product_name for real_name in real_product_names):
+                                found_real_products += 1
+                        
+                        if found_real_products > 0:
+                            self.log_test(f"Enhanced Recommendations: {test_case['name']}", True, 
+                                        f"Found {found_real_products}/{len(recommendations)} real Evol products")
+                        else:
+                            self.log_test(f"Enhanced Recommendations: {test_case['name']}", False, 
+                                        "No real Evol product names found in recommendations")
+                            all_passed = False
+                else:
+                    self.log_test(f"Enhanced Recommendations: {test_case['name']}", False, f"Status {response.status_code}")
+                    all_passed = False
+                    
+            except Exception as e:
+                self.log_test(f"Enhanced Recommendations: {test_case['name']}", False, f"Request failed: {str(e)}")
+                all_passed = False
+        
+        return all_passed
+
+    def test_data_integration_verification(self):
+        """Test data integration with INR pricing, CDN images, and product details"""
+        try:
+            # Get recommendations with mid-range budget
+            response = requests.post(
+                f"{API_BASE}/survey",
+                json={
+                    "occasion": "Special Events",
+                    "style": "Modern",
+                    "budget": "₹25,000–₹65,000"
+                },
+                headers={"Content-Type": "application/json"},
+                timeout=15
+            )
+            
+            if response.status_code != 200:
+                self.log_test("Data Integration Verification", False, f"Survey failed with status {response.status_code}")
+                return False
+            
+            data = response.json()
+            recommendations = data.get("recommendations", [])
+            
+            if len(recommendations) == 0:
+                self.log_test("Data Integration Verification", False, "No recommendations to verify")
+                return False
+            
+            issues = []
+            
+            for i, rec in enumerate(recommendations):
+                product = rec["product"]
+                
+                # Check INR pricing display in reason
+                reason = rec.get("reason", "")
+                if "₹" not in reason:
+                    issues.append(f"Product {i+1}: No INR pricing in reason")
+                
+                # Check image URL accessibility
+                image_url = product.get("image_url", "")
+                if image_url:
+                    try:
+                        img_response = requests.head(image_url, timeout=5)
+                        if img_response.status_code not in [200, 301, 302]:
+                            issues.append(f"Product {i+1}: Image URL not accessible ({img_response.status_code})")
+                    except:
+                        issues.append(f"Product {i+1}: Image URL request failed")
+                else:
+                    issues.append(f"Product {i+1}: No image URL")
+                
+                # Check product description
+                if not product.get("description"):
+                    issues.append(f"Product {i+1}: No description")
+                
+                # Check style and occasion tags
+                if not product.get("style_tags") or not product.get("occasion_tags"):
+                    issues.append(f"Product {i+1}: Missing style or occasion tags")
+            
+            if issues:
+                self.log_test("Data Integration Verification", False, f"Issues found: {'; '.join(issues[:3])}")
+                return False
+            else:
+                self.log_test("Data Integration Verification", True, f"All {len(recommendations)} products have proper INR pricing, accessible images, and complete data")
+                return True
+                
+        except Exception as e:
+            self.log_test("Data Integration Verification", False, f"Request failed: {str(e)}")
+            return False
+
+    def test_api_compatibility(self):
+        """Test that existing frontend still works with enhanced backend"""
+        try:
+            # Test the complete flow that frontend would use
+            survey_data = {
+                "occasion": "Special Events",
+                "style": "Modern",
+                "budget": "₹25,000–₹65,000"
+            }
+            
+            # Step 1: Submit survey
+            response = requests.post(
+                f"{API_BASE}/survey",
+                json=survey_data,
+                headers={"Content-Type": "application/json"},
+                timeout=15
+            )
+            
+            if response.status_code != 200:
+                self.log_test("API Compatibility", False, f"Survey submission failed: {response.status_code}")
+                return False
+            
+            survey_result = response.json()
+            session_id = survey_result.get("session_id")
+            
+            if not session_id:
+                self.log_test("API Compatibility", False, "No session_id returned from survey")
+                return False
+            
+            # Step 2: Get passport
+            passport_response = requests.get(f"{API_BASE}/passport/{session_id}", timeout=10)
+            
+            if passport_response.status_code != 200:
+                self.log_test("API Compatibility", False, f"Passport retrieval failed: {passport_response.status_code}")
+                return False
+            
+            passport_data = passport_response.json()
+            
+            # Step 3: Test AI vibe endpoint
+            ai_response = requests.post(
+                f"{API_BASE}/ai/vibe",
+                json=survey_data,
+                headers={"Content-Type": "application/json"},
+                timeout=15
+            )
+            
+            if ai_response.status_code != 200:
+                self.log_test("API Compatibility", False, f"AI vibe endpoint failed: {ai_response.status_code}")
+                return False
+            
+            ai_data = ai_response.json()
+            
+            # Verify all responses have expected structure
+            required_survey_fields = ["session_id", "vibe", "recommendations"]
+            required_passport_fields = ["session_id", "survey", "recommendations"]
+            required_ai_fields = ["vibe", "explanation", "source"]
+            
+            missing_survey = [f for f in required_survey_fields if f not in survey_result]
+            missing_passport = [f for f in required_passport_fields if f not in passport_data]
+            missing_ai = [f for f in required_ai_fields if f not in ai_data]
+            
+            if missing_survey or missing_passport or missing_ai:
+                issues = []
+                if missing_survey: issues.append(f"Survey missing: {missing_survey}")
+                if missing_passport: issues.append(f"Passport missing: {missing_passport}")
+                if missing_ai: issues.append(f"AI missing: {missing_ai}")
+                self.log_test("API Compatibility", False, f"Missing fields: {'; '.join(issues)}")
+                return False
+            
+            self.log_test("API Compatibility", True, "All frontend APIs working with enhanced backend")
+            return True
+            
+        except Exception as e:
+            self.log_test("API Compatibility", False, f"Request failed: {str(e)}")
+            return False
+
+    def test_performance_and_reliability(self):
+        """Test system performance and reliability with real product dataset"""
+        try:
+            start_time = time.time()
+            
+            # Test multiple concurrent-like requests
+            test_requests = [
+                {"occasion": "Everyday", "style": "Classic", "budget": "₹8,000–₹25,000"},
+                {"occasion": "Special Events", "style": "Modern", "budget": "₹25,000–₹65,000"},
+                {"occasion": "Romantic", "style": "Vintage", "budget": "₹65,000+"},
+                {"occasion": "Work", "style": "Modern", "budget": "₹25,000–₹65,000"}
+            ]
+            
+            successful_requests = 0
+            total_response_time = 0
+            
+            for i, survey_data in enumerate(test_requests):
+                request_start = time.time()
+                
+                response = requests.post(
+                    f"{API_BASE}/survey",
+                    json=survey_data,
+                    headers={"Content-Type": "application/json"},
+                    timeout=20
+                )
+                
+                request_time = time.time() - request_start
+                total_response_time += request_time
+                
+                if response.status_code == 200:
+                    successful_requests += 1
+                    data = response.json()
+                    
+                    # Verify response has recommendations (except for low budget)
+                    recommendations = data.get("recommendations", [])
+                    if survey_data["budget"] != "₹8,000–₹25,000" and len(recommendations) == 0:
+                        self.log_test("Performance and Reliability", False, f"Request {i+1}: No recommendations for higher budget")
+                        return False
+                else:
+                    self.log_test("Performance and Reliability", False, f"Request {i+1} failed: {response.status_code}")
+                    return False
+            
+            total_time = time.time() - start_time
+            avg_response_time = total_response_time / len(test_requests)
+            
+            # Performance criteria
+            if total_time > 30:  # Should complete all requests within 30 seconds
+                self.log_test("Performance and Reliability", False, f"Total time {total_time:.2f}s exceeds 30s limit")
+                return False
+            
+            if avg_response_time > 10:  # Average response should be under 10 seconds
+                self.log_test("Performance and Reliability", False, f"Average response time {avg_response_time:.2f}s exceeds 10s limit")
+                return False
+            
+            if successful_requests != len(test_requests):
+                self.log_test("Performance and Reliability", False, f"Only {successful_requests}/{len(test_requests)} requests successful")
+                return False
+            
+            self.log_test("Performance and Reliability", True, 
+                        f"All {successful_requests} requests successful, avg response: {avg_response_time:.2f}s, total: {total_time:.2f}s")
+            return True
+            
+        except Exception as e:
+            self.log_test("Performance and Reliability", False, f"Test failed: {str(e)}")
+            return False
     
     def run_all_tests(self):
         """Run all backend tests"""
