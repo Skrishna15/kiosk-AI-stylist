@@ -70,19 +70,19 @@ export default function AIJewelryStylistPage({ onContinue, onBack, selectedProdu
       let response = "";
       
       if (selectedProduct) {
-        // Product-specific responses
-        if (question.includes("Tell me more")) {
-          response = `The ${selectedProduct.name} is ${selectedProduct.description || 'a beautifully crafted piece'}. Priced at ₹${Math.round(selectedProduct.price*83).toLocaleString('en-IN')}, this piece combines quality craftsmanship with elegant design. It's perfect for someone with your sophisticated taste and style preferences.`;
-        } else if (question.includes("occasions")) {
-          response = `This ${selectedProduct.name} is incredibly versatile! Based on your survey preferences, it would be perfect for your selected occasions. The elegant design makes it suitable for both everyday wear and special events, allowing you to transition seamlessly from day to evening.`;
-        } else if (question.includes("care instructions")) {
-          response = `For your ${selectedProduct.name}: Clean gently with mild soap and warm water, store in a soft pouch to prevent scratches, and have it professionally cleaned every 6 months. Avoid exposure to harsh chemicals and remove before swimming or exercising to maintain its beauty.`;
-        } else if (question.includes("other styles")) {
-          response = `The ${selectedProduct.name} comes in our curated collection with complementary pieces. Based on your style preferences, I can recommend similar pieces that would create a beautiful coordinated look. Would you like me to suggest matching items?`;
-        } else if (question.includes("makes this special")) {
-          response = `What makes the ${selectedProduct.name} special is its perfect alignment with your style preferences. The quality craftsmanship, timeless design, and attention to detail make it a piece you'll treasure. At ₹${Math.round(selectedProduct.price*83).toLocaleString('en-IN')}, it offers excellent value for luxury jewelry.`;
+        // Product-specific celebrity responses
+        if (question.includes("celebrities wear")) {
+          response = `The ${selectedProduct.name} has that timeless elegance we see on red carpets! Think Emma Stone's sophisticated premieres or Blake Lively's Met Gala looks. This ₹${Math.round(selectedProduct.price*83).toLocaleString('en-IN')} piece captures the same refined glamour that celebrity stylists choose for A-list events.`;
+        } else if (question.includes("red carpet look")) {
+          response = `To achieve a red carpet look with the ${selectedProduct.name}, pair it with a classic updo to showcase the piece's elegance. Keep other jewelry minimal - let this be your statement piece, just like celebrity stylists do for award shows. The key is confidence and letting the jewelry elevate your entire look!`;
+        } else if (question.includes("celebrity-worthy")) {
+          response = `The ${selectedProduct.name} has that perfect balance of luxury and wearability that celebrity stylists love. At ₹${Math.round(selectedProduct.price*83).toLocaleString('en-IN')}, it offers the same sophistication you see in Vogue spreads and Hollywood premieres. The craftsmanship and design align with what A-list celebrities choose for their most important moments.`;
+        } else if (question.includes("events")) {
+          response = `Celebrities would absolutely wear the ${selectedProduct.name} to premieres, award ceremonies, fashion week events, and exclusive galas. It has that versatile elegance that works for both daytime red carpet events and evening black-tie affairs - perfect for your celebrity-inspired wardrobe!`;
+        } else if (question.includes("Hollywood glamour")) {
+          response = `To achieve Hollywood glamour with the ${selectedProduct.name}, think Old Hollywood meets modern sophistication. Style it with classic silhouettes, elegant updos, and timeless makeup. This piece captures that Audrey Hepburn meets modern-day Cate Blanchett aesthetic that never goes out of style.`;
         } else {
-          response = `For styling the ${selectedProduct.name}, I'd recommend keeping your other accessories minimal to let this piece shine. Based on your preferences, it would pair beautifully with your existing wardrobe and can be the perfect finishing touch for any outfit.`;
+          response = `The celebrity inspiration behind the ${selectedProduct.name} comes from that effortless luxury we see on fashion week front rows and movie premieres. It embodies the same refined elegance that celebrity stylists choose when they want their clients to look sophisticated and timeless at high-profile events.`;
         }
       } else {
         // General responses when no product selected
