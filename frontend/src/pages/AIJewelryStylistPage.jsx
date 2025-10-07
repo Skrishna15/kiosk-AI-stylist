@@ -284,10 +284,17 @@ export default function AIJewelryStylistPage({ onContinue, onBack, selectedProdu
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyPress={handleKeyPress}
-              placeholder="Ask me anything about jewelry, styling, or celebrity looks..."
+              placeholder="Type your message or tap the microphone to speak..."
               className="flex-1 px-6 py-4 border border-yellow-200 rounded-full focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 text-lg"
               data-testid="chat-input"
             />
+            
+            {/* Voice Input Button */}
+            <VoiceInputButton 
+              onTranscript={setInput}
+              isLoading={loading}
+            />
+            
             <button
               onClick={handleSendMessage}
               disabled={!input.trim() || loading}
