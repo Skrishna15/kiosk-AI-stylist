@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """
-Backend API Testing for Jewelry Recommendation System
-Tests the 4-page flow backend APIs as requested in the review.
+Enhanced Backend API Testing for Luxury Jewelry Kiosk System
+Tests the enhanced backend system with real Evol Jewels product data and celebrity style database.
+This tests the remaining 30% completion of the luxury jewelry kiosk system.
 """
 
 import requests
@@ -9,6 +10,7 @@ import json
 import sys
 import os
 from typing import Dict, Any, List
+import time
 
 # Get backend URL from frontend .env file
 def get_backend_url():
