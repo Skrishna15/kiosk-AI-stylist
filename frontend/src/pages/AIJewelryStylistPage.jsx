@@ -7,11 +7,24 @@ import axios from 'axios';
 const API = process.env.REACT_APP_BACKEND_URL || "";
 
 export default function AIJewelryStylistPage({ onContinue, onBack, selectedProduct }) {
+  const getCelebrityStyleMatch = () => {
+    // Map survey preferences to celebrity styles
+    const styleMap = {
+      "Classic": "Hollywood Glam",
+      "Modern": "Editorial Chic", 
+      "Vintage": "Vintage Romance",
+      "Bohemian": "Boho Luxe"
+    };
+    return styleMap["Modern"] || "Hollywood Glam"; // Default fallback
+  };
+
   const getInitialMessage = () => {
+    const celebrityVibe = getCelebrityStyleMatch();
+    
     if (selectedProduct) {
-      return `Hello! I see you're interested in the ${selectedProduct.name}. This beautiful piece costs ₹${Math.round(selectedProduct.price*83).toLocaleString('en-IN')} and would be perfect for your style preferences. What would you like to know about this jewelry piece?`;
+      return `Hello! I see you're interested in the ${selectedProduct.name}. This beautiful piece costs ₹${Math.round(selectedProduct.price*83).toLocaleString('en-IN')} and perfectly captures the ${celebrityVibe} aesthetic - just like what you'd see on red carpets and in celebrity style magazines. What would you like to know about this piece?`;
     }
-    return "Hello! I'm your personal jewelry stylist. Based on your preferences for modern style jewelry for special occasions, I'd love to help you find the perfect piece. What questions do you have about the recommendations?";
+    return `Hello! I'm your personal celebrity stylist AI. Based on your style preferences, I'm seeing a strong ${celebrityVibe} vibe - the same sophisticated elegance we see with A-list celebrities at premieres and fashion week. I've curated these pieces to match your celebrity-inspired aesthetic. What questions do you have about achieving this red-carpet worthy look?`;
   };
 
   const [messages, setMessages] = useState([
