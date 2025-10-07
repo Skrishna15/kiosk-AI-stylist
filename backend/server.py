@@ -407,7 +407,16 @@ async def submit_survey(payload: SurveyInput):
         explanation = vibe_explanation(vibe)
         engine = "rules"
     mood_img = VIBE_IMAGES.get(vibe)
-    recs = await recommend_products(payload, vibe)
+    # Get enhanced recommendations using real Evol Jewels data
+    try:
+        recs = await get_enhanced_recommendations(payload.model_dump())
+        if not recs:
+            # Fallback to existing logic
+            recs = await recommend_products(payload, vibe)
+    except Exception as e:
+        logger.error(f"Enhanced recommendation error: {e}")
+        # Fallback to existing logic
+        recs = await recommend_products(payload, vibe)
 
     session_id = str(uuid.uuid4())
     created_at = now_iso()
