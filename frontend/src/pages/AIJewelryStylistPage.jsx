@@ -85,19 +85,19 @@ export default function AIJewelryStylistPage({ onContinue, onBack, selectedProdu
           response = `The celebrity inspiration behind the ${selectedProduct.name} comes from that effortless luxury we see on fashion week front rows and movie premieres. It embodies the same refined elegance that celebrity stylists choose when they want their clients to look sophisticated and timeless at high-profile events.`;
         }
       } else {
-        // General responses when no product selected
-        if (question.includes("diamond ring")) {
-          response = "The Classic Diamond Solitaire Ring features a brilliant cut diamond that maximizes sparkle and light reflection. Given your preference for classic style, this timeless piece would complement any outfit and can transition beautifully from day to evening wear.";
-        } else if (question.includes("trending")) {
-          response = "This season, we're seeing a rise in minimalist designs, stackable rings, and vintage-inspired pieces. Layered necklaces and mixed metal combinations are also very popular right now.";
-        } else if (question.includes("choose between")) {
-          response = "I'd be happy to help you compare pieces! Could you tell me more about the specific items you're considering and what occasions you'll be wearing them for?";
-        } else if (question.includes("care instructions")) {
-          response = "For most fine jewelry: Clean with mild soap and warm water, store separately to avoid scratches, and have pieces professionally cleaned every 6 months. Avoid exposure to chemicals and remove before swimming or exercising.";
-        } else if (question.includes("sizing")) {
-          response = "For rings, measure your finger at the end of the day when it's slightly swollen. The ring should slide on easily but require slight pressure to remove. I can help you with a detailed sizing guide!";
+        // General celebrity stylist responses
+        if (question.includes("celebrity style matches")) {
+          response = `Based on your preferences, you have strong ${getCelebrityStyleMatch()} vibes! Think Blake Lively's effortless elegance or Emma Stone's sophisticated red carpet moments. Your style DNA matches celebrities who choose timeless pieces that make statements without being flashy.`;
+        } else if (question.includes("red carpets this season")) {
+          response = "This season on red carpets, we're seeing a return to classic Hollywood glamour with modern twists! Celebrities are choosing statement earrings, delicate layered necklaces, and vintage-inspired rings. Think Margot Robbie's Chanel moments or Zendaya's bold but elegant choices.";
+        } else if (question.includes("A-list celebrities accessorize")) {
+          response = "A-list celebrities follow the 'less is more but make it luxurious' rule. They choose one statement piece - like bold earrings with hair pulled back, or a stunning necklace with a simple dress. Celebrity stylists always ensure jewelry complements, never competes with, the overall look.";
+        } else if (question.includes("Hollywood glamour")) {
+          response = "Our Hollywood glamour collection captures that timeless elegance of Audrey Hepburn meets modern-day Cate Blanchett. These pieces are designed to give you that red-carpet confidence and sophistication that celebrity stylists are known for creating.";
+        } else if (question.includes("celebrity stylist recommend")) {
+          response = `As your celebrity stylist AI, I'd recommend pieces that match your ${getCelebrityStyleMatch()} aesthetic. These selections are inspired by what top Hollywood stylists choose for their A-list clients - elegant, sophisticated, and perfectly suited to your personal vibe.`;
         } else {
-          response = "That's a great question! I'd love to help you explore custom design options. We can create unique pieces tailored to your style preferences and budget.";
+          response = "Right now, celebrity fashion trends are leaning toward timeless elegance with modern sophistication. Think pieces that would look perfect in Vogue or at a movie premiere - that's exactly what we've curated for your style preferences!";
         }
       }
       
