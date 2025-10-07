@@ -40,21 +40,21 @@ export default function AIJewelryStylistPage({ onContinue, onBack, selectedProdu
   const getQuickQuestions = () => {
     if (selectedProduct) {
       return [
-        `Tell me more about ${selectedProduct.name}`,
-        "What occasions is this perfect for?",
-        "Care instructions for this piece",
-        "Does this come in other styles?", 
-        "What makes this special?",
-        "How should I style this?"
+        `What celebrities wear pieces like ${selectedProduct.name}?`,
+        "How can I style this like a red carpet look?",
+        "What makes this piece celebrity-worthy?",
+        "Which events would celebrities wear this to?", 
+        "How to achieve the Hollywood glamour with this?",
+        "What's the celebrity inspiration behind this?"
       ];
     }
     return [
-      "Tell me more about the diamond ring",
-      "What's trending this season?",
-      "Help me choose between pieces", 
-      "Care instructions for jewelry",
-      "Sizing guide for rings",
-      "Custom design options"
+      "Which celebrity style matches my vibe?",
+      "What's trending on red carpets this season?",
+      "How do A-list celebrities accessorize?", 
+      "Show me Hollywood glamour pieces",
+      "What would my celebrity stylist recommend?",
+      "Match me to celebrity fashion trends"
     ];
   };
 
