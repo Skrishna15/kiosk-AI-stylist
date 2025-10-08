@@ -637,12 +637,46 @@ const NewFlow = () => {
     setCurrentStep(6); // Navigate to AI chat with product context
   };
 
+  // General back navigation handler
+  const handleGoBack = () => {
+    if (currentStep > 0) {
+      setCurrentStep(currentStep - 1);
+      // Clear selectedProduct when going back from AI chat
+      if (currentStep === 6) {
+        setSelectedProduct(null);
+      }
+    }
+  };
+
+  // Specific back handlers for each step
+  const handleStyleBack = () => {
+    setCurrentStep(0); // Go back to Welcome
+  };
+
+  const handleRecommendationBack = () => {
+    setCurrentStep(4); // Go back to Metal Type
+  };
+
+  const handleAIChatBack = () => {
+    if (selectedProduct) {
+      setCurrentStep(5); // Go back to Recommendations if coming from View Details
+      setSelectedProduct(null);
+    } else {
+      setCurrentStep(4); // Go back to Metal Type if accessed directly
+    }
+  };
+
+  const handleQRBack = () => {
+    setCurrentStep(6); // Go back to AI Chat
+  };
+
   return (
     <div data-testid="new-flow-container">
       {currentStep === 0 && <WelcomeScreen onStart={handleStart} />}
       {currentStep === 1 && (
         <StylePreferencePage 
           onNext={handleStyleNext}
+          onBack={handleStyleBack}
           initialValue={surveyData.style}
         />
       )}
@@ -672,12 +706,13 @@ const NewFlow = () => {
           data={recommendations.recommendations?.map(r => r.product) || []}
           onViewDetails={handleViewDetails}
           onGetOnPhone={handleGetOnPhone}
+          onBack={handleRecommendationBack}
         />
       )}
       {currentStep === 6 && (
         <AIJewelryStylistPage 
           onContinue={handleAIChatContinue}
-          onBack={() => selectedProduct ? setCurrentStep(5) : setCurrentStep(4)}
+          onBack={handleAIChatBack}
           selectedProduct={selectedProduct}
         />
       )}
@@ -685,6 +720,7 @@ const NewFlow = () => {
         <QRCodeScreen 
           sessionId={sessionId}
           onRestart={handleRestart}
+          onBack={handleQRBack}
         />
       )}
     </div>
