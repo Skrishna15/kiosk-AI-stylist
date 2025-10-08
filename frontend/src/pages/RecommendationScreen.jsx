@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
+import BackButton from "@/components/BackButton";
 
-export default function RecommendationScreen({ data, onViewDetails, onGetOnPhone }){
+export default function RecommendationScreen({ data, onViewDetails, onGetOnPhone, onBack }){
   return (
     <div className="kiosk-frame container py-10 space-y-6" data-testid="recommendation-screen-page">
       <div>
