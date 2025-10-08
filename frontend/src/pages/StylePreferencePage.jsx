@@ -38,7 +38,7 @@ export default function StylePreferencePage({ onNext, onBack, initialValue }) {
   return (
     <div className="min-h-screen bg-white" data-testid="style-preference-page">
       {/* Back Button */}
-      {onBack && <BackButton onClick={onBack} />}
+      {/* {onBack && <BackButton onClick={onBack} />} */}
       
       <div className="container mx-auto px-8 py-16 max-w-4xl">
         {/* Header */}
