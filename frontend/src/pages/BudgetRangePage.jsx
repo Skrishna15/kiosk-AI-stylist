@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import BackButton from "@/components/BackButton";
 
 export default function BudgetRangePage({ onNext, onBack, initialValue }) {
   const [selected, setSelected] = useState(initialValue || "");
