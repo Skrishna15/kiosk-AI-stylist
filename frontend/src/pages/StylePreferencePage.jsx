@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import BackButton from "@/components/BackButton";
 
-export default function StylePreferencePage({ onNext, initialValue }) {
+export default function StylePreferencePage({ onNext, onBack, initialValue }) {
   const [selected, setSelected] = useState(initialValue || "");
 
   const styles = [
