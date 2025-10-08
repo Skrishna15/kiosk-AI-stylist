@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import BackButton from "@/components/BackButton";
 
 export default function OccasionPage({ onNext, onBack, initialValue }) {
   const [selected, setSelected] = useState(initialValue || "");
@@ -41,9 +40,6 @@ export default function OccasionPage({ onNext, onBack, initialValue }) {
 
   return (
     <div className="min-h-screen bg-white" data-testid="occasion-page">
-      {/* Back Button */}
-      <BackButton onClick={onBack} />
-      
       <div className="container mx-auto px-8 py-16 max-w-4xl">
         {/* Header */}
         <motion.div 

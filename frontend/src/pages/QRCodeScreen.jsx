@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from "react";
 import QRCode from "qrcode";
 import { Button } from "@/components/ui/button";
 import { Heart, ThumbsUp, Meh, HelpCircle, ThumbsDown } from "lucide-react";
-import BackButton from "@/components/BackButton";
 
 export default function QRCodeScreen({ sessionId, onRestart, onBack }){
   const [qr, setQr] = useState("");
@@ -18,8 +17,6 @@ export default function QRCodeScreen({ sessionId, onRestart, onBack }){
 
   return (
     <div className="kiosk-frame container py-10 space-y-6" data-testid="qrcode-screen-page">
-      {/* Back Button */}
-      {onBack && <BackButton onClick={onBack} />}
       <div>
         <div className="text-sm tracking-widest text-neutral-500">Almost Done!</div>
         <h2 className="card-title text-4xl mt-2">Scan to Save Your Matches</h2>
