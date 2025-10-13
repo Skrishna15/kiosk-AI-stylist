@@ -176,10 +176,12 @@ export default function AIJewelryStylistPage({ onContinue, onBack, selectedProdu
           response = "Our Hollywood glamour collection captures that timeless elegance of Audrey Hepburn meets modern-day Cate Blanchett. These pieces are designed to give you that red-carpet confidence and sophistication that celebrity stylists are known for creating.";
         } else if (question.includes("celebrity stylist recommend")) {
           response = `As your celebrity stylist AI, I'd recommend pieces that match your ${getCelebrityStyleMatch()} aesthetic. These selections are inspired by what top Hollywood stylists choose for their A-list clients - elegant, sophisticated, and perfectly suited to your personal vibe.`;
-        } else if (question.includes("buy these recommendations") || question.includes("purchase these pieces")) {
-          response = `Perfect! I'm so glad you're interested in these celebrity-inspired pieces. At the end of our styling session, you'll receive a QR code that opens your personalized Jewelry Passport on Evol Jewels' website. This secure platform will have all your recommendations saved, along with our styling conversation, making it easy to purchase the pieces that caught your eye. It's like having a VIP shopping experience tailored just for you!`;
+        } else if (question.includes("ready to shop") || question.includes("what next") || question.includes("purchase")) {
+          response = `Yess! I love your energy! 🛍️ Here's the deal - when we're done chatting, you'll get this amazing QR code that's basically your VIP pass to everything we've talked about. It saves all your style preferences, our whole conversation, everything! Then you can shop on Evol Jewels' site with all your personalized picks ready to go. It's like having your own personal shopping experience!`;
+        } else if (question.includes("pick for me") || question.includes("recommend")) {
+          response = `Oh honey, based on our chat, I'm seeing some absolutely gorgeous pieces in your future! 😍 You have this incredible ${getCelebrityStyleMatch()} energy that deserves jewelry with the same sophistication. I'm thinking pieces that make you feel like the main character in your own story - you know, that confident, effortless elegance that makes heads turn!`;
         } else {
-          response = "Right now, celebrity fashion trends are leaning toward timeless elegance with modern sophistication. Think pieces that would look perfect in Vogue or at a movie premiere - that's exactly what we've curated for your style preferences!";
+          response = "You know what's so exciting about jewelry trends right now? ✨ We're seeing this beautiful blend of timeless elegance with just the right amount of modern edge. The kind of pieces that would look perfect in a Vogue shoot or at a movie premiere - sophisticated but never stuffy. That's exactly the vibe I'm getting from your style choices!";
         }
       }
       
