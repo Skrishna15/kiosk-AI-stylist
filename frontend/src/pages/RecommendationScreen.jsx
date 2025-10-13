@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import BackButton from "@/components/BackButton";
 import { ChevronDown, ChevronUp, Star, Shield, Truck } from "lucide-react";
+import ProductAttractMode from "@/components/ProductAttractMode";
 
 export default function RecommendationScreen({ data, onViewDetails, onGetOnPhone, onBack }){
   const [expandedCards, setExpandedCards] = useState(new Set());
