@@ -7,14 +7,6 @@ export default function RecommendationScreen({ data, onViewDetails, onGetOnPhone
   const [expandedCards, setExpandedCards] = useState(new Set());
   return (
     <div className="kiosk-frame container py-10 space-y-6" data-testid="recommendation-screen-page">
-      {/* Product Attract Mode */}
-      {showProductAttract && data && (
-        <ProductAttractMode 
-          products={data} 
-          onExit={handleAttractExit} 
-        />
-      )}
-      
       {/* Back Button */}
       {onBack && <BackButton onClick={onBack} />}
       
