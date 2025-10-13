@@ -40,7 +40,7 @@ export default function RecommendationScreen({ data, onViewDetails, onGetOnPhone
                 
                 {/* Expanded Details */}
                 {isExpanded && (
-                  <div className="mt-4 pt-4 border-t border-gray-200 space-y-4 animate-in slide-in-from-top-2 duration-300">
+                  <div className="mt-4 pt-4 border-t border-gray-200 space-y-4 transition-all duration-300 ease-in-out">
                     {/* Product Features */}
                     <div className="space-y-2">
                       <h4 className="font-medium text-gray-800">Product Features</h4>
