@@ -304,19 +304,33 @@ export default function AIJewelryStylistPage({ onContinue, onBack, selectedProdu
           response = `Yay for treating yourself! 🎉 You'll get a QR code with all your picks saved and ready to go!`;
         }
       } else {
-        // Call the AI API for non-purchase queries
-        const response_data = await axios.post(`${API}/ai/vibe`, {
-          occasion: "Special Events",
-          style: "Modern", 
-          budget: "₹25,000–₹65,000",
-          query: userInput
-        });
+        // Create conversational AI chat request
+        const chatRequest = {
+          messages: [
+            {
+              role: "system",
+              content: `You are a friendly, enthusiastic celebrity jewelry stylist AI. Respond naturally and conversationally like you're chatting with a friend. Be warm, engaging, and knowledgeable about jewelry and celebrity fashion. Keep responses concise (1-3 sentences) but personable. Use emojis sparingly but naturally.
+
+Context: ${selectedProduct ? `The user is asking about the ${selectedProduct.name} (₹${Math.round(selectedProduct.price*83).toLocaleString('en-IN')})` : 'General jewelry styling conversation'}.
+
+Always be helpful, positive, and make the user feel confident about their style choices.`
+            },
+            {
+              role: "user", 
+              content: userInput
+            }
+          ],
+          temperature: 0.8,
+          max_tokens: 150
+        };
+
+        const response_data = await axios.post(`${API}/api/chat`, chatRequest);
         
-        response = `${response_data.data.explanation || response_data.data.vibe}`;
+        response = response_data.data.response || response_data.data.message;
         
         // Add purchase guidance if the AI response might have sparked interest
         if (selectedProduct) {
-          response += ` Want it? I'll hook you up with the QR code! 😊`;
+          response += ` Want to get it? I can help with that! 😊`;
         }
       }
       
