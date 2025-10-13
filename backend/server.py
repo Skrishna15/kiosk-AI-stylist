@@ -486,57 +486,6 @@ logger = logging.getLogger(__name__)
 EVOL_PRODUCTS = [
     {
         "id": str(uuid4()),
-        "name": "Delicate Gold Chain",
-        "price": 4999,
-        "category": "Necklaces",
-        "metal_types": ["Yellow Gold"],
-        "karat_options": ["14 KT"],
-        "sizes": ["16 inch", "18 inch"],
-        "images": [
-            "https://cdn.shopify.com/s/files/1/0674/7665/2346/products/SNKL332381-YG-PV_3024x.jpg?v=1711002550"
-        ],
-        "url": "https://evoljewels.com/collections/all-products/products/delicate-gold-chain",
-        "description": "Simple, elegant gold chain perfect for everyday wear",
-        "occasion": ["Everyday", "Work"],
-        "style": ["Classic", "Modern"],
-        "celebrity_vibe": "Everyday Chic"
-    },
-    {
-        "id": str(uuid4()),
-        "name": "Pearl Stud Earrings",
-        "price": 6999,
-        "category": "Earrings",
-        "metal_types": ["White Gold", "Yellow Gold"],
-        "karat_options": ["14 KT"],
-        "sizes": ["Small", "Medium"],
-        "images": [
-            "https://cdn.shopify.com/s/files/1/0674/7665/2346/products/SERG332381-WG-PV_3024x.jpg?v=1711002550"
-        ],
-        "url": "https://evoljewels.com/collections/all-products/products/pearl-stud-earrings",
-        "description": "Classic pearl studs for timeless elegance",
-        "occasion": ["Work", "Special Events"],
-        "style": ["Classic", "Vintage"],
-        "celebrity_vibe": "Vintage Romance"
-    },
-    {
-        "id": str(uuid4()),
-        "name": "Simple Ring Band",
-        "price": 7499,
-        "category": "Rings",
-        "metal_types": ["Rose Gold", "White Gold", "Yellow Gold"],
-        "karat_options": ["14 KT"],
-        "sizes": list(range(5, 17)),
-        "images": [
-            "https://cdn.shopify.com/s/files/1/0674/7665/2346/products/SRNG332381-RG-PV_3024x.jpg?v=1711002550"
-        ],
-        "url": "https://evoljewels.com/collections/all-products/products/simple-ring-band",
-        "description": "Minimalist ring band perfect for stacking or wearing alone",
-        "occasion": ["Everyday", "Work"],
-        "style": ["Modern", "Bohemian"],
-        "celebrity_vibe": "Minimal Modern"
-    },
-    {
-        "id": str(uuid4()),
         "name": "Talia Diamond Ring",
         "price": 14998,
         "category": "Rings",
