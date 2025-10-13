@@ -222,9 +222,9 @@ export default function AIJewelryStylistPage({ onContinue, onBack, selectedProdu
       // Check for purchase intent
       if (detectPurchaseIntent(userInput)) {
         if (selectedProduct) {
-          response = `Aw, I'm so happy you love the ${selectedProduct.name}! 💕 Here's what we'll do - when we're all done chatting, you'll get this super cool QR code that's like your personal shopping key. Just scan it and boom - your Jewelry Passport opens up with everything about this piece and our whole conversation saved. It makes shopping so much easier and more personal!`;
+          response = `Love that you want the ${selectedProduct.name}! 💕 I'll give you a QR code at the end - makes shopping super easy!`;
         } else {
-          response = `This is so exciting - I love when someone's ready to treat themselves! 🎉 At the end of our chat, I'll give you a special QR code that opens your personal Jewelry Passport. It's got all your style preferences, our conversation, and your perfect matches all saved and ready to go. Shopping has never felt so personalized!`;
+          response = `Yay for treating yourself! 🎉 You'll get a QR code with all your picks saved and ready to go!`;
         }
       } else {
         // Call the AI API for non-purchase queries
