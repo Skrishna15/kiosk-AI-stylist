@@ -609,6 +609,179 @@ EVOL_PRODUCTS = [
         "occasion": ["Romantic", "Special Events"],
         "style": ["Vintage", "Classic"],
         "celebrity_vibe": "Vintage Romance"
+    },
+    {
+        "id": str(uuid4()),
+        "name": "Aurelia Diamond Necklace",
+        "price": 25463,
+        "category": "Necklaces",
+        "metal_types": ["White Gold", "Yellow Gold"],
+        "karat_options": ["18 KT"],
+        "sizes": ["16 inch", "18 inch"],
+        "images": [
+            "https://cdn.shopify.com/s/files/1/0674/7665/2346/products/SNKL332381-WG-PV_3024x.jpg?v=1711002550"
+        ],
+        "url": "https://evoljewels.com/collections/all-products/products/aurelia-diamond-necklace",
+        "description": "Sophisticated diamond necklace for special occasions",
+        "occasion": ["Special Events", "Romantic"],
+        "style": ["Classic", "Vintage"],
+        "celebrity_vibe": "Hollywood Glam"
+    },
+    # Luxury Range Products (₹60K - ₹1L)
+    {
+        "id": str(uuid4()),
+        "name": "Royal Emerald Collection Ring",
+        "price": 75000,
+        "category": "Rings",
+        "metal_types": ["Platinum", "White Gold"],
+        "karat_options": ["18 KT", "22 KT"],
+        "sizes": list(range(5, 17)),
+        "images": [
+            "https://cdn.shopify.com/s/files/1/0674/7665/2346/products/SRNG332381-RG-PV_3024x.jpg?v=1711002550"
+        ],
+        "url": "https://evoljewels.com/collections/all-products/products/royal-emerald-ring",
+        "description": "Exquisite emerald and diamond ring for luxury occasions",
+        "occasion": ["Special Events", "Romantic"],
+        "style": ["Classic", "Modern"],
+        "celebrity_vibe": "Hollywood Glam"
+    },
+    {
+        "id": str(uuid4()),
+        "name": "Premium Diamond Tennis Bracelet",
+        "price": 85000,
+        "category": "Bracelets",
+        "metal_types": ["Platinum", "White Gold"],
+        "karat_options": ["18 KT"],
+        "sizes": ["Small", "Medium", "Large"],
+        "images": [
+            "https://cdn.shopify.com/s/files/1/0674/7665/2346/products/SNKL332381-WG-PV_3024x.jpg?v=1711002550"
+        ],
+        "url": "https://evoljewels.com/collections/all-products/products/premium-tennis-bracelet",
+        "description": "Classic tennis bracelet with premium diamonds",
+        "occasion": ["Special Events", "Work"],
+        "style": ["Classic", "Modern"],
+        "celebrity_vibe": "Editorial Chic"
+    },
+    {
+        "id": str(uuid4()),
+        "name": "Sapphire Statement Earrings",
+        "price": 95000,
+        "category": "Earrings",
+        "metal_types": ["Platinum", "White Gold"],
+        "karat_options": ["18 KT"],
+        "sizes": ["One Size"],
+        "images": [
+            "https://cdn.shopify.com/s/files/1/0674/7665/2346/products/SERG332381-WG-PV_3024x.jpg?v=1711002550"
+        ],
+        "url": "https://evoljewels.com/collections/all-products/products/sapphire-statement-earrings",
+        "description": "Bold sapphire and diamond statement earrings",
+        "occasion": ["Special Events", "Romantic"],
+        "style": ["Modern", "Bohemian"],
+        "celebrity_vibe": "Bold Statement"
+    },
+    # High-End Luxury Range (₹1L - ₹2L)
+    {
+        "id": str(uuid4()),
+        "name": "Maharaja Heritage Necklace Set",
+        "price": 150000,
+        "category": "Necklaces",
+        "metal_types": ["Yellow Gold", "Rose Gold"],
+        "karat_options": ["22 KT"],
+        "sizes": ["Adjustable"],
+        "images": [
+            "https://cdn.shopify.com/s/files/1/0674/7665/2346/products/SNKL332381-YG-PV_3024x.jpg?v=1711002550"
+        ],
+        "url": "https://evoljewels.com/collections/all-products/products/maharaja-heritage-necklace",
+        "description": "Traditional Indian heritage necklace with precious stones",
+        "occasion": ["Special Events", "Romantic"],
+        "style": ["Vintage", "Classic"],
+        "celebrity_vibe": "Vintage Romance"
+    },
+    {
+        "id": str(uuid4()),
+        "name": "Diamond Chandelier Earrings",
+        "price": 125000,
+        "category": "Earrings",
+        "metal_types": ["Platinum", "White Gold"],
+        "karat_options": ["18 KT"],
+        "sizes": ["One Size"],
+        "images": [
+            "https://cdn.shopify.com/s/files/1/0674/7665/2346/products/SERG332381-WG-PV_3024x.jpg?v=1711002550"
+        ],
+        "url": "https://evoljewels.com/collections/all-products/products/diamond-chandelier-earrings",
+        "description": "Elegant chandelier earrings with cascading diamonds",
+        "occasion": ["Special Events", "Work"],
+        "style": ["Classic", "Modern"],
+        "celebrity_vibe": "Hollywood Glam"
+    },
+    {
+        "id": str(uuid4()),
+        "name": "Royal Ruby Cocktail Ring",
+        "price": 180000,
+        "category": "Rings",
+        "metal_types": ["Platinum", "Yellow Gold"],
+        "karat_options": ["18 KT", "22 KT"],
+        "sizes": list(range(5, 17)),
+        "images": [
+            "https://cdn.shopify.com/s/files/1/0674/7665/2346/products/SRNG332381-YG-PV_3024x.jpg?v=1711002550"
+        ],
+        "url": "https://evoljewels.com/collections/all-products/products/royal-ruby-cocktail-ring",
+        "description": "Statement ruby ring with diamond accents",
+        "occasion": ["Special Events", "Romantic"],
+        "style": ["Modern", "Bohemian"],
+        "celebrity_vibe": "Bold Statement"
+    },
+    # Ultra-Luxury Range (₹2L - ₹4L)
+    {
+        "id": str(uuid4()),
+        "name": "Imperial Diamond Tiara",
+        "price": 350000,
+        "category": "Accessories",
+        "metal_types": ["Platinum", "White Gold"],
+        "karat_options": ["18 KT"],
+        "sizes": ["Adjustable"],
+        "images": [
+            "https://cdn.shopify.com/s/files/1/0674/7665/2346/products/SACC332381-PT-PV_3024x.jpg?v=1711002550"
+        ],
+        "url": "https://evoljewels.com/collections/all-products/products/imperial-diamond-tiara",
+        "description": "Regal diamond tiara for the most special occasions",
+        "occasion": ["Special Events", "Romantic"],
+        "style": ["Vintage", "Classic"],
+        "celebrity_vibe": "Hollywood Glam"
+    },
+    {
+        "id": str(uuid4()),
+        "name": "Maharani Kundan Set",
+        "price": 275000,
+        "category": "Sets",
+        "metal_types": ["Yellow Gold", "Rose Gold"],
+        "karat_options": ["22 KT"],
+        "sizes": ["Complete Set"],
+        "images": [
+            "https://cdn.shopify.com/s/files/1/0674/7665/2346/products/SSET332381-YG-PV_3024x.jpg?v=1711002550"
+        ],
+        "url": "https://evoljewels.com/collections/all-products/products/maharani-kundan-set",
+        "description": "Complete bridal kundan jewelry set with precious stones",
+        "occasion": ["Special Events", "Romantic"],
+        "style": ["Vintage", "Classic"],
+        "celebrity_vibe": "Vintage Romance"
+    },
+    {
+        "id": str(uuid4()),
+        "name": "Platinum Paradise Necklace",
+        "price": 320000,
+        "category": "Necklaces",
+        "metal_types": ["Platinum"],
+        "karat_options": ["18 KT"],
+        "sizes": ["16 inch", "18 inch", "20 inch"],
+        "images": [
+            "https://cdn.shopify.com/s/files/1/0674/7665/2346/products/SNKL332381-PT-PV_3024x.jpg?v=1711002550"
+        ],
+        "url": "https://evoljewels.com/collections/all-products/products/platinum-paradise-necklace",
+        "description": "Ultra-luxury platinum necklace with rare diamonds",
+        "occasion": ["Special Events", "Work"],
+        "style": ["Modern", "Classic"],
+        "celebrity_vibe": "Editorial Chic"
     }
 ]
 
