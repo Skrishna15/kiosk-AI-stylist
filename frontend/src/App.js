@@ -40,7 +40,25 @@ const VIBE_IMAGES = {
   "Bold Statement": "https://images.unsplash.com/photo-1623321673989-830eff0fd59f?crop=entropy&cs=srgb&fm=jpg&q=85",
 };
 
-// 60s idle reset
+// Enhanced idle detection with attract mode
+const useIdleAttract = (onIdle, ms = 30000) => {
+  const timer = useRef(null);
+  const resetTimer = () => {
+    if (timer.current) clearTimeout(timer.current);
+    timer.current = setTimeout(onIdle, ms);
+  };
+  useEffect(() => {
+    const events = ["click", "mousemove", "keydown", "touchstart", "scroll"];
+    events.forEach(e => window.addEventListener(e, resetTimer));
+    resetTimer();
+    return () => { 
+      events.forEach(e => window.removeEventListener(e, resetTimer)); 
+      if (timer.current) clearTimeout(timer.current); 
+    };
+  }, [ms, onIdle]);
+};
+
+// 60s idle reset (fallback)
 const useIdleReset = (ms = 60000) => {
   const navigate = useNavigate();
   const timer = useRef(null);
