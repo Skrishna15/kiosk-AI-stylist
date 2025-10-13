@@ -222,9 +222,9 @@ export default function AIJewelryStylistPage({ onContinue, onBack, selectedProdu
       // Check for purchase intent
       if (detectPurchaseIntent(userInput)) {
         if (selectedProduct) {
-          response = `I'm excited that you're interested in the ${selectedProduct.name}! To purchase this beautiful piece securely, you can scan the QR code that will appear at the end of our consultation. This will open your personalized Jewelry Passport where you can complete your purchase safely through Evol Jewels' official website. The QR code will save all your preferences and this specific product for easy checkout.`;
+          response = `Aw, I'm so happy you love the ${selectedProduct.name}! 💕 Here's what we'll do - when we're all done chatting, you'll get this super cool QR code that's like your personal shopping key. Just scan it and boom - your Jewelry Passport opens up with everything about this piece and our whole conversation saved. It makes shopping so much easier and more personal!`;
         } else {
-          response = `I'm thrilled that you're interested in making a purchase! At the end of our consultation, you'll receive a QR code that opens your personalized Jewelry Passport. This will take you directly to Evol Jewels' secure website where you can purchase any of your recommended pieces safely. All your preferences and our conversation will be saved for a seamless shopping experience.`;
+          response = `This is so exciting - I love when someone's ready to treat themselves! 🎉 At the end of our chat, I'll give you a special QR code that opens your personal Jewelry Passport. It's got all your style preferences, our conversation, and your perfect matches all saved and ready to go. Shopping has never felt so personalized!`;
         }
       } else {
         // Call the AI API for non-purchase queries
