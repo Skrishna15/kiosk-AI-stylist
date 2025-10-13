@@ -18,7 +18,6 @@ import QRCodeScreen from "@/pages/QRCodeScreen";
 
 // Import individual survey pages
 import StylePreferencePage from "@/pages/StylePreferencePage";
-import CelebrityAttractMode from "@/components/CelebrityAttractMode";
 import OccasionPage from "@/pages/OccasionPage";
 import BudgetRangePage from "@/pages/BudgetRangePage";
 import MetalTypePage from "@/pages/MetalTypePage";
