@@ -110,21 +110,21 @@ export default function AIJewelryStylistPage({ onContinue, onBack, selectedProdu
   const getQuickQuestions = () => {
     if (selectedProduct) {
       return [
-        `What celebrities wear pieces like ${selectedProduct.name}?`,
-        "How can I style this like a red carpet look?",
-        "What makes this piece celebrity-worthy?",
-        "How do I purchase this piece?", 
-        "Is this available for order?",
-        "What's the celebrity inspiration behind this?"
+        `Which celebs would totally rock this piece?`,
+        "How do I style this for maximum impact?",
+        "What makes this so special?",
+        "Tell me more about this piece", 
+        "How can I get this?",
+        "What's the vibe behind this design?"
       ];
     }
     return [
-      "Which celebrity style matches my vibe?",
-      "What's trending on red carpets this season?",
-      "How do A-list celebrities accessorize?", 
-      "How can I buy these recommendations?",
-      "What would my celebrity stylist recommend?",
-      "Where can I purchase these pieces?"
+      "Which celebrity am I channeling?",
+      "What's hot on red carpets right now?",
+      "How do I accessorize like an A-lister?", 
+      "I'm ready to shop - what next?",
+      "What would you pick for me?",
+      "Show me the perfect piece!"
     ];
   };
 
