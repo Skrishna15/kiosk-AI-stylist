@@ -249,10 +249,10 @@ export default function AIJewelryStylistPage({ onContinue, onBack, selectedProdu
       }]);
     } catch (error) {
       // Fallback response with purchase guidance
-      let fallbackResponse = "That's such a great question! 😊 You know what I love about your style? It's so thoughtful and sophisticated. I'm absolutely loving curating pieces that match your vibe - each one is picked to complement that amazing taste of yours!";
+      let fallbackResponse = "Love your style sense! 😊 So thoughtful and sophisticated. Perfect pieces coming your way!";
       
       if (detectPurchaseIntent(userInput)) {
-        fallbackResponse = `Ooh, someone's ready to add some sparkle to their life! ✨ Don't worry, I've got you covered. At the end of our styling session, you'll get your personal QR code that makes shopping super easy and keeps everything we've talked about saved just for you!`;
+        fallbackResponse = `Ready for some sparkle? ✨ You'll get a QR code at the end that makes shopping super easy!`;
       }
       
       setMessages(prev => [...prev, { 
