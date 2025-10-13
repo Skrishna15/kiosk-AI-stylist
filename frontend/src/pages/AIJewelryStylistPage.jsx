@@ -142,11 +142,11 @@ export default function AIJewelryStylistPage({ onContinue, onBack, selectedProdu
       if (selectedProduct) {
         // Product-specific celebrity responses
         if (question.includes("celebs would") || question.includes("celebrities wear")) {
-          response = `Oh my gosh, yes! 🌟 I can totally see Emma Stone wearing the ${selectedProduct.name} to a premiere - it has that effortless sophistication she's known for. And Blake Lively? She'd absolutely nail this at the Met Gala! At ₹${Math.round(selectedProduct.price*83).toLocaleString('en-IN')}, you're getting that same A-list elegance. Want to make it yours? I'll hook you up with a QR code to get it!`;
+          response = `Yes! 🌟 Emma Stone would totally rock this - it's got her effortless elegance. Blake Lively too! Pure A-list energy.`;
         } else if (question.includes("style this") || question.includes("maximum impact")) {
-          response = `Ooh, I love this question! 💫 Here's the secret: let the ${selectedProduct.name} be your star. Pair it with a sleek updo so nothing competes with its beauty. Keep other jewelry super minimal - think Audrey Hepburn vibes. The magic is in the confidence you wear it with! Trust me, you'll feel like you're walking your own red carpet. Ready to make heads turn?`;
+          response = `Let it be the star! 💫 Sleek updo, minimal other jewelry. Think Audrey Hepburn vibes - confident and chic!`;
         } else if (question.includes("special") || question.includes("makes this")) {
-          response = `What doesn't make it special, honestly! 😍 The ${selectedProduct.name} has this incredible balance - it's luxurious enough for your biggest moments but wearable enough that you won't save it for "someday." At ₹${Math.round(selectedProduct.price*83).toLocaleString('en-IN')}, you're investing in that same sophisticated energy celebrities bring to every red carpet. It's crafted to make YOU the main character!`;
+          response = `It's luxe enough for big moments but wearable for everyday! 😍 At ₹${Math.round(selectedProduct.price*83).toLocaleString('en-IN')}, you're getting that celebrity confidence.`;
         } else if (question.includes("events")) {
           response = `Celebrities would absolutely wear the ${selectedProduct.name} to premieres, award ceremonies, fashion week events, and exclusive galas. It has that versatile elegance that works for both daytime red carpet events and evening black-tie affairs - perfect for your celebrity-inspired wardrobe!`;
         } else if (question.includes("get this") || question.includes("purchase") || question.includes("how can I")) {
