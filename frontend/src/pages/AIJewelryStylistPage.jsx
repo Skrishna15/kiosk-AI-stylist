@@ -161,17 +161,17 @@ export default function AIJewelryStylistPage({ onContinue, onBack, selectedProdu
         if (question.includes("celebrity am I") || question.includes("style matches")) {
           const celebrityMatch = getCelebrityStyleMatch();
           const celebrityData = {
-            "Hollywood Glam": { celebrity: "Blake Lively", signature: "that effortless vintage glamour", quote: "The right jewelry can transform any outfit into something magical" },
-            "Editorial Chic": { celebrity: "Emma Stone", signature: "minimalist pieces that still make a statement", quote: "I love jewelry that feels effortless but still makes a statement" },
-            "Vintage Romance": { celebrity: "Margot Robbie", signature: "timeless pieces with serious staying power", quote: "I believe in investing in jewelry pieces that will be treasured forever" },
-            "Boho Luxe": { celebrity: "Zendaya", signature: "bold pieces that show personality", quote: "Fashion and jewelry should be fun and express who you are" }
+            "Hollywood Glam": { celebrity: "Blake Lively" },
+            "Editorial Chic": { celebrity: "Emma Stone" },
+            "Vintage Romance": { celebrity: "Margot Robbie" },
+            "Boho Luxe": { celebrity: "Zendaya" }
           };
           const match = celebrityData[celebrityMatch] || celebrityData["Hollywood Glam"];
-          response = `OMG, you are totally channeling ${match.celebrity} energy! 🌟 You both have that amazing ${celebrityMatch} vibe with ${match.signature}. She once said "${match.quote}" and honestly? That's SO you! Your jewelry choices should feel authentically yours.`;
+          response = `You're totally channeling ${match.celebrity}! 🌟 That ${celebrityMatch} vibe is so chic!`;
         } else if (question.includes("hot on red carpets") || question.includes("trending")) {
-          response = "Okay, so the red carpet tea right now? 🍵 Everyone's going back to classic Hollywood glamour but with a modern twist! I'm seeing statement earrings that actually make statements, delicate layers that look effortless, and vintage-inspired pieces that feel fresh. Margot Robbie's Chanel moments? *Chef's kiss* And don't get me started on Zendaya's bold-but-elegant game!";
+          response = "Classic Hollywood glamour with modern twists! 🍵 Statement earrings, delicate layers, vintage vibes. Margot and Zendaya are nailing it!";
         } else if (question.includes("accessorize like") || question.includes("A-lister")) {
-          response = "Here's the celebrity styling secret: 'Less is more, but make it LUXURIOUS!' 💎 The pros always pick ONE statement piece to be the star - maybe killer earrings with hair swept back, or a show-stopping necklace with a simple dress. The trick is making sure your jewelry elevates the whole look instead of fighting for attention. Quality over quantity, always!";
+          response = "Secret: Less is more, but make it LUXE! 💎 Pick ONE star piece. Quality over quantity, always!";
         } else if (question.includes("Hollywood glamour")) {
           response = "Our Hollywood glamour collection captures that timeless elegance of Audrey Hepburn meets modern-day Cate Blanchett. These pieces are designed to give you that red-carpet confidence and sophistication that celebrity stylists are known for creating.";
         } else if (question.includes("celebrity stylist recommend")) {
