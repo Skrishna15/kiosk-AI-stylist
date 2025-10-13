@@ -150,11 +150,11 @@ export default function AIJewelryStylistPage({ onContinue, onBack, selectedProdu
         } else if (question.includes("events")) {
           response = `Celebrities would absolutely wear the ${selectedProduct.name} to premieres, award ceremonies, fashion week events, and exclusive galas. It has that versatile elegance that works for both daytime red carpet events and evening black-tie affairs - perfect for your celebrity-inspired wardrobe!`;
         } else if (question.includes("get this") || question.includes("purchase") || question.includes("how can I")) {
-          response = `Yes! I'm so excited you want the ${selectedProduct.name}! 🎉 Here's what we'll do - at the end of our chat, I'll give you a special QR code that's like your personal shopping pass. It takes you straight to Evol Jewels where everything about your style preferences and our conversation is saved. Super easy, super secure, and totally personalized just for you!`;
+          response = `Absolutely! 🎉 I'll give you a QR code at the end - it saves all our chat and takes you straight to secure checkout!`;
         } else if (question.includes("Tell me more") || question.includes("about this piece")) {
-          response = `Oh, where do I even start? 😊 The ${selectedProduct.name} is honestly one of my favorites! It has this amazing way of making whoever wears it feel instantly more confident. At ₹${Math.round(selectedProduct.price*83).toLocaleString('en-IN')}, you're not just buying jewelry - you're investing in that feeling of walking into any room and knowing you look absolutely incredible. What specific details are you most curious about?`;
+          response = `It's one of my favorites! 😊 Makes you feel instantly confident. At ₹${Math.round(selectedProduct.price*83).toLocaleString('en-IN')}, you're investing in that "wow" feeling.`;
         } else {
-          response = `You know what I love about the ${selectedProduct.name}? 💎 It has that same magnetic quality that makes celebrities stop traffic on red carpets. There's something about the design that just screams "main character energy" - which is exactly what you deserve! It's inspired by those iconic fashion moments that we still talk about years later.`;
+          response = `It has that red carpet magnetism! 💎 Pure main character energy - which is exactly what you deserve!`;
         }
       } else {
         // General celebrity stylist responses
