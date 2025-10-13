@@ -1,7 +1,10 @@
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import BackButton from "@/components/BackButton";
+import { ChevronDown, ChevronUp, Star, Shield, Truck } from "lucide-react";
 
 export default function RecommendationScreen({ data, onViewDetails, onGetOnPhone, onBack }){
+  const [expandedCards, setExpandedCards] = useState(new Set());
   return (
     <div className="kiosk-frame container py-10 space-y-6" data-testid="recommendation-screen-page">
       {/* Back Button */}
