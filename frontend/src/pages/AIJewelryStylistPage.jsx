@@ -248,12 +248,8 @@ export default function AIJewelryStylistPage({ onContinue, onBack, selectedProdu
         content: response
       }]);
     } catch (error) {
-      // Fallback response with purchase guidance
-      let fallbackResponse = "Love your style sense! 😊 So thoughtful and sophisticated. Perfect pieces coming your way!";
-      
-      if (detectPurchaseIntent(userInput)) {
-        fallbackResponse = `Ready for some sparkle? ✨ You'll get a QR code at the end that makes shopping super easy!`;
-      }
+      // Dynamic fallback responses based on user input
+      let fallbackResponse = getContextualFallback(userInput, selectedProduct);
       
       setMessages(prev => [...prev, { 
         role: 'assistant', 
