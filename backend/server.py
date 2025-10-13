@@ -709,13 +709,17 @@ async def get_enhanced_recommendations(survey_data):
     budget = survey_data.get("budget", "₹25,000–₹65,000")
     
     # Parse budget range
-    budget_max = 65000  # default
-    if "Under ₹8,000" in budget:
-        budget_max = 8000
-    elif "₹8,000–₹25,000" in budget:
-        budget_max = 25000
-    elif "₹25,000–₹65,000" in budget:
-        budget_max = 65000
+    budget_min = 20000  # default minimum
+    budget_max = 60000  # default maximum
+    
+    if "₹20,000 - ₹60,000" in budget:
+        budget_min, budget_max = 20000, 60000
+    elif "₹60,000 - ₹1,00,000" in budget:
+        budget_min, budget_max = 60000, 100000
+    elif "₹1,00,000 - ₹2,00,000" in budget:
+        budget_min, budget_max = 100000, 200000
+    elif "₹2,00,000 - ₹4,00,000" in budget:
+        budget_min, budget_max = 200000, 400000
     
     # Filter products based on criteria
     filtered_products = []
