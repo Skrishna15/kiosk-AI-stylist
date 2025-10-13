@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Send, Mic, MicOff } from "lucide-react";
+import BackButton from "@/components/BackButton";
 import axios from 'axios';
 
 const API = process.env.REACT_APP_BACKEND_URL || "";
@@ -270,6 +271,9 @@ export default function AIJewelryStylistPage({ onContinue, onBack, selectedProdu
 
   return (
     <div className="h-screen bg-white flex flex-col" data-testid="ai-jewelry-stylist-page">
+      {/* Back Button */}
+      {onBack && <BackButton onClick={onBack} />}
+      
       {/* Header */}
       <div className="bg-gradient-to-r from-yellow-400 to-yellow-500 text-white p-6 border-b border-yellow-200 flex-shrink-0">
         <div className="flex items-center gap-3">
