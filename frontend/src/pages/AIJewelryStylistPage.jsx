@@ -235,11 +235,11 @@ export default function AIJewelryStylistPage({ onContinue, onBack, selectedProdu
           query: userInput
         });
         
-        response = `Based on your query, here's my recommendation: ${response_data.data.explanation || response_data.data.vibe}`;
+        response = `${response_data.data.explanation || response_data.data.vibe}`;
         
         // Add purchase guidance if the AI response might have sparked interest
         if (selectedProduct) {
-          response += ` If you're interested in purchasing, just let me know and I'll guide you to our secure checkout through your Jewelry Passport!`;
+          response += ` Want it? I'll hook you up with the QR code! 😊`;
         }
       }
       
