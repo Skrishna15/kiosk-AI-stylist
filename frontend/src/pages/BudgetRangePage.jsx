@@ -8,30 +8,30 @@ export default function BudgetRangePage({ onNext, onBack, initialValue }) {
 
   const budgets = [
     {
-      name: "Under ₹8,000",
-      description: "Perfect starter pieces and everyday essentials",
-      range: "Entry Level",
-      gradient: "from-green-100 to-emerald-200",
-      popular: false
-    },
-    {
-      name: "₹8,000–₹25,000", 
+      name: "₹20,000 - ₹60,000",
       description: "Quality pieces for regular wear and gifting",
-      range: "Popular Choice",
-      gradient: "from-blue-100 to-indigo-200",
+      range: "₹20K - ₹60K",
+      gradient: "from-green-100 to-emerald-200",
       popular: true
     },
     {
-      name: "₹25,000–₹65,000",
+      name: "₹60,000 - ₹1,00,000", 
       description: "Premium jewelry for special occasions",
-      range: "Premium",
+      range: "₹60K - ₹1L",
+      gradient: "from-blue-100 to-indigo-200",
+      popular: false
+    },
+    {
+      name: "₹1,00,000 - ₹2,00,000",
+      description: "Luxury pieces and investment jewelry",
+      range: "₹1L - ₹2L",
       gradient: "from-purple-100 to-violet-200",
       popular: false
     },
     {
-      name: "₹65,000+",
-      description: "Luxury pieces and investment jewelry",
-      range: "Luxury",
+      name: "₹2,00,000 - ₹4,00,000",
+      description: "Exclusive high-end luxury collection",
+      range: "₹2L - ₹4L",
       gradient: "from-amber-100 to-yellow-200",
       popular: false
     }
