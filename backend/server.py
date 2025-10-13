@@ -755,6 +755,102 @@ async def get_celebrity_styles():
         "style_vibes": ["Hollywood Glam", "Editorial Chic", "Vintage Romance", "Boho Luxe"]
     }
 
+class ChatMessage(BaseModel):
+    role: str
+    content: str
+
+class ChatRequest(BaseModel):
+    messages: List[ChatMessage]
+    temperature: Optional[float] = 0.8
+    max_tokens: Optional[int] = 150
+
+@app.post("/api/chat")
+async def chat_with_ai(request: ChatRequest):
+    """Natural conversational AI chat for jewelry styling"""
+    try:
+        # Try OpenAI first
+        api_key = os.environ.get("OPENAI_API_KEY")
+        if api_key and AsyncOpenAI is not None:
+            try:
+                client = AsyncOpenAI(api_key=api_key)
+                
+                # Convert messages to OpenAI format
+                openai_messages = [{"role": msg.role, "content": msg.content} for msg in request.messages]
+                
+                response = await asyncio.wait_for(
+                    client.chat.completions.create(
+                        model="gpt-4o-mini",
+                        messages=openai_messages,
+                        temperature=request.temperature,
+                        max_tokens=request.max_tokens
+                    ),
+                    timeout=15.0
+                )
+                
+                ai_response = response.choices[0].message.content
+                return {"response": ai_response, "source": "openai"}
+                
+            except Exception as openai_error:
+                logger.warning(f"OpenAI chat failed: {openai_error}")
+        
+        # Try Emergent LLM key as fallback
+        try:
+            from emergentintegrations.llm import EmergentLLM
+            
+            emergent_key = os.environ.get("EMERGENT_LLM_KEY")
+            if emergent_key:
+                llm = EmergentLLM(api_key=emergent_key)
+                
+                # Use the conversation context
+                conversation = "\n".join([f"{msg.role}: {msg.content}" for msg in request.messages])
+                
+                response = await asyncio.wait_for(
+                    llm.acomplete(conversation),
+                    timeout=15.0
+                )
+                
+                return {"response": response, "source": "emergent"}
+                
+        except Exception as emergent_error:
+            logger.warning(f"Emergent LLM chat failed: {emergent_error}")
+        
+        # Intelligent fallback based on the user's question
+        user_message = request.messages[-1].content if request.messages else ""
+        fallback_response = generate_intelligent_fallback(user_message)
+        
+        return {"response": fallback_response, "source": "fallback"}
+        
+    except Exception as e:
+        logger.error(f"Chat endpoint error: {e}")
+        return {"response": "I'm here to help you find the perfect jewelry! What would you like to know?", "source": "error"}
+
+def generate_intelligent_fallback(user_input):
+    """Generate contextual fallback responses"""
+    input_lower = user_input.lower()
+    
+    # Style and fashion questions
+    if any(word in input_lower for word in ['style', 'look', 'wear', 'fashion', 'trend']):
+        return "Great style question! I love helping with fashion choices. What specific look are you going for?"
+    
+    # Celebrity questions
+    if any(word in input_lower for word in ['celebrity', 'star', 'famous', 'red carpet']):
+        return "Ooh, I love celebrity style inspiration! They always have the best jewelry looks. Which celebrity's style catches your eye?"
+    
+    # Product questions
+    if any(word in input_lower for word in ['ring', 'necklace', 'earrings', 'bracelet', 'jewelry']):
+        return "That's a beautiful piece you're asking about! Tell me more about what draws you to it."
+    
+    # Occasion questions
+    if any(word in input_lower for word in ['occasion', 'event', 'party', 'wedding', 'date']):
+        return "Perfect question! The right jewelry can totally transform your look for any occasion. What's the special event?"
+    
+    # Purchase questions
+    if any(word in input_lower for word in ['buy', 'purchase', 'price', 'cost', 'order']):
+        return "I'd love to help you with that! At the end of our chat, you'll get a QR code that makes shopping super easy."
+    
+    # General positive response
+    return "That's such a thoughtful question! I'm here to help you find jewelry that makes you feel absolutely amazing. Tell me more!"
+
 @app.on_event("startup")
 async def on_startup():
     await seed_products_if_needed()
