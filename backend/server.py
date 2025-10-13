@@ -724,14 +724,14 @@ async def get_enhanced_recommendations(survey_data):
     # Filter products based on criteria
     filtered_products = []
     for product in EVOL_PRODUCTS:
-        if (product["price"] <= budget_max and 
+        if (budget_min <= product["price"] <= budget_max and 
             (style in product["style"] or occasion in product["occasion"])):
             filtered_products.append(product)
     
     # If not enough products, add more from the range
     if len(filtered_products) < 4:
         for product in EVOL_PRODUCTS:
-            if product["price"] <= budget_max and product not in filtered_products:
+            if budget_min <= product["price"] <= budget_max and product not in filtered_products:
                 filtered_products.append(product)
                 if len(filtered_products) >= 4:
                     break
