@@ -8,9 +8,9 @@ export default function BudgetRangePage({ onNext, onBack, initialValue }) {
 
   const budgets = [
     {
-      name: "₹20,000 - ₹60,000",
+      name: "₹10,000 - ₹60,000",
       description: "Quality pieces for regular wear and gifting",
-      range: "₹20K - ₹60K",
+      range: "₹10K - ₹60K",
       gradient: "from-green-100 to-emerald-200",
       popular: true
     },
