@@ -92,9 +92,9 @@ export default function AIJewelryStylistPage({ onContinue, onBack, selectedProdu
     const celebrityVibe = getCelebrityStyleMatch();
     
     if (selectedProduct) {
-      return `Hello! I see you're interested in the ${selectedProduct.name}. This beautiful piece costs ₹${Math.round(selectedProduct.price*83).toLocaleString('en-IN')} and perfectly captures the ${celebrityVibe} aesthetic - just like what you'd see on red carpets and in celebrity style magazines. What would you like to know about this piece?`;
+      return `Oh, excellent choice! 😍 The ${selectedProduct.name} caught your eye - I totally get why! At ₹${Math.round(selectedProduct.price*83).toLocaleString('en-IN')}, this piece has that perfect ${celebrityVibe} energy. It's the kind of jewelry that makes you feel like you're walking a red carpet, you know? What's drawing you to this particular piece?`;
     }
-    return `Hello! I'm your personal celebrity stylist AI. Based on your style preferences, I'm seeing a strong ${celebrityVibe} vibe - the same sophisticated elegance we see with A-list celebrities at premieres and fashion week. I've curated these pieces to match your celebrity-inspired aesthetic. What questions do you have about achieving this red-carpet worthy look?`;
+    return `Hey there! 👋 I'm absolutely loving your style choices so far - you've got that gorgeous ${celebrityVibe} aesthetic going on! It reminds me of how effortlessly chic celebrities look at premieres. I've picked some pieces that'll give you that same sophisticated confidence. What do you think? Ready to find your perfect match?`;
   };
 
   const [messages, setMessages] = useState([
