@@ -43,6 +43,28 @@ export default function QRCodeScreen({ sessionId, onRestart, onBack }){
         </div>
       </div>
 
+      {/* Evol Jewels Website Link */}
+      <div className="max-w-md mx-auto mt-6">
+        <div className="bg-gradient-to-r from-yellow-50 to-yellow-100 rounded-lg border border-yellow-200 p-4">
+          <div className="text-center">
+            <h3 className="font-semibold text-gray-800 mb-2">Want to Shop Now?</h3>
+            <p className="text-sm text-gray-600 mb-3">Visit our complete jewelry collection</p>
+            <a 
+              href="https://evoljewels.com/" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="inline-flex items-center px-6 py-3 bg-yellow-400 hover:bg-yellow-500 text-white font-medium rounded-full transition-all duration-200 shadow-md hover:shadow-lg"
+              data-testid="evol-website-link-qr"
+            >
+              <span>Visit Evol Jewels</span>
+              <svg className="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+              </svg>
+            </a>
+          </div>
+        </div>
+      </div>
+
       <div className="text-center text-sm subcopy">This screen will restart in {seconds}s</div>
 
       <div className="flex justify-center">
