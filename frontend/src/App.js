@@ -700,8 +700,16 @@ const NewFlow = () => {
     setCurrentStep(6); // Go back to AI Chat
   };
 
+  const handleAttractExit = () => {
+    setShowAttractMode(false);
+  };
+
   return (
     <div data-testid="new-flow-container">
+      {/* Celebrity Attract Mode Overlay */}
+      {showAttractMode && (
+        <CelebrityAttractMode onExit={handleAttractExit} />
+      )}
       {currentStep === 0 && <WelcomeScreen onStart={handleStart} />}
       {currentStep === 1 && (
         <StylePreferencePage 
