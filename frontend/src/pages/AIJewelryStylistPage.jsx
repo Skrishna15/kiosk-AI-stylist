@@ -141,12 +141,12 @@ export default function AIJewelryStylistPage({ onContinue, onBack, selectedProdu
       
       if (selectedProduct) {
         // Product-specific celebrity responses
-        if (question.includes("celebrities wear")) {
-          response = `The ${selectedProduct.name} has that timeless elegance we see on red carpets! Think Emma Stone's sophisticated premieres or Blake Lively's Met Gala looks. This ₹${Math.round(selectedProduct.price*83).toLocaleString('en-IN')} piece captures the same refined glamour that celebrity stylists choose for A-list events. If you'd like to add this to your collection, I'll provide a QR code at the end that takes you to Evol Jewels' secure website for purchase.`;
-        } else if (question.includes("red carpet look")) {
-          response = `To achieve a red carpet look with the ${selectedProduct.name}, pair it with a classic updo to showcase the piece's elegance. Keep other jewelry minimal - let this be your statement piece, just like celebrity stylists do for award shows. The key is confidence and letting the jewelry elevate your entire look! Ready to make it yours? Just scan the QR code I'll provide to purchase securely through Evol Jewels.`;
-        } else if (question.includes("celebrity-worthy")) {
-          response = `The ${selectedProduct.name} has that perfect balance of luxury and wearability that celebrity stylists love. At ₹${Math.round(selectedProduct.price*83).toLocaleString('en-IN')}, it offers the same sophistication you see in Vogue spreads and Hollywood premieres. The craftsmanship and design align with what A-list celebrities choose for their most important moments. When you're ready to purchase, scan the QR code for secure checkout on Evol Jewels' website.`;
+        if (question.includes("celebs would") || question.includes("celebrities wear")) {
+          response = `Oh my gosh, yes! 🌟 I can totally see Emma Stone wearing the ${selectedProduct.name} to a premiere - it has that effortless sophistication she's known for. And Blake Lively? She'd absolutely nail this at the Met Gala! At ₹${Math.round(selectedProduct.price*83).toLocaleString('en-IN')}, you're getting that same A-list elegance. Want to make it yours? I'll hook you up with a QR code to get it!`;
+        } else if (question.includes("style this") || question.includes("maximum impact")) {
+          response = `Ooh, I love this question! 💫 Here's the secret: let the ${selectedProduct.name} be your star. Pair it with a sleek updo so nothing competes with its beauty. Keep other jewelry super minimal - think Audrey Hepburn vibes. The magic is in the confidence you wear it with! Trust me, you'll feel like you're walking your own red carpet. Ready to make heads turn?`;
+        } else if (question.includes("special") || question.includes("makes this")) {
+          response = `What doesn't make it special, honestly! 😍 The ${selectedProduct.name} has this incredible balance - it's luxurious enough for your biggest moments but wearable enough that you won't save it for "someday." At ₹${Math.round(selectedProduct.price*83).toLocaleString('en-IN')}, you're investing in that same sophisticated energy celebrities bring to every red carpet. It's crafted to make YOU the main character!`;
         } else if (question.includes("events")) {
           response = `Celebrities would absolutely wear the ${selectedProduct.name} to premieres, award ceremonies, fashion week events, and exclusive galas. It has that versatile elegance that works for both daytime red carpet events and evening black-tie affairs - perfect for your celebrity-inspired wardrobe!`;
         } else if (question.includes("purchase this piece") || question.includes("available for order")) {
