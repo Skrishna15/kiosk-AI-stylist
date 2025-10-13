@@ -6,6 +6,31 @@ import ProductAttractMode from "@/components/ProductAttractMode";
 
 export default function RecommendationScreen({ data, onViewDetails, onGetOnPhone, onBack }){
   const [expandedCards, setExpandedCards] = useState(new Set());
+  const [showProductAttract, setShowProductAttract] = useState(false);
+  const timer = useRef(null);
+
+  // Product attract mode after 20 seconds of inactivity
+  useEffect(() => {
+    const resetTimer = () => {
+      if (timer.current) clearTimeout(timer.current);
+      timer.current = setTimeout(() => {
+        setShowProductAttract(true);
+      }, 20000); // 20 seconds
+    };
+
+    const events = ["click", "mousemove", "keydown", "touchstart", "scroll"];
+    events.forEach(e => window.addEventListener(e, resetTimer));
+    resetTimer();
+
+    return () => {
+      events.forEach(e => window.removeEventListener(e, resetTimer));
+      if (timer.current) clearTimeout(timer.current);
+    };
+  }, []);
+
+  const handleAttractExit = () => {
+    setShowProductAttract(false);
+  };
   return (
     <div className="kiosk-frame container py-10 space-y-6" data-testid="recommendation-screen-page">
       {/* Back Button */}
