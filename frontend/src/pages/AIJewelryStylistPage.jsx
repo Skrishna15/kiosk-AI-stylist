@@ -249,10 +249,10 @@ export default function AIJewelryStylistPage({ onContinue, onBack, selectedProdu
       }]);
     } catch (error) {
       // Fallback response with purchase guidance
-      let fallbackResponse = "Thank you for your question! Based on your preferences, I'd recommend exploring our curated collection that matches your style and budget. Each piece is selected to complement your sophisticated taste.";
+      let fallbackResponse = "That's such a great question! 😊 You know what I love about your style? It's so thoughtful and sophisticated. I'm absolutely loving curating pieces that match your vibe - each one is picked to complement that amazing taste of yours!";
       
       if (detectPurchaseIntent(userInput)) {
-        fallbackResponse = `I understand you're interested in making a purchase! At the end of our styling consultation, you'll receive a QR code that opens your personalized Jewelry Passport on Evol Jewels' secure website. This ensures a safe and seamless shopping experience with all your preferences saved.`;
+        fallbackResponse = `Ooh, someone's ready to add some sparkle to their life! ✨ Don't worry, I've got you covered. At the end of our styling session, you'll get your personal QR code that makes shopping super easy and keeps everything we've talked about saved just for you!`;
       }
       
       setMessages(prev => [...prev, { 
