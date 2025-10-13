@@ -326,7 +326,7 @@ Always be helpful, positive, and make the user feel confident about their style 
 
         const response_data = await axios.post(`${API}/api/chat`, chatRequest);
         
-        response = response_data.data.response || response_data.data.message;
+        response = response_data.data.response;
         
         // Add purchase guidance if the AI response might have sparked interest
         if (selectedProduct) {
