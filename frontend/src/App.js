@@ -569,9 +569,9 @@ const Recommendation = () => {
 
 // New 8-Step Flow Component (Welcome + 4 Survey Pages + Recommendations + AI Chat + QR)
 const NewFlow = () => {
+  useIdleReset();
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(0); // 0: Welcome, 1: Style, 2: Occasion, 3: Budget, 4: Metal, 5: Recommendations, 6: AI Chat, 7: QR
-  const [showAttractMode, setShowAttractMode] = useState(false);
   const [surveyData, setSurveyData] = useState({
     style: "",
     occasion: "",
@@ -581,17 +581,6 @@ const NewFlow = () => {
   const [recommendations, setRecommendations] = useState(null);
   const [sessionId, setSessionId] = useState(null);
   const [selectedProduct, setSelectedProduct] = useState(null);
-
-  // Show attract mode after 30 seconds of inactivity on welcome screen
-  const showAttract = () => {
-    if (currentStep === 0) {
-      setShowAttractMode(true);
-    }
-  };
-
-  // Use attract mode on welcome screen, regular reset on other screens  
-  useIdleAttract(showAttract, 30000); // 30 seconds to attract mode
-  useIdleReset(90000); // 90 seconds to full reset
 
   const handleStart = () => {
     setCurrentStep(1);
