@@ -207,6 +207,83 @@ export default function AIJewelryStylistPage({ onContinue, onBack, selectedProdu
     );
   };
 
+  const getContextualFallback = (userInput, selectedProduct) => {
+    const input = userInput.toLowerCase();
+    
+    // Purchase intent responses
+    if (detectPurchaseIntent(input)) {
+      const responses = [
+        "Ready for some sparkle? ✨ You'll get a QR code at the end that makes shopping super easy!",
+        "Love that you want to treat yourself! 💎 I'll hook you up with the purchase link!",
+        "Yes! Let's make it yours! 🛍️ QR code coming up for easy checkout!"
+      ];
+      return responses[Math.floor(Math.random() * responses.length)];
+    }
+    
+    // Style-related questions
+    if (input.includes('style') || input.includes('look') || input.includes('wear')) {
+      const responses = [
+        "Your style is absolutely gorgeous! 😍 Let me think of the perfect styling tips...",
+        "Great style question! 💫 You have such a good eye for elegance!",
+        "Love how thoughtful you are about styling! ✨ That's what makes great fashion sense!"
+      ];
+      return responses[Math.floor(Math.random() * responses.length)];
+    }
+    
+    // Celebrity-related questions  
+    if (input.includes('celebrity') || input.includes('star') || input.includes('famous')) {
+      const responses = [
+        "Ooh, celebrity inspiration! 🌟 You're totally thinking like a stylist!",
+        "Yes! Celebrity styling is my favorite topic! 💫 Great question!",
+        "Love the celebrity angle! ⭐ You have that A-list mindset!"
+      ];
+      return responses[Math.floor(Math.random() * responses.length)];
+    }
+    
+    // Product-specific questions
+    if (selectedProduct && (input.includes('this') || input.includes('piece') || input.includes('ring') || input.includes('necklace'))) {
+      const responses = [
+        `The ${selectedProduct.name} is such a beautiful choice! 😍 What specifically interests you about it?`,
+        `Great eye! The ${selectedProduct.name} is definitely a showstopper! 💎`,
+        `You picked an amazing piece! ✨ The ${selectedProduct.name} has incredible elegance!`
+      ];
+      return responses[Math.floor(Math.random() * responses.length)];
+    }
+    
+    // Occasion-related questions
+    if (input.includes('occasion') || input.includes('event') || input.includes('party') || input.includes('wedding')) {
+      const responses = [
+        "Perfect question! 🎉 The right jewelry can totally transform your look for any occasion!",
+        "Love that you're thinking about occasions! ✨ That's how you nail the perfect style!",
+        "Great approach! 💫 Matching jewelry to your event shows real style sense!"
+      ];
+      return responses[Math.floor(Math.random() * responses.length)];
+    }
+    
+    // Budget-related questions
+    if (input.includes('budget') || input.includes('expensive') || input.includes('cheap') || input.includes('afford')) {
+      const responses = [
+        "Smart thinking about budget! 💰 Great jewelry is an investment in yourself!",
+        "Love that you're being thoughtful about this! 💎 Quality pieces are always worth it!",
+        "Good question! ✨ The right piece at the right price - that's perfect shopping!"
+      ];
+      return responses[Math.floor(Math.random() * responses.length)];
+    }
+    
+    // Generic positive responses for other questions
+    const genericResponses = [
+      "That's such a thoughtful question! 😊 You really know how to pick great jewelry!",
+      "I love your curiosity! ✨ You're going to find the perfect piece!",
+      "Great question! 💫 Your attention to detail shows amazing style sense!",
+      "You're asking all the right questions! 🌟 That's what I love to see!",
+      "Perfect question! 💎 You clearly have great taste in jewelry!",
+      "Love how you think! ⭐ You're going to look absolutely stunning!",
+      "Such a smart question! 😍 You really understand what makes jewelry special!"
+    ];
+    
+    return genericResponses[Math.floor(Math.random() * genericResponses.length)];
+  };
+
   const handleSendMessage = async () => {
     if (!input.trim()) return;
     
