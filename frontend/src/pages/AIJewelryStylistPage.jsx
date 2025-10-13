@@ -177,11 +177,11 @@ export default function AIJewelryStylistPage({ onContinue, onBack, selectedProdu
         } else if (question.includes("celebrity stylist recommend")) {
           response = `As your celebrity stylist AI, I'd recommend pieces that match your ${getCelebrityStyleMatch()} aesthetic. These selections are inspired by what top Hollywood stylists choose for their A-list clients - elegant, sophisticated, and perfectly suited to your personal vibe.`;
         } else if (question.includes("ready to shop") || question.includes("what next") || question.includes("purchase")) {
-          response = `Yess! I love your energy! 🛍️ Here's the deal - when we're done chatting, you'll get this amazing QR code that's basically your VIP pass to everything we've talked about. It saves all your style preferences, our whole conversation, everything! Then you can shop on Evol Jewels' site with all your personalized picks ready to go. It's like having your own personal shopping experience!`;
+          response = `Yes! 🛍️ You'll get a QR code at the end - your VIP pass to personalized shopping!`;
         } else if (question.includes("pick for me") || question.includes("recommend")) {
-          response = `Oh honey, based on our chat, I'm seeing some absolutely gorgeous pieces in your future! 😍 You have this incredible ${getCelebrityStyleMatch()} energy that deserves jewelry with the same sophistication. I'm thinking pieces that make you feel like the main character in your own story - you know, that confident, effortless elegance that makes heads turn!`;
+          response = `Based on your ${getCelebrityStyleMatch()} vibe, I see gorgeous pieces in your future! 😍 Main character energy all the way!`;
         } else {
-          response = "You know what's so exciting about jewelry trends right now? ✨ We're seeing this beautiful blend of timeless elegance with just the right amount of modern edge. The kind of pieces that would look perfect in a Vogue shoot or at a movie premiere - sophisticated but never stuffy. That's exactly the vibe I'm getting from your style choices!";
+          response = "Current trend: timeless elegance meets modern edge! ✨ Think Vogue shoot vibes - sophisticated but never stuffy!";
         }
       }
       
