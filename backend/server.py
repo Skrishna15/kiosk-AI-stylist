@@ -1613,6 +1613,9 @@ async def get_enhanced_recommendations(survey_data):
 async def import_evol_products():
     """Import real Evol Jewels product data"""
     try:
+        # Debug: Check how many products are in EVOL_PRODUCTS
+        logger.info(f"EVOL_PRODUCTS array contains {len(EVOL_PRODUCTS)} products")
+        
         # Clear existing products
         await db.products.delete_many({})
         
@@ -1631,6 +1634,8 @@ async def import_evol_products():
             transformed_products.append(transformed)
         
         result = await db.products.insert_many(transformed_products)
+        
+        logger.info(f"Imported {len(result.inserted_ids)} products to database")
         
         return {
             "success": True,
