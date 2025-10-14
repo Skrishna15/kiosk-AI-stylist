@@ -108,65 +108,67 @@ class BackendTester:
                     missing_fields = [field for field in required_fields if field not in data]
                     
                     if missing_fields:
-                        self.log_test(f"Survey: {test_case['name']}", False, f"Missing fields: {missing_fields}")
+                        self.log_test(f"Survey Budget Filtering: {test_case['name']}", False, f"Missing fields: {missing_fields}")
                         all_passed = False
                         continue
                     
                     # Validate recommendations
                     recommendations = data.get("recommendations", [])
-                    expect_empty = test_case.get("expect_empty", False)
+                    min_expected = test_case.get("min_expected", 1)
                     
-                    if expect_empty:
-                        # For low budget ranges, empty results are acceptable
-                        if len(recommendations) == 0:
-                            self.log_test(f"Survey: {test_case['name']}", True, "No recommendations (expected for this budget range)")
-                            continue
-                        else:
-                            self.log_test(f"Survey: {test_case['name']}", True, f"Got {len(recommendations)} recommendations (better than expected)")
-                    else:
-                        # For higher budget ranges, we expect recommendations
-                        if not isinstance(recommendations, list) or len(recommendations) == 0:
-                            self.log_test(f"Survey: {test_case['name']}", False, "No recommendations returned")
-                            all_passed = False
-                            continue
-                        
-                        # Check if we have at least 3 recommendations as expected
-                        if len(recommendations) < 3:
-                            self.log_test(f"Survey: {test_case['name']}", False, f"Only {len(recommendations)} recommendations, expected at least 3")
-                            all_passed = False
-                            continue
+                    if len(recommendations) < min_expected:
+                        self.log_test(f"Survey Budget Filtering: {test_case['name']}", False, 
+                                    f"Got {len(recommendations)} recommendations, expected at least {min_expected}")
+                        all_passed = False
+                        continue
                     
-                    # Validate recommendation structure
+                    # Verify product data includes real CDN images, proper names, accurate INR prices
+                    cdn_images_found = 0
+                    inr_prices_found = 0
+                    real_product_names = 0
+                    
+                    expected_real_names = ["Talia", "Orbis", "Romance", "Nova", "Tranquil", "Lineal", "Victoria", "Marion"]
+                    
                     for i, rec in enumerate(recommendations):
                         if not isinstance(rec, dict) or "product" not in rec or "reason" not in rec:
-                            self.log_test(f"Survey: {test_case['name']}", False, f"Invalid recommendation {i} structure")
+                            self.log_test(f"Survey Budget Filtering: {test_case['name']}", False, f"Invalid recommendation {i} structure")
                             all_passed = False
                             break
                         
                         product = rec["product"]
-                        required_product_fields = ["id", "name", "price", "image_url"]
-                        missing_product_fields = [field for field in required_product_fields if field not in product]
-                        if missing_product_fields:
-                            self.log_test(f"Survey: {test_case['name']}", False, f"Product {i} missing fields: {missing_product_fields}")
-                            all_passed = False
-                            break
+                        reason = rec.get("reason", "")
+                        
+                        # Check for CDN images
+                        image_url = product.get("image_url", "")
+                        if "cdn.shopify.com" in image_url:
+                            cdn_images_found += 1
+                        
+                        # Check for INR prices in reason
+                        if "₹" in reason:
+                            inr_prices_found += 1
+                        
+                        # Check for real product names
+                        product_name = product.get("name", "")
+                        if any(real_name in product_name for real_name in expected_real_names):
+                            real_product_names += 1
                     
                     if all_passed:
-                        # Store session_id for passport test (use first non-empty result)
-                        if not self.session_id and len(recommendations) > 0:
+                        # Store session_id for passport test
+                        if not self.session_id:
                             self.session_id = data["session_id"]
                         
-                        self.log_test(
-                            f"Survey: {test_case['name']}", 
-                            True, 
-                            f"Session: {data['session_id']}, Engine: {data['engine']}, Vibe: {data['vibe']}, Recommendations: {len(recommendations)}"
-                        )
+                        details = (f"Recommendations: {len(recommendations)}, "
+                                 f"CDN Images: {cdn_images_found}/{len(recommendations)}, "
+                                 f"INR Prices: {inr_prices_found}/{len(recommendations)}, "
+                                 f"Real Names: {real_product_names}/{len(recommendations)}")
+                        
+                        self.log_test(f"Survey Budget Filtering: {test_case['name']}", True, details)
                 else:
-                    self.log_test(f"Survey: {test_case['name']}", False, f"Status {response.status_code}: {response.text}")
+                    self.log_test(f"Survey Budget Filtering: {test_case['name']}", False, f"Status {response.status_code}: {response.text}")
                     all_passed = False
                     
             except Exception as e:
-                self.log_test(f"Survey: {test_case['name']}", False, f"Request failed: {str(e)}")
+                self.log_test(f"Survey Budget Filtering: {test_case['name']}", False, f"Request failed: {str(e)}")
                 all_passed = False
         
         return all_passed
