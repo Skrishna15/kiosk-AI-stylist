@@ -322,8 +322,8 @@ class BackendTester:
                     return False
                 
                 products = products_response.json()
-                if len(products) != 45:
-                    self.log_test("Real Evol Products Import", False, f"Products endpoint shows {len(products)} products, expected 45")
+                if len(products) != 46:
+                    self.log_test("Real Evol Products Import", False, f"Products endpoint shows {len(products)} products, expected 46")
                     return False
                 
                 # Check price range (convert USD to INR for verification)
