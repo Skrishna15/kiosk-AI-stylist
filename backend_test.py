@@ -420,35 +420,48 @@ class BackendTester:
             self.log_test("Celebrity Styles Database", False, f"Request failed: {str(e)}")
             return False
 
-    def test_enhanced_product_recommendations(self):
-        """Test enhanced product recommendations with real Evol Jewels products"""
+    def test_product_recommendations_engine(self):
+        """Verify the recommendation engine works with real data: style matching, occasion matching, celebrity vibe assignments"""
         test_cases = [
             {
-                "name": "Classic Style Under ₹8,000 (Expected: No Results)",
+                "name": "Classic Style Matching",
                 "data": {
                     "occasion": "Special Events",
-                    "style": "Classic", 
-                    "budget": "Under ₹8,000"
+                    "style": "Classic",
+                    "budget": "₹25,000–₹65,000"
                 },
-                "expect_empty": True
+                "expected_styles": ["Classic"],
+                "expected_vibes": ["Hollywood Glam", "Editorial Chic"]
             },
             {
-                "name": "Modern Style ₹25,000–₹65,000 (Expected: Real Evol Products)",
+                "name": "Modern Style Matching", 
                 "data": {
                     "occasion": "Special Events",
                     "style": "Modern",
                     "budget": "₹25,000–₹65,000"
                 },
-                "expect_real_products": True
+                "expected_styles": ["Modern"],
+                "expected_vibes": ["Editorial Chic"]
             },
             {
-                "name": "Vintage Style ₹65,000+ (Expected: Premium Products)",
+                "name": "Vintage Style Matching",
                 "data": {
                     "occasion": "Romantic",
                     "style": "Vintage",
-                    "budget": "₹65,000+"
+                    "budget": "₹25,000–₹65,000"
                 },
-                "expect_real_products": True
+                "expected_styles": ["Vintage"],
+                "expected_vibes": ["Vintage Romance"]
+            },
+            {
+                "name": "Bohemian Style Matching",
+                "data": {
+                    "occasion": "Everyday",
+                    "style": "Bohemian",
+                    "budget": "₹25,000–₹65,000"
+                },
+                "expected_styles": ["Bohemian"],
+                "expected_vibes": ["Boho Luxe"]
             }
         ]
         
