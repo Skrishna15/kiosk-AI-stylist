@@ -1303,6 +1303,161 @@ EVOL_PRODUCTS = [
         "style": ['Vintage'],
         "celebrity_vibe": "Vintage Romance"
     },
+    # Ultra-Luxury Collection - ₹1L-₹2L Range
+    {
+        "id": str(uuid4()),
+        "name": "Empress Diamond Necklace Set",
+        "price": 125000,
+        "category": "Necklaces",
+        "metal_types": ["Yellow Gold"],
+        "karat_options": ["18 KT"],
+        "sizes": ["18 inch"],
+        "images": [
+            "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?q=80&w=1000"
+        ],
+        "url": "https://evoljewels.com/collections/luxury",
+        "description": "Stunning diamond necklace set with intricate craftsmanship, perfect for grand celebrations",
+        "occasion": ["Special Events", "Romantic"],
+        "style": ["Classic"],
+        "celebrity_vibe": "Hollywood Glam"
+    },
+    {
+        "id": str(uuid4()),
+        "name": "Royal Platinum Diamond Ring",
+        "price": 135000,
+        "category": "Rings",
+        "metal_types": ["Platinum"],
+        "karat_options": ["PT 950"],
+        "sizes": [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
+        "images": [
+            "https://images.unsplash.com/photo-1605100804763-247f67b3557e?q=80&w=1000"
+        ],
+        "url": "https://evoljewels.com/collections/luxury",
+        "description": "Exquisite platinum diamond ring with rare gemstones for the discerning connoisseur",
+        "occasion": ["Special Events", "Romantic"],
+        "style": ["Modern", "Classic"],
+        "celebrity_vibe": "Editorial Chic"
+    },
+    {
+        "id": str(uuid4()),
+        "name": "Heritage Rose Gold Bracelet",
+        "price": 145000,
+        "category": "Bracelets",
+        "metal_types": ["Rose Gold"],
+        "karat_options": ["18 KT"],
+        "sizes": ["7 inch", "7.5 inch"],
+        "images": [
+            "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?q=80&w=1000"
+        ],
+        "url": "https://evoljewels.com/collections/luxury",
+        "description": "Elegant rose gold bracelet with vintage-inspired design and premium diamonds",
+        "occasion": ["Special Events"],
+        "style": ["Vintage", "Classic"],
+        "celebrity_vibe": "Vintage Romance"
+    },
+    {
+        "id": str(uuid4()),
+        "name": "Celestial White Gold Earrings",
+        "price": 155000,
+        "category": "Earrings",
+        "metal_types": ["White Gold"],
+        "karat_options": ["18 KT"],
+        "sizes": ["One Size"],
+        "images": [
+            "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?q=80&w=1000"
+        ],
+        "url": "https://evoljewels.com/collections/luxury",
+        "description": "Breathtaking white gold chandelier earrings with cascading diamonds",
+        "occasion": ["Special Events"],
+        "style": ["Modern", "Classic"],
+        "celebrity_vibe": "Hollywood Glam"
+    },
+    {
+        "id": str(uuid4()),
+        "name": "Maharani Gold & Diamond Set",
+        "price": 180000,
+        "category": "Jewelry",
+        "metal_types": ["Yellow Gold"],
+        "karat_options": ["22 KT"],
+        "sizes": ["One Size"],
+        "images": [
+            "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?q=80&w=1000"
+        ],
+        "url": "https://evoljewels.com/collections/luxury",
+        "description": "Traditional bridal set with elaborate gold work and precious gemstones",
+        "occasion": ["Special Events", "Romantic"],
+        "style": ["Classic", "Vintage"],
+        "celebrity_vibe": "Vintage Romance"
+    },
+    # Ultra-Luxury Collection - ₹2L-₹4L Range
+    {
+        "id": str(uuid4()),
+        "name": "Grand Platinum Tiara",
+        "price": 250000,
+        "category": "Jewelry",
+        "metal_types": ["Platinum"],
+        "karat_options": ["PT 950"],
+        "sizes": ["One Size"],
+        "images": [
+            "https://images.unsplash.com/photo-1591085686350-798c0f9faa7f?q=80&w=1000"
+        ],
+        "url": "https://evoljewels.com/collections/luxury",
+        "description": "Majestic platinum tiara adorned with rare diamonds for royal occasions",
+        "occasion": ["Special Events"],
+        "style": ["Classic"],
+        "celebrity_vibe": "Hollywood Glam"
+    },
+    {
+        "id": str(uuid4()),
+        "name": "Imperial Rose Gold Collar Necklace",
+        "price": 280000,
+        "category": "Necklaces",
+        "metal_types": ["Rose Gold"],
+        "karat_options": ["18 KT"],
+        "sizes": ["16 inch"],
+        "images": [
+            "https://images.unsplash.com/photo-1603561596112-0a132b757442?q=80&w=1000"
+        ],
+        "url": "https://evoljewels.com/collections/luxury",
+        "description": "Statement collar necklace in rose gold with flawless diamond arrangement",
+        "occasion": ["Special Events"],
+        "style": ["Modern", "Classic"],
+        "celebrity_vibe": "Editorial Chic"
+    },
+    {
+        "id": str(uuid4()),
+        "name": "Legacy White Gold Diamond Suite",
+        "price": 320000,
+        "category": "Jewelry",
+        "metal_types": ["White Gold"],
+        "karat_options": ["18 KT"],
+        "sizes": ["One Size"],
+        "images": [
+            "https://images.unsplash.com/photo-1617038260770-a7d7f0ebfcce?q=80&w=1000"
+        ],
+        "url": "https://evoljewels.com/collections/luxury",
+        "description": "Complete bridal suite featuring necklace, earrings, and ring in white gold",
+        "occasion": ["Special Events", "Romantic"],
+        "style": ["Classic", "Modern"],
+        "celebrity_vibe": "Hollywood Glam"
+    },
+    {
+        "id": str(uuid4()),
+        "name": "Opulent Yellow Gold Heirloom Set",
+        "price": 380000,
+        "category": "Jewelry",
+        "metal_types": ["Yellow Gold"],
+        "karat_options": ["22 KT"],
+        "sizes": ["One Size"],
+        "images": [
+            "https://images.unsplash.com/photo-1601121141461-9d6647bca1ed?q=80&w=1000"
+        ],
+        "url": "https://evoljewels.com/collections/luxury",
+        "description": "Exquisite traditional gold set with intricate detailing and precious stones",
+        "occasion": ["Special Events", "Romantic"],
+        "style": ["Classic", "Vintage"],
+        "celebrity_vibe": "Vintage Romance"
+    },
     {
         "id": str(uuid4()),
         "name": "Design Your Dream Piece",
