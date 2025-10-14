@@ -1667,7 +1667,36 @@ class ChatRequest(BaseModel):
 async def chat_with_ai(request: ChatRequest):
     """Natural conversational AI chat for jewelry styling"""
     try:
-        # Try OpenAI first
+        # Try xAI Grok first
+        xai_key = os.environ.get("XAI_API_KEY")
+        if xai_key:
+            try:
+                from xai_sdk import Client
+                
+                client = Client(api_key=xai_key)
+                
+                # Convert messages to xAI format
+                xai_messages = [{"role": msg.role, "content": msg.content} for msg in request.messages]
+                
+                response = await asyncio.wait_for(
+                    asyncio.to_thread(
+                        client.chat.completions.create,
+                        model="grok-beta",
+                        messages=xai_messages,
+                        temperature=request.temperature,
+                        max_tokens=request.max_tokens
+                    ),
+                    timeout=15.0
+                )
+                
+                ai_response = response.choices[0].message.content
+                logger.info("Grok AI response generated successfully")
+                return {"response": ai_response, "source": "grok"}
+                
+            except Exception as grok_error:
+                logger.warning(f"Grok AI chat failed: {grok_error}")
+        
+        # Try OpenAI as fallback
         api_key = os.environ.get("OPENAI_API_KEY")
         if api_key and AsyncOpenAI is not None:
             try:
