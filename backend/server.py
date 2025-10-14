@@ -630,6 +630,58 @@ EVOL_PRODUCTS = [
         "style": ["Classic", "Vintage"],
         "celebrity_vibe": "Hollywood Glam"
     },
+    # Additional ₹10K-₹60K Range Products
+    {
+        "id": str(uuid4()),
+        "name": "Classic Pearl Drop Earrings",
+        "price": 32000,
+        "category": "Earrings",
+        "metal_types": ["Yellow Gold", "White Gold"],
+        "karat_options": ["14 KT", "18 KT"],
+        "sizes": ["One Size"],
+        "images": [
+            "https://cdn.shopify.com/s/files/1/0674/7665/2346/products/SERG332381-YG-PV_3024x.jpg?v=1711002550"
+        ],
+        "url": "https://evoljewels.com/collections/all-products/products/classic-pearl-drop-earrings",
+        "description": "Timeless pearl drop earrings for elegant occasions",
+        "occasion": ["Work", "Special Events"],
+        "style": ["Classic", "Vintage"],
+        "celebrity_vibe": "Hollywood Glam"
+    },
+    {
+        "id": str(uuid4()),
+        "name": "Diamond Infinity Bracelet",
+        "price": 45000,
+        "category": "Bracelets",
+        "metal_types": ["Rose Gold", "White Gold"],
+        "karat_options": ["18 KT"],
+        "sizes": ["Small", "Medium", "Large"],
+        "images": [
+            "https://cdn.shopify.com/s/files/1/0674/7665/2346/products/SBRC332381-RG-PV_3024x.jpg?v=1711002550"
+        ],
+        "url": "https://evoljewels.com/collections/all-products/products/diamond-infinity-bracelet",
+        "description": "Elegant infinity symbol bracelet with diamonds",
+        "occasion": ["Romantic", "Special Events"],
+        "style": ["Modern", "Classic"],
+        "celebrity_vibe": "Editorial Chic"
+    },
+    {
+        "id": str(uuid4()),
+        "name": "Emerald Solitaire Ring",
+        "price": 55000,
+        "category": "Rings",
+        "metal_types": ["Yellow Gold", "Platinum"],
+        "karat_options": ["18 KT"],
+        "sizes": list(range(5, 17)),
+        "images": [
+            "https://cdn.shopify.com/s/files/1/0674/7665/2346/products/SRNG332381-YG-PV_3024x.jpg?v=1711002550"
+        ],
+        "url": "https://evoljewels.com/collections/all-products/products/emerald-solitaire-ring",
+        "description": "Beautiful emerald solitaire in classic setting",
+        "occasion": ["Romantic", "Special Events"],
+        "style": ["Classic", "Modern"],
+        "celebrity_vibe": "Hollywood Glam"
+    },
     # Luxury Range Products (₹60K - ₹1L)
     {
         "id": str(uuid4()),
