@@ -1669,6 +1669,7 @@ async def chat_with_ai(request: ChatRequest):
     try:
         # Try Groq first (ultra-fast inference)
         groq_key = os.environ.get("GROQ_API_KEY")
+        logger.info(f"Groq key present: {bool(groq_key)}")
         if groq_key:
             try:
                 from groq import AsyncGroq
