@@ -436,3 +436,19 @@ agent_communication:
 agent_communication:
   - agent: "main"
     message: "✅ Fixed product display issue by importing real products into MongoDB database. Old mock products have been cleared and replaced with 46 authentic Evol Jewels products. Verified through API testing that recommendations now show real products like Nova diamond eternity ring, Tranquil Diamond Necklace, etc. Frontend restarted to clear any caching. System now fully operational with real product data."
+
+  - task: "Budget Range Filtering Fix"
+    implemented: true
+    working: true
+    file: "server.py"
+    stuck_count: 0
+    priority: "critical"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "✅ Fixed budget filtering mismatch. Frontend was sending budget ranges with spaces '₹10,000 - ₹60,000' but backend BUDGET_RANGES_INR only had en-dash format '₹10,000–₹60,000'. Added frontend format mappings to BUDGET_RANGES_INR dictionary. Verified filtering now works correctly: ₹10K-₹60K shows lower-priced products (Talia Ring ₹14,998, Orbis Ring ₹15,323), ₹60K-₹1L shows mid-range products (Urbane Earrings ₹61,075, Reverie Earrings ₹62,331, Marion Pendant ₹62,696). Different budget selections now return different products with appropriate price ranges."
+
+agent_communication:
+  - agent: "main"
+    message: "✅ BUDGET FILTERING ISSUE RESOLVED - The problem was a format mismatch between frontend and backend. Frontend sends '₹10,000 - ₹60,000' (with spaces), but backend only recognized '₹10,000–₹60,000' (en-dash). Added frontend format mappings to BUDGET_RANGES_INR. Tested and confirmed: ₹10K-₹60K range returns products priced ₹14,998-₹44,534, ₹60K-₹1L range returns products priced ₹61,075-₹68,128. Budget filtering now working correctly - different selections show different products with proper price filtering."
