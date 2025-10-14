@@ -311,8 +311,8 @@ class BackendTester:
                     return False
                 
                 imported_count = data.get("imported", 0)
-                if imported_count != 45:  # Expect exactly 45 products including custom option
-                    self.log_test("Real Evol Products Import", False, f"Expected 45 products, got {imported_count}")
+                if imported_count != 46:  # Expect 45 real products + 1 custom option = 46 total
+                    self.log_test("Real Evol Products Import", False, f"Expected 46 products (45 real + 1 custom), got {imported_count}")
                     return False
                 
                 # Verify products are accessible via products endpoint
