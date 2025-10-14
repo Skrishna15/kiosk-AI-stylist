@@ -31,12 +31,20 @@ export default function RecommendationScreen({ data, onViewDetails, onGetOnPhone
           };
 
           return (
-            <div key={p.id} className="rounded-xl border border-neutral-200 overflow-hidden bg-white/90 shadow-sm transition-all duration-300" data-testid={`rec-card-${idx}`}>
+            <div key={p.id} className={`rounded-xl border overflow-hidden shadow-sm transition-all duration-300 ${
+              p.is_custom 
+                ? 'border-yellow-400 bg-gradient-to-br from-yellow-50 to-yellow-100' 
+                : 'border-neutral-200 bg-white/90'
+            }`} data-testid={`rec-card-${idx}`}>
               <img src={p.image_url} alt={p.name} className="w-full h-64 object-cover" />
               <div className="p-4">
                 <div className="font-semibold text-lg">{p.name}</div>
                 <div className="text-sm text-gray-600 mt-1">{p.description || 'Beautifully crafted piece for your look.'}</div>
-                <div className="text-lg font-semibold mt-2 text-yellow-600">₹{Math.round(p.price*83).toLocaleString('en-IN')}</div>
+                {p.is_custom ? (
+                  <div className="text-lg font-semibold mt-2 text-yellow-600">Starting from ₹50,000</div>
+                ) : (
+                  <div className="text-lg font-semibold mt-2 text-yellow-600">₹{Math.round(p.price*83).toLocaleString('en-IN')}</div>
+                )}
                 
                 {/* Expanded Details */}
                 {isExpanded && (
