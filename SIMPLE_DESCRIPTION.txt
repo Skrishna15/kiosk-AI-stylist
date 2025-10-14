@@ -1,0 +1,51 @@
+# Evol Jewels AI Stylist Kiosk - Simple Description
+
+## PRODUCT DESCRIPTION
+
+Evol Jewels AI-Powered Stylist Kiosk is an interactive jewelry recommendation system for 55-inch vertical touchscreen displays (1080x1920px). The application provides personalized jewelry recommendations through an elegant white & gold interface.
+
+**Key Features:**
+- 8-step personalized journey (Style → Occasion → Budget → Metal → AI Chat)
+- 55 luxury jewelry products (₹14,998 to ₹380,000)
+- AI-powered conversational stylist using Groq/Grok/OpenAI
+- Smart filtering by style, occasion, budget (₹10K-₹4L), and metal type
+- Voice and text chat support
+- QR code digital passport for seamless mobile shopping
+- 60-second auto-reset for kiosk mode
+- Celebrity-inspired styling recommendations
+
+**Use Case:** In-store customers interact with the touchscreen kiosk to receive personalized jewelry recommendations and chat with an AI stylist, then scan a QR code to complete purchase on their mobile device.
+
+---
+
+## TECH STACK
+
+**Frontend:**
+- React 18.2.0 + React Router
+- Tailwind CSS + Shadcn/UI components
+- Framer Motion (animations)
+- Vite (build tool)
+- Web Speech API (voice input)
+
+**Backend:**
+- FastAPI (Python)
+- MongoDB + Motor (async driver)
+- Uvicorn ASGI server
+- Pydantic (data validation)
+
+**AI Integration:**
+- Groq (Llama 3.3 70B) - Primary AI
+- xAI Grok Beta - Fallback #1
+- OpenAI GPT-4o-mini - Fallback #2
+
+**Infrastructure:**
+- Kubernetes + Docker
+- Supervisor (process management)
+- Nginx (reverse proxy)
+
+**Key Libraries:**
+- groq (0.32.0), xai-sdk (1.2.0), openai (2.3.0)
+- React, axios, framer-motion
+- MongoDB, motor, fastapi
+
+**Display:** 1080x1920 portrait touchscreen, optimized for kiosk deployment
