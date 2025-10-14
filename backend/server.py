@@ -1395,18 +1395,28 @@ async def get_enhanced_recommendations(survey_data):
     
     # Convert to RecommendationItem format
     recommendations = []
-    for product_data in filtered_products[:4]:
+    # Take first 3 regular products, then add custom option as 4th
+    regular_products = [p for p in filtered_products if not p.get("is_custom")][:3]
+    custom_products = [p for p in filtered_products if p.get("is_custom")]
+    
+    # Combine regular products with custom option
+    products_to_process = regular_products + custom_products
+    
+    for product_data in products_to_process:
         # Convert price to INR for display
         price_inr = int(round(product_data["price"]))
         
         # Create reason based on matching criteria
         reason_parts = []
-        if style in product_data["style"]:
-            reason_parts.append("matches your style preference")
-        if occasion in product_data["occasion"]:
-            reason_parts.append("perfect for your occasion")
-        reason_parts.append(f"within your budget at {format_inr(price_inr)}")
-        reason = ", ".join(reason_parts) if reason_parts else "curated for your style"
+        if product_data.get("is_custom"):
+            reason = "Create your own unique piece with our expert jewelers"
+        else:
+            if style in product_data["style"]:
+                reason_parts.append("matches your style preference")
+            if occasion in product_data["occasion"]:
+                reason_parts.append("perfect for your occasion")
+            reason_parts.append(f"within your budget at {format_inr(price_inr)}")
+            reason = ", ".join(reason_parts) if reason_parts else "curated for your style"
         
         # Create Product object
         product = Product(
