@@ -1693,15 +1693,18 @@ async def test_groq():
 @app.post("/api/chat")
 async def chat_with_ai(request: ChatRequest):
     """Natural conversational AI chat for jewelry styling"""
-    logger.info("=== CHAT ENDPOINT CALLED ===")
+    logger.info(f"=== Chat endpoint called with {len(request.messages)} messages ===")
+    
     try:
         # Try Groq first (ultra-fast inference)
         groq_key = os.environ.get("GROQ_API_KEY")
-        logger.info(f"Groq key present: {bool(groq_key)}, len: {len(groq_key) if groq_key else 0}")
+        logger.info(f"GROQ_API_KEY present: {bool(groq_key)}")
+        
         if groq_key:
             logger.info("Attempting Groq API call...")
             try:
                 from groq import AsyncGroq
+                logger.info("AsyncGroq imported successfully")
                 
                 client = AsyncGroq(api_key=groq_key)
                 logger.info("Groq client created")
@@ -1718,9 +1721,10 @@ async def chat_with_ai(request: ChatRequest):
                 for msg in request.messages:
                     messages.append({"role": msg.role, "content": msg.content})
                 
+                logger.info(f"Calling Groq with {len(messages)} messages...")
                 response = await asyncio.wait_for(
                     client.chat.completions.create(
-                        model="llama-3.3-70b-versatile",  # Fast and conversational
+                        model="llama-3.3-70b-versatile",
                         messages=messages,
                         temperature=request.temperature,
                         max_tokens=request.max_tokens
@@ -1729,13 +1733,18 @@ async def chat_with_ai(request: ChatRequest):
                 )
                 
                 ai_response = response.choices[0].message.content
-                logger.info("Groq AI stylist response generated successfully")
+                logger.info(f"✅ Groq AI response generated: {ai_response[:50]}...")
                 return {"response": ai_response, "source": "groq"}
                 
             except Exception as groq_error:
-                logger.warning(f"Groq AI chat failed: {groq_error}")
+                logger.error(f"❌ Groq AI chat failed: {type(groq_error).__name__}: {str(groq_error)}")
+                import traceback
+                logger.error(f"Traceback: {traceback.format_exc()}")
+        else:
+            logger.warning("No GROQ_API_KEY found in environment")
         
         # Try xAI Grok as fallback
+        logger.info("Trying xAI Grok fallback...")
         xai_key = os.environ.get("XAI_API_KEY")
         if xai_key and AsyncOpenAI is not None:
             try:
