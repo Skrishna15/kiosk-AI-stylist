@@ -360,7 +360,7 @@ class BackendTester:
                     return False
                 
                 self.log_test("Real Evol Products Import", True, 
-                            f"Successfully imported 45 products (₹{min_price_inr:.0f} - ₹{max_price_inr:.0f} range) + custom option")
+                            f"Successfully imported 46 products: 45 real Evol products (₹{min_price_inr:.0f} - ₹{max_price_inr:.0f}) + 1 custom option")
                 return True
             else:
                 self.log_test("Real Evol Products Import", False, f"Status {response.status_code}: {response.text}")
