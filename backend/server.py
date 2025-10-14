@@ -819,6 +819,108 @@ EVOL_PRODUCTS = [
         "style": ["Modern", "Classic"],
         "celebrity_vibe": "Editorial Chic"
     },
+    {
+        "id": str(uuid4()),
+        "name": "Celestial Diamond Pendant Set",
+        "price": 68000,
+        "category": "Sets",
+        "metal_types": ["White Gold", "Rose Gold"],
+        "karat_options": ["18 KT"],
+        "sizes": ["16 inch", "18 inch"],
+        "images": [
+            "https://cdn.shopify.com/s/files/1/0674/7665/2346/products/SSET332381-WG-PV_3024x.jpg?v=1711002550"
+        ],
+        "url": "https://evoljewels.com/collections/all-products/products/celestial-diamond-pendant-set",
+        "description": "Elegant pendant and earring set with celestial motifs",
+        "occasion": ["Special Events", "Work"],
+        "style": ["Modern", "Classic"],
+        "celebrity_vibe": "Editorial Chic"
+    },
+    {
+        "id": str(uuid4()),
+        "name": "Vintage Rose Gold Cuff",
+        "price": 72000,
+        "category": "Bracelets",
+        "metal_types": ["Rose Gold", "Yellow Gold"],
+        "karat_options": ["18 KT", "22 KT"],
+        "sizes": ["Adjustable"],
+        "images": [
+            "https://cdn.shopify.com/s/files/1/0674/7665/2346/products/SBRC332381-RG-PV_3024x.jpg?v=1711002550"
+        ],
+        "url": "https://evoljewels.com/collections/all-products/products/vintage-rose-gold-cuff",
+        "description": "Beautifully crafted vintage-inspired rose gold cuff",
+        "occasion": ["Everyday", "Special Events"],
+        "style": ["Vintage", "Bohemian"],
+        "celebrity_vibe": "Vintage Romance"
+    },
+    {
+        "id": str(uuid4()),
+        "name": "Modern Geometric Necklace",
+        "price": 89000,
+        "category": "Necklaces",
+        "metal_types": ["Platinum", "White Gold"],
+        "karat_options": ["18 KT"],
+        "sizes": ["16 inch", "18 inch"],
+        "images": [
+            "https://cdn.shopify.com/s/files/1/0674/7665/2346/products/SNKL332381-PT-PV_3024x.jpg?v=1711002550"
+        ],
+        "url": "https://evoljewels.com/collections/all-products/products/modern-geometric-necklace",
+        "description": "Contemporary geometric design with diamond accents",
+        "occasion": ["Work", "Special Events"],
+        "style": ["Modern", "Bohemian"],
+        "celebrity_vibe": "Editorial Chic"
+    },
+    {
+        "id": str(uuid4()),
+        "name": "Heritage Kundan Choker",
+        "price": 78000,
+        "category": "Necklaces",
+        "metal_types": ["Yellow Gold", "Rose Gold"],
+        "karat_options": ["22 KT"],
+        "sizes": ["14 inch", "16 inch"],
+        "images": [
+            "https://cdn.shopify.com/s/files/1/0674/7665/2346/products/SNKL332381-YG-PV_3024x.jpg?v=1711002550"
+        ],
+        "url": "https://evoljewels.com/collections/all-products/products/heritage-kundan-choker",
+        "description": "Traditional kundan choker with intricate craftsmanship",
+        "occasion": ["Special Events", "Romantic"],
+        "style": ["Vintage", "Classic"],
+        "celebrity_vibe": "Vintage Romance"
+    },
+    {
+        "id": str(uuid4()),
+        "name": "Diamond Stacking Ring Set",
+        "price": 92000,
+        "category": "Rings",
+        "metal_types": ["White Gold", "Rose Gold", "Yellow Gold"],
+        "karat_options": ["18 KT"],
+        "sizes": list(range(5, 17)),
+        "images": [
+            "https://cdn.shopify.com/s/files/1/0674/7665/2346/products/SRNG332381-WG-PV_3024x.jpg?v=1711002550"
+        ],
+        "url": "https://evoljewels.com/collections/all-products/products/diamond-stacking-ring-set",
+        "description": "Versatile set of stackable diamond rings",
+        "occasion": ["Everyday", "Work"],
+        "style": ["Modern", "Classic"],
+        "celebrity_vibe": "Editorial Chic"
+    },
+    {
+        "id": str(uuid4()),
+        "name": "Art Deco Diamond Earrings",
+        "price": 83000,
+        "category": "Earrings",
+        "metal_types": ["Platinum", "White Gold"],
+        "karat_options": ["18 KT"],
+        "sizes": ["One Size"],
+        "images": [
+            "https://cdn.shopify.com/s/files/1/0674/7665/2346/products/SERG332381-PT-PV_3024x.jpg?v=1711002550"
+        ],
+        "url": "https://evoljewels.com/collections/all-products/products/art-deco-diamond-earrings",
+        "description": "Sophisticated Art Deco inspired diamond earrings",
+        "occasion": ["Special Events", "Work"],
+        "style": ["Vintage", "Classic"],
+        "celebrity_vibe": "Hollywood Glam"
+    },
     # High-End Luxury Range (₹1L - ₹2L)
     {
         "id": str(uuid4()),
