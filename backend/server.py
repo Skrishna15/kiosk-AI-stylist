@@ -1523,26 +1523,42 @@ async def get_enhanced_recommendations(survey_data):
     style = survey_data.get("style", "Classic")
     occasion = survey_data.get("occasion", "Special Events")  
     budget = survey_data.get("budget", "₹25,000–₹65,000")
+    metal = survey_data.get("metal", "Gold")
+    
+    # Map metal selection to metal_types
+    metal_mapping = {
+        "Gold": "Yellow Gold",
+        "Silver": "White Gold",  # Silver typically means White Gold in jewelry
+        "Platinum": "Platinum",
+        "Rose Gold": "Rose Gold"
+    }
+    selected_metal = metal_mapping.get(metal, "Yellow Gold")
     
     # Parse budget range using the same logic as BUDGET_RANGES_INR
     budget_min, budget_max = BUDGET_RANGES_INR.get(budget, (25000, 65000))
     
-    # Filter products based on criteria
+    # Filter products based on criteria including metal type
     filtered_products = []
     for product in EVOL_PRODUCTS:
         # Skip custom option for regular filtering
         if product.get("is_custom"):
             continue
-            
+        
+        # Check metal type match
+        metal_match = selected_metal in product.get("metal_types", [])
+        
+        # Apply filters: budget, metal, and (style OR occasion)
         if (budget_min <= product["price"] <= budget_max and 
+            metal_match and
             (style in product["style"] or occasion in product["occasion"])):
             filtered_products.append(product)
     
-    # If not enough products, add more from the range
+    # If not enough products, relax style/occasion filter but keep metal filter
     if len(filtered_products) < 4:
         for product in EVOL_PRODUCTS:
             if (not product.get("is_custom") and 
-                budget_min <= product["price"] <= budget_max and 
+                budget_min <= product["price"] <= budget_max and
+                selected_metal in product.get("metal_types", []) and
                 product not in filtered_products):
                 filtered_products.append(product)
                 if len(filtered_products) >= 4:
