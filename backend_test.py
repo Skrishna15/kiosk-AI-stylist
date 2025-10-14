@@ -308,8 +308,9 @@ class BackendTester:
             return False
 
     def test_evol_products_import(self):
-        """Test POST /api/admin/import-evol-products endpoint"""
+        """Test that all 45 real Evol Jewels products are properly loaded (₹14,998 - ₹68,128 range)"""
         try:
+            # First import the products
             response = requests.post(
                 f"{API_BASE}/admin/import-evol-products",
                 headers={"Content-Type": "application/json"},
@@ -321,22 +322,67 @@ class BackendTester:
                 
                 # Validate response structure
                 if not data.get("success"):
-                    self.log_test("Evol Products Import", False, f"Import failed: {data}")
+                    self.log_test("Real Evol Products Import", False, f"Import failed: {data}")
                     return False
                 
                 imported_count = data.get("imported", 0)
-                if imported_count < 5:  # Expect at least 5 real products
-                    self.log_test("Evol Products Import", False, f"Only {imported_count} products imported, expected more")
+                if imported_count != 45:  # Expect exactly 45 products including custom option
+                    self.log_test("Real Evol Products Import", False, f"Expected 45 products, got {imported_count}")
                     return False
                 
-                self.log_test("Evol Products Import", True, f"Successfully imported {imported_count} Evol Jewels products")
+                # Verify products are accessible via products endpoint
+                products_response = requests.get(f"{API_BASE}/products", timeout=10)
+                if products_response.status_code != 200:
+                    self.log_test("Real Evol Products Import", False, "Cannot access products endpoint after import")
+                    return False
+                
+                products = products_response.json()
+                if len(products) != 45:
+                    self.log_test("Real Evol Products Import", False, f"Products endpoint shows {len(products)} products, expected 45")
+                    return False
+                
+                # Check price range (convert USD to INR for verification)
+                usd_to_inr = 83.0
+                min_price_inr = float('inf')
+                max_price_inr = 0
+                custom_product_found = False
+                
+                for product in products:
+                    price_usd = product.get("price", 0)
+                    price_inr = price_usd * usd_to_inr
+                    
+                    # Check for custom jewelry option (price = 0)
+                    if price_usd == 0 and "Design Your Dream Piece" in product.get("name", ""):
+                        custom_product_found = True
+                        continue
+                    
+                    if price_inr < min_price_inr:
+                        min_price_inr = price_inr
+                    if price_inr > max_price_inr:
+                        max_price_inr = price_inr
+                
+                # Verify price range matches expected ₹14,998 - ₹68,128
+                if abs(min_price_inr - 14998) > 100:  # Allow small rounding differences
+                    self.log_test("Real Evol Products Import", False, f"Min price ₹{min_price_inr:.0f} doesn't match expected ₹14,998")
+                    return False
+                
+                if abs(max_price_inr - 68128) > 100:  # Allow small rounding differences
+                    self.log_test("Real Evol Products Import", False, f"Max price ₹{max_price_inr:.0f} doesn't match expected ₹68,128")
+                    return False
+                
+                if not custom_product_found:
+                    self.log_test("Real Evol Products Import", False, "Custom jewelry option 'Design Your Dream Piece' not found")
+                    return False
+                
+                self.log_test("Real Evol Products Import", True, 
+                            f"Successfully imported 45 products (₹{min_price_inr:.0f} - ₹{max_price_inr:.0f} range) + custom option")
                 return True
             else:
-                self.log_test("Evol Products Import", False, f"Status {response.status_code}: {response.text}")
+                self.log_test("Real Evol Products Import", False, f"Status {response.status_code}: {response.text}")
                 return False
                 
         except Exception as e:
-            self.log_test("Evol Products Import", False, f"Request failed: {str(e)}")
+            self.log_test("Real Evol Products Import", False, f"Request failed: {str(e)}")
             return False
 
     def test_celebrity_styles_database(self):
