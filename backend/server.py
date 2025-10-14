@@ -1250,6 +1250,10 @@ async def get_enhanced_recommendations(survey_data):
     # Filter products based on criteria
     filtered_products = []
     for product in EVOL_PRODUCTS:
+        # Skip custom option for regular filtering
+        if product.get("is_custom"):
+            continue
+            
         if (budget_min <= product["price"] <= budget_max and 
             (style in product["style"] or occasion in product["occasion"])):
             filtered_products.append(product)
@@ -1257,10 +1261,17 @@ async def get_enhanced_recommendations(survey_data):
     # If not enough products, add more from the range
     if len(filtered_products) < 4:
         for product in EVOL_PRODUCTS:
-            if budget_min <= product["price"] <= budget_max and product not in filtered_products:
+            if (not product.get("is_custom") and 
+                budget_min <= product["price"] <= budget_max and 
+                product not in filtered_products):
                 filtered_products.append(product)
                 if len(filtered_products) >= 4:
                     break
+    
+    # Always add custom option as the last item
+    custom_option = next((p for p in EVOL_PRODUCTS if p.get("is_custom")), None)
+    if custom_option:
+        filtered_products.append(custom_option)
     
     # Convert to RecommendationItem format
     recommendations = []
