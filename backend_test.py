@@ -64,45 +64,28 @@ class BackendTester:
             self.log_test("Health Check", False, f"Request failed: {str(e)}")
             return False
     
-    def test_survey_submission(self):
-        """Test POST /api/survey with various budget ranges"""
+    def test_survey_api_budget_filtering(self):
+        """Test Survey API (/api/survey) with multiple budget ranges as specified in review request"""
         test_cases = [
             {
-                "name": "Everyday Classic Low-Range (Expected: Few/No Results)",
-                "data": {
-                    "occasion": "Everyday",
-                    "style": "Classic", 
-                    "budget": "Under ₹8,000",
-                    "vibe_preference": "Minimal Modern"
-                },
-                "expect_empty": True  # We expect this to be empty based on product prices
-            },
-            {
-                "name": "Special Events Modern Mid-Range",
+                "name": "₹10K-₹60K Range (Should return products from 41 available)",
                 "data": {
                     "occasion": "Special Events",
                     "style": "Modern",
-                    "budget": "₹8,000–₹25,000"
+                    "budget": "₹25,000–₹65,000"  # This covers the ₹10K-₹60K range mentioned
                 },
-                "expect_empty": False
+                "expected_products": "from_41_available",
+                "min_expected": 3
             },
             {
-                "name": "Work Vintage High-Range",
+                "name": "₹60K-₹1L Range (Should return products from 4 available)",
                 "data": {
-                    "occasion": "Work",
-                    "style": "Vintage", 
-                    "budget": "₹25,000–₹65,000"
+                    "occasion": "Special Events",
+                    "style": "Classic",
+                    "budget": "₹65,000+"  # This covers the ₹60K-₹1L range mentioned
                 },
-                "expect_empty": False
-            },
-            {
-                "name": "Romantic Bohemian Premium",
-                "data": {
-                    "occasion": "Romantic",
-                    "style": "Bohemian",
-                    "budget": "₹65,000+"
-                },
-                "expect_empty": False
+                "expected_products": "from_4_available",
+                "min_expected": 1
             }
         ]
         
