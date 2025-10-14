@@ -111,8 +111,8 @@ export default function RecommendationScreen({ data, onViewDetails, onGetOnPhone
                     data-testid={`rec-chat-${idx}`} 
                     className="w-full px-4 py-2 text-sm bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-white rounded-full font-medium transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2"
                   >
-                    <span className="text-lg">💬</span>
-                    Chat with AI Stylist
+                    <span className="text-lg">{p.is_custom ? '🎨' : '💬'}</span>
+                    {p.is_custom ? 'Start Custom Design' : 'Chat with AI Stylist'}
                   </Button>
                 </div>
               </div>
