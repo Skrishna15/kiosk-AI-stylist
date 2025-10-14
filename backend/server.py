@@ -1666,15 +1666,18 @@ class ChatRequest(BaseModel):
 @app.post("/api/chat")
 async def chat_with_ai(request: ChatRequest):
     """Natural conversational AI chat for jewelry styling"""
+    logger.info("=== CHAT ENDPOINT CALLED ===")
     try:
         # Try Groq first (ultra-fast inference)
         groq_key = os.environ.get("GROQ_API_KEY")
-        logger.info(f"Groq key present: {bool(groq_key)}")
+        logger.info(f"Groq key present: {bool(groq_key)}, len: {len(groq_key) if groq_key else 0}")
         if groq_key:
+            logger.info("Attempting Groq API call...")
             try:
                 from groq import AsyncGroq
                 
                 client = AsyncGroq(api_key=groq_key)
+                logger.info("Groq client created")
                 
                 # Add system message for jewelry stylist persona
                 messages = [
