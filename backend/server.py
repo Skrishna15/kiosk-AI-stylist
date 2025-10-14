@@ -973,6 +973,108 @@ EVOL_PRODUCTS = [
         "style": ["Modern", "Bohemian"],
         "celebrity_vibe": "Bold Statement"
     },
+    {
+        "id": str(uuid4()),
+        "name": "Bridal Diamond Set",
+        "price": 135000,
+        "category": "Sets",
+        "metal_types": ["White Gold", "Platinum"],
+        "karat_options": ["18 KT"],
+        "sizes": ["Complete Set"],
+        "images": [
+            "https://cdn.shopify.com/s/files/1/0674/7665/2346/products/SSET332381-PT-PV_3024x.jpg?v=1711002550"
+        ],
+        "url": "https://evoljewels.com/collections/all-products/products/bridal-diamond-set",
+        "description": "Complete bridal set with necklace, earrings, and bracelet",
+        "occasion": ["Special Events", "Romantic"],
+        "style": ["Classic", "Modern"],
+        "celebrity_vibe": "Hollywood Glam"
+    },
+    {
+        "id": str(uuid4()),
+        "name": "Emerald and Diamond Collar",
+        "price": 165000,
+        "category": "Necklaces",
+        "metal_types": ["Yellow Gold", "Platinum"],
+        "karat_options": ["18 KT", "22 KT"],
+        "sizes": ["14 inch", "16 inch"],
+        "images": [
+            "https://cdn.shopify.com/s/files/1/0674/7665/2346/products/SNKL332381-YG-PV_3024x.jpg?v=1711002550"
+        ],
+        "url": "https://evoljewels.com/collections/all-products/products/emerald-diamond-collar",
+        "description": "Luxurious emerald and diamond collar necklace",
+        "occasion": ["Special Events", "Romantic"],
+        "style": ["Classic", "Vintage"],
+        "celebrity_vibe": "Hollywood Glam"
+    },
+    {
+        "id": str(uuid4()),
+        "name": "Platinum Eternity Band",
+        "price": 115000,
+        "category": "Rings",
+        "metal_types": ["Platinum"],
+        "karat_options": ["18 KT"],
+        "sizes": list(range(5, 17)),
+        "images": [
+            "https://cdn.shopify.com/s/files/1/0674/7665/2346/products/SRNG332381-PT-PV_3024x.jpg?v=1711002550"
+        ],
+        "url": "https://evoljewels.com/collections/all-products/products/platinum-eternity-band",
+        "description": "Premium platinum eternity band with diamonds",
+        "occasion": ["Romantic", "Special Events"],
+        "style": ["Classic", "Modern"],
+        "celebrity_vibe": "Editorial Chic"
+    },
+    {
+        "id": str(uuid4()),
+        "name": "Victorian Revival Brooch",
+        "price": 108000,
+        "category": "Accessories",
+        "metal_types": ["Yellow Gold", "Rose Gold"],
+        "karat_options": ["18 KT", "22 KT"],
+        "sizes": ["One Size"],
+        "images": [
+            "https://cdn.shopify.com/s/files/1/0674/7665/2346/products/SACC332381-YG-PV_3024x.jpg?v=1711002550"
+        ],
+        "url": "https://evoljewels.com/collections/all-products/products/victorian-revival-brooch",
+        "description": "Exquisite Victorian-inspired brooch with gemstones",
+        "occasion": ["Special Events", "Work"],
+        "style": ["Vintage", "Classic"],
+        "celebrity_vibe": "Vintage Romance"
+    },
+    {
+        "id": str(uuid4()),
+        "name": "Contemporary Chain Necklace",
+        "price": 142000,
+        "category": "Necklaces",
+        "metal_types": ["Rose Gold", "White Gold"],
+        "karat_options": ["18 KT"],
+        "sizes": ["18 inch", "20 inch"],
+        "images": [
+            "https://cdn.shopify.com/s/files/1/0674/7665/2346/products/SNKL332381-RG-PV_3024x.jpg?v=1711002550"
+        ],
+        "url": "https://evoljewels.com/collections/all-products/products/contemporary-chain-necklace",
+        "description": "Modern chain necklace with unique link design",
+        "occasion": ["Everyday", "Work"],
+        "style": ["Modern", "Bohemian"],
+        "celebrity_vibe": "Editorial Chic"
+    },
+    {
+        "id": str(uuid4()),
+        "name": "Sapphire Halo Ring",
+        "price": 198000,
+        "category": "Rings",
+        "metal_types": ["Platinum", "White Gold"],
+        "karat_options": ["18 KT"],
+        "sizes": list(range(5, 17)),
+        "images": [
+            "https://cdn.shopify.com/s/files/1/0674/7665/2346/products/SRNG332381-PT-PV_3024x.jpg?v=1711002550"
+        ],
+        "url": "https://evoljewels.com/collections/all-products/products/sapphire-halo-ring",
+        "description": "Stunning sapphire ring with diamond halo setting",
+        "occasion": ["Special Events", "Romantic"],
+        "style": ["Classic", "Modern"],
+        "celebrity_vibe": "Hollywood Glam"
+    },
     # Ultra-Luxury Range (₹2L - ₹4L)
     {
         "id": str(uuid4()),
