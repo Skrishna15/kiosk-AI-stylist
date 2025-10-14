@@ -1126,6 +1126,76 @@ EVOL_PRODUCTS = [
         "occasion": ["Special Events", "Work"],
         "style": ["Modern", "Classic"],
         "celebrity_vibe": "Editorial Chic"
+    },
+    {
+        "id": str(uuid4()),
+        "name": "Royal Sapphire Parure",
+        "price": 285000,
+        "category": "Sets",
+        "metal_types": ["Platinum", "White Gold"],
+        "karat_options": ["18 KT"],
+        "sizes": ["Complete Set"],
+        "images": [
+            "https://cdn.shopify.com/s/files/1/0674/7665/2346/products/SSET332381-PT-PV_3024x.jpg?v=1711002550"
+        ],
+        "url": "https://evoljewels.com/collections/all-products/products/royal-sapphire-parure",
+        "description": "Magnificent sapphire and diamond complete jewelry set",
+        "occasion": ["Special Events", "Romantic"],
+        "style": ["Classic", "Vintage"],
+        "celebrity_vibe": "Hollywood Glam"
+    },
+    {
+        "id": str(uuid4()),
+        "name": "Heritage Diamond Haar",
+        "price": 365000,
+        "category": "Necklaces",
+        "metal_types": ["Yellow Gold", "Rose Gold"],
+        "karat_options": ["22 KT"],
+        "sizes": ["Traditional Length"],
+        "images": [
+            "https://cdn.shopify.com/s/files/1/0674/7665/2346/products/SNKL332381-YG-PV_3024x.jpg?v=1711002550"
+        ],
+        "url": "https://evoljewels.com/collections/all-products/products/heritage-diamond-haar",
+        "description": "Traditional Indian haar necklace with uncut diamonds",
+        "occasion": ["Special Events", "Romantic"],
+        "style": ["Vintage", "Classic"],
+        "celebrity_vibe": "Vintage Romance"
+    },
+    {
+        "id": str(uuid4()),
+        "name": "Contemporary Art Bracelet",
+        "price": 225000,
+        "category": "Bracelets",
+        "metal_types": ["Platinum", "White Gold"],
+        "karat_options": ["18 KT"],
+        "sizes": ["Adjustable"],
+        "images": [
+            "https://cdn.shopify.com/s/files/1/0674/7665/2346/products/SBRC332381-PT-PV_3024x.jpg?v=1711002550"
+        ],
+        "url": "https://evoljewels.com/collections/all-products/products/contemporary-art-bracelet",
+        "description": "Artistic bracelet with sculptural diamond elements",
+        "occasion": ["Special Events", "Work"],
+        "style": ["Modern", "Bohemian"],
+        "celebrity_vibe": "Editorial Chic"
+    },
+    # Custom Jewelry Option
+    {
+        "id": str(uuid4()),
+        "name": "Design Your Dream Piece",
+        "price": 0,  # Price varies based on customization
+        "category": "Custom",
+        "metal_types": ["Yellow Gold", "White Gold", "Rose Gold", "Platinum"],
+        "karat_options": ["14 KT", "18 KT", "22 KT"],
+        "sizes": ["Custom"],
+        "images": [
+            "https://cdn.shopify.com/s/files/1/0674/7665/2346/products/CUSTOM-DESIGN-PV_3024x.jpg?v=1711002550"
+        ],
+        "url": "https://evoljewels.com/collections/custom-jewelry",
+        "description": "Create your unique piece with our expert designers. From concept to creation, make jewelry that's truly yours.",
+        "occasion": ["All Occasions"],
+        "style": ["All Styles"],
+        "celebrity_vibe": "Personal Expression",
+        "is_custom": True
     }
 ]
 
