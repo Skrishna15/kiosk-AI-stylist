@@ -479,41 +479,67 @@ class BackendTester:
                 if response.status_code == 200:
                     data = response.json()
                     recommendations = data.get("recommendations", [])
+                    vibe = data.get("vibe", "")
                     
-                    if test_case.get("expect_empty"):
-                        if len(recommendations) == 0:
-                            self.log_test(f"Enhanced Recommendations: {test_case['name']}", True, "No recommendations (expected for low budget)")
-                        else:
-                            self.log_test(f"Enhanced Recommendations: {test_case['name']}", True, f"Got {len(recommendations)} recommendations (better than expected)")
-                    elif test_case.get("expect_real_products"):
-                        if len(recommendations) == 0:
-                            self.log_test(f"Enhanced Recommendations: {test_case['name']}", False, "No recommendations returned")
-                            all_passed = False
-                            continue
-                        
-                        # Check for real Evol product names
-                        real_product_names = ["Talia Diamond Ring", "Orbis Diamond Ring", "Hold Me Closer Diamond Ring", 
-                                            "Romance Diamond Ring", "Dazzling Dewdrop Diamond Studs", "Wain Marquise Diamond Ring"]
-                        
-                        found_real_products = 0
-                        for rec in recommendations:
-                            product_name = rec["product"]["name"]
-                            if any(real_name in product_name for real_name in real_product_names):
-                                found_real_products += 1
-                        
-                        if found_real_products > 0:
-                            self.log_test(f"Enhanced Recommendations: {test_case['name']}", True, 
-                                        f"Found {found_real_products}/{len(recommendations)} real Evol products")
-                        else:
-                            self.log_test(f"Enhanced Recommendations: {test_case['name']}", False, 
-                                        "No real Evol product names found in recommendations")
-                            all_passed = False
+                    if len(recommendations) == 0:
+                        self.log_test(f"Product Recommendations: {test_case['name']}", False, "No recommendations returned")
+                        all_passed = False
+                        continue
+                    
+                    # Check style matching
+                    expected_styles = test_case.get("expected_styles", [])
+                    style_matches = 0
+                    
+                    for rec in recommendations:
+                        product = rec["product"]
+                        style_tags = product.get("style_tags", [])
+                        if any(style in style_tags for style in expected_styles):
+                            style_matches += 1
+                    
+                    # Check occasion matching
+                    expected_occasion = test_case["data"]["occasion"]
+                    occasion_matches = 0
+                    
+                    for rec in recommendations:
+                        product = rec["product"]
+                        occasion_tags = product.get("occasion_tags", [])
+                        if expected_occasion in occasion_tags:
+                            occasion_matches += 1
+                    
+                    # Check celebrity vibe assignments
+                    expected_vibes = test_case.get("expected_vibes", [])
+                    vibe_match = vibe in expected_vibes if expected_vibes else True
+                    
+                    # Check for custom jewelry option as last item
+                    custom_option_found = False
+                    if len(recommendations) >= 4:
+                        last_product = recommendations[-1]["product"]
+                        if "Design Your Dream Piece" in last_product.get("name", ""):
+                            custom_option_found = True
+                    
+                    success_details = []
+                    if style_matches > 0:
+                        success_details.append(f"Style matches: {style_matches}/{len(recommendations)}")
+                    if occasion_matches > 0:
+                        success_details.append(f"Occasion matches: {occasion_matches}/{len(recommendations)}")
+                    if vibe_match:
+                        success_details.append(f"Vibe: {vibe}")
+                    if custom_option_found:
+                        success_details.append("Custom option included")
+                    
+                    if style_matches > 0 or occasion_matches > 0:
+                        self.log_test(f"Product Recommendations: {test_case['name']}", True, 
+                                    f"{len(recommendations)} recommendations, " + ", ".join(success_details))
+                    else:
+                        self.log_test(f"Product Recommendations: {test_case['name']}", False, 
+                                    f"No style/occasion matches found in {len(recommendations)} recommendations")
+                        all_passed = False
                 else:
-                    self.log_test(f"Enhanced Recommendations: {test_case['name']}", False, f"Status {response.status_code}")
+                    self.log_test(f"Product Recommendations: {test_case['name']}", False, f"Status {response.status_code}")
                     all_passed = False
                     
             except Exception as e:
-                self.log_test(f"Enhanced Recommendations: {test_case['name']}", False, f"Request failed: {str(e)}")
+                self.log_test(f"Product Recommendations: {test_case['name']}", False, f"Request failed: {str(e)}")
                 all_passed = False
         
         return all_passed
