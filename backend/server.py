@@ -1663,6 +1663,11 @@ class ChatRequest(BaseModel):
     temperature: Optional[float] = 0.8
     max_tokens: Optional[int] = 150
 
+@app.get("/api/ping")
+async def ping():
+    """Quick ping to verify server is responding"""
+    return {"status": "ok", "timestamp": datetime.now().isoformat(), "groq_configured": bool(os.environ.get("GROQ_API_KEY"))}
+
 @app.get("/api/test-groq")
 async def test_groq():
     """Test Groq integration"""
