@@ -1734,7 +1734,7 @@ async def chat_with_ai(request: ChatRequest):
                 
                 ai_response = response.choices[0].message.content
                 logger.info(f"✅ Groq AI response generated: {ai_response[:50]}...")
-                return {"response": ai_response, "source": "groq"}
+                return {"response": ai_response, "source": "groq", "timestamp": datetime.now().isoformat()}
                 
             except Exception as groq_error:
                 logger.error(f"❌ Groq AI chat failed: {type(groq_error).__name__}: {str(groq_error)}")
