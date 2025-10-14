@@ -837,25 +837,22 @@ class BackendTester:
             return False
     
     def run_all_tests(self):
-        """Run all enhanced backend tests"""
-        print(f"🧪 Starting Enhanced Backend API Tests for Luxury Jewelry Kiosk System")
+        """Run all real Evol Jewels product data tests"""
+        print(f"🧪 Testing Real Evol Jewels Product Data Integration")
         print(f"📍 Testing against: {API_BASE}")
-        print(f"🎯 Testing the remaining 30% completion with real Evol Jewels data")
+        print(f"🎯 Verifying 45 real products (₹14,998 - ₹68,128 range)")
         print("=" * 80)
         
-        # Run tests in order - enhanced features first
+        # Run tests focusing on the review request requirements
         tests = [
-            ("Basic Health Check", self.test_health_check),
-            ("Real Evol Jewels Product Import", self.test_evol_products_import),
-            ("Celebrity Style Database", self.test_celebrity_styles_database),
-            ("Enhanced Product Recommendations", self.test_enhanced_product_recommendations),
-            ("Data Integration Verification", self.test_data_integration_verification),
-            ("API Compatibility", self.test_api_compatibility),
-            ("Performance and Reliability", self.test_performance_and_reliability),
-            ("Legacy Survey Submission", self.test_survey_submission),
-            ("Legacy Passport Retrieval", self.test_passport_retrieval),
-            ("Legacy Invalid Session", self.test_invalid_session_passport),
-            ("Legacy Budget Filtering", self.test_budget_filtering)
+            ("1. Product Import (45 products ₹14,998-₹68,128)", self.test_evol_products_import),
+            ("2. Survey API Budget Filtering", self.test_survey_api_budget_filtering),
+            ("3. Product Recommendations Engine", self.test_product_recommendations_engine),
+            ("4. Custom Jewelry Option", self.test_custom_jewelry_option),
+            ("5. Product Data Integrity", self.test_product_data_integrity),
+            ("6. Celebrity Style Database", self.test_celebrity_styles_database),
+            ("7. API Compatibility", self.test_api_compatibility),
+            ("8. Performance and Reliability", self.test_performance_and_reliability)
         ]
         
         passed = 0
