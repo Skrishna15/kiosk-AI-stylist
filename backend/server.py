@@ -1663,6 +1663,33 @@ class ChatRequest(BaseModel):
     temperature: Optional[float] = 0.8
     max_tokens: Optional[int] = 150
 
+@app.get("/api/test-groq")
+async def test_groq():
+    """Test Groq integration"""
+    try:
+        groq_key = os.environ.get("GROQ_API_KEY")
+        if not groq_key:
+            return {"status": "error", "message": "No GROQ_API_KEY found"}
+        
+        from groq import AsyncGroq
+        client = AsyncGroq(api_key=groq_key)
+        
+        response = await client.chat.completions.create(
+            model="llama-3.3-70b-versatile",
+            messages=[{"role": "user", "content": "Say hello in 5 words"}],
+            temperature=0.7,
+            max_tokens=50
+        )
+        
+        return {
+            "status": "success", 
+            "response": response.choices[0].message.content,
+            "key_present": bool(groq_key),
+            "key_length": len(groq_key)
+        }
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
 @app.post("/api/chat")
 async def chat_with_ai(request: ChatRequest):
     """Natural conversational AI chat for jewelry styling"""
