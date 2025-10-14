@@ -1667,30 +1667,40 @@ class ChatRequest(BaseModel):
 async def chat_with_ai(request: ChatRequest):
     """Natural conversational AI chat for jewelry styling"""
     try:
-        # Try xAI Grok first
+        # Try xAI Grok using OpenAI-compatible endpoint
         xai_key = os.environ.get("XAI_API_KEY")
-        if xai_key:
+        if xai_key and AsyncOpenAI is not None:
             try:
-                from xai_sdk import Client
+                # Use OpenAI client with xAI base URL
+                client = AsyncOpenAI(
+                    api_key=xai_key,
+                    base_url="https://api.x.ai/v1"
+                )
                 
-                client = Client(api_key=xai_key)
+                # Add system message for jewelry stylist persona
+                messages = [
+                    {
+                        "role": "system", 
+                        "content": "You are a professional luxury jewelry stylist for Evol Jewels. Speak warmly and naturally like a real stylist would - conversational, friendly, and knowledgeable. Keep responses concise (2-3 sentences max). Use casual language and show genuine excitement about jewelry. Add relevant emojis occasionally to feel more human. If asked about purchasing, mention they'll get a QR code at the end to shop easily."
+                    }
+                ]
                 
-                # Convert messages to xAI format
-                xai_messages = [{"role": msg.role, "content": msg.content} for msg in request.messages]
+                # Add conversation history
+                for msg in request.messages:
+                    messages.append({"role": msg.role, "content": msg.content})
                 
                 response = await asyncio.wait_for(
-                    asyncio.to_thread(
-                        client.chat.completions.create,
+                    client.chat.completions.create(
                         model="grok-beta",
-                        messages=xai_messages,
+                        messages=messages,
                         temperature=request.temperature,
                         max_tokens=request.max_tokens
                     ),
-                    timeout=15.0
+                    timeout=20.0
                 )
                 
                 ai_response = response.choices[0].message.content
-                logger.info("Grok AI response generated successfully")
+                logger.info("Grok AI stylist response generated successfully")
                 return {"response": ai_response, "source": "grok"}
                 
             except Exception as grok_error:
